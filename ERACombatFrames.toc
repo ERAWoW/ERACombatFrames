@@ -1,0 +1,50 @@
+## Interface: 90001
+## Title: ERACombatFrames
+## Notes: ERA's Combat Interface
+## SavedVariables: ERACombatOptionsVariables
+
+ERALIB.lua
+
+ERACombatUIConstants.lua
+
+ERACombat.lua
+
+ERACombatControls.xml
+ERACombatControls.lua
+
+ERACombatStatusBars.xml
+ERACombatStatusBars.lua
+
+ERACombatTimers.xml
+ERACombatTimers.lua
+
+ERACombatGrid.xml
+ERACombatGrid.lua
+
+ERACombatTankWindow.xml
+ERACombatTankWindow.lua
+
+ERACombatEnemiesTracker.lua
+ERACombatDOTracker.lua
+
+ERACombatUtilityFrame.lua
+
+ERACombatPoints.xml
+ERACombatPoints.lua
+
+ERADeathKnight.lua
+ERADemonHunter.lua
+ERADruid.lua
+ERAHunter.lua
+ERAMage.lua
+ERAMonk.lua
+ERAPaladin.lua
+ERAPriest.lua
+ERAWarlock.xml
+ERAWarlock.lua
+
+ERACombatOptions.xml
+ERACombatOptions.lua
+
+ERACombatFrames.xml
+ERACombatFrames.lua

@@ -1,0 +1,86 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\..\FrameXML\UI.xsd">
+
+    <Frame name="ERACombatOptionsSpecFrame" virtual="true">
+        <Frames>
+            <Frame parentKey="header" inherits="BackdropTemplate" frameLevel="2">
+                <KeyValues>
+                    <KeyValue key="backdropInfo" value="ERA_ECF_UI_BACKDROP_GROUPBOX_HEADER" type="global"/>
+                    <KeyValue key="backdropColor" value="TOOLTIP_DEFAULT_BACKGROUND_COLOR" type="global"/>
+                    <KeyValue key="backdropColorAlpha" value="1.0" type="number"/>
+                </KeyValues>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="32" y="0"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-32" y="-32"/>
+                </Anchors>
+                <Frames>
+                    <CheckButton frameLevel="5" parentKey="checkbox" inherits="OptionsSmallCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="LEFT" x="4" y="0"/>
+                        </Anchors>
+                    </CheckButton>
+                </Frames>
+            </Frame>
+            <Frame parentKey="details" inherits="BackdropTemplate" frameLevel="1">
+                <KeyValues>
+                    <KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_12_12_4444" type="global"/>
+                    <KeyValue key="backdropColor" value="TOOLTIP_DEFAULT_BACKGROUND_COLOR" type="global"/>
+                </KeyValues>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="0" y="-16"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+                </Anchors>
+            </Frame>
+        </Frames>
+    </Frame>
+
+    <Frame name="ERACombatOptionsFrame" parent="UIParent" hidden="true" inherits="BackdropTemplate">
+        <KeyValues>
+            <KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+            <KeyValue key="backdropColor" value="TOOLTIP_DEFAULT_BACKGROUND_COLOR" type="global"/>
+        </KeyValues>
+        <Size x="1111" y="888"/>
+        <Anchors>
+            <Anchor point="TOP" relativePoint="TOP"/>
+        </Anchors>
+        <Frames>
+            <Button inherits="OptionsButtonTemplate" text="Reload UI">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="16" y="36"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-4" y="12"/>
+                </Anchors>
+                <Scripts>
+                    <OnClick>C_UI.Reload()</OnClick>
+                </Scripts>
+            </Button>
+            <Button inherits="OptionsButtonTemplate" text="close this window, I will reload the UI later">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOM" x="4" y="36"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-16" y="12"/>
+                </Anchors>
+                <Scripts>
+                    <OnClick>ERACombatOptionsFrame:Hide()</OnClick>
+                </Scripts>
+            </Button>
+            <ScrollFrame parentKey="ScrollFrame" inherits="UIPanelScrollFrameTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="8" y="-16"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-36" y="66"/>
+                </Anchors>
+                <ScrollChild>
+                    <Frame parentKey="ScrollChild"/>
+                </ScrollChild>
+            </ScrollFrame>
+        </Frames>
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString inherits="GameFontNormal" text="NOTE : you need to reload your UI to apply the changes immediately">
+                    <Anchors>
+                        <Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="44"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+    </Frame>
+
+</Ui>

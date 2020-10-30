@@ -1,0 +1,25 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\..\FrameXML\UI.xsd">
+
+    <Frame name="ERACombatPointFrame" virtual="true">
+        <Layers>
+
+            <Layer level="BACKGROUND">
+                <Texture setAllPoints="true" file="Interface/Addons/ERACombatFrames/textures/disk_256.tga">
+                    <Color r="0.0" g="0.0" b="0.0" a="0.6"/>
+                </Texture>
+            </Layer>
+
+            <Layer level="BORDER">
+                <!--circle_256_16.tga-->
+                <Texture parentKey="Border" setAllPoints="true" file="Interface/Addons/ERACombatFrames/textures/circle_256_16_blur_b8_8_4.tga"/>
+            </Layer>
+            
+            <Layer level="ARTWORK">
+                <Texture parentKey="Point" setAllPoints="true" file="Interface/Addons/ERACombatFrames/textures/disk_256_padding_16_blur_128.tga"/>
+            </Layer>
+
+        </Layers>
+    </Frame>
+
+</Ui>

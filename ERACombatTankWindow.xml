@@ -1,0 +1,67 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\..\FrameXML\UI.xsd">
+
+    <FontString name="ERACombatTankWindowText" toplevel="true" virtual="true">
+        <FontHeight>
+            <AbsValue val="50"/>
+        </FontHeight>
+        <Shadow>
+            <Offset>
+                <AbsDimension x="-1" y="-1"/>
+            </Offset>
+            <Color r="0.0" g="0.0" b="0.0"/>
+        </Shadow>
+        <Color r="1.0" g="0.82" b="0"/>
+    </FontString>
+
+    <Frame name="ERACombatTankWindowFrame" virtual="true">
+        <!-->
+        <Backdrop bgFile="Interface/DialogFrame/UI-DialogBox-Background" tile="true">
+            <TileSize val="32"/>
+        </Backdrop>
+        -->
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture setAllPoints="true">
+                    <Color r="0" g="0" b="0" a="0.5"/>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY">
+                <FontString parentKey="BRText" justifyH="RIGHT" inherits="ERACombatTankWindowText">
+                    <FontHeight>
+                        <AbsValue val="50"/>
+                    </FontHeight>
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="4" y="1"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Frame parentKey="Chart" setAllPoints="true">
+                <!--
+                <Anchors>
+                    <Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                -->
+            </Frame>
+        </Frames>
+    </Frame>
+
+    <Line name="ERACombatTankWindowDELine" thickness="2" toplevel="true" virtual="true">
+        <Color r="1" g="0.2" b="0.2"/>
+    </Line>
+
+    <Line name="ERACombatTankWindowCurveLine" thickness="1" toplevel="true" virtual="true">
+        <Color r="1" g="1" b="1"/>
+    </Line>
+
+</Ui>

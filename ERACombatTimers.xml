@@ -1,0 +1,59 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\..\FrameXML\UI.xsd">
+
+    <Frame name="ERACombatTimersFrame" parent="UIParent" virtual="true">
+        <Size>
+            <AbsDimension x="2048" y="2048"/>
+        </Size>
+    </Frame>
+
+    <StatusBar name="ERACombatTimersStatusBar" reverseFill="true" virtual="true" drawLayer="BORDER">
+        <Animations>
+            <AnimationGroup parentKey="Anim">
+                <Translation parentKey="Translation" smoothing="IN_OUT" duration="0.3"/>
+            </AnimationGroup>
+        </Animations>
+        <Layers>
+            <Layer level="ARTWORK">
+                <Texture parentKey="Icon" setAllPoints="true">
+                    <Size>
+                        <AbsDimension x="16" y="16"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" relativePoint="RIGHT">
+                            <Offset>
+                                <AbsDimension x="0" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY">
+                <FontString parentKey="Text" toplevel="true" justifyH="RIGHT">
+                    <Size>
+                        <AbsDimension x="512" y="16"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="RIGHT" relativePoint="RIGHT">
+                            <Offset>
+                                <AbsDimension x="-4" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Size>
+            <AbsDimension x="512" y="16"/>
+        </Size>
+    </StatusBar>
+
+    <Line name="ERACombatTimersVerticalTick" thickness="1" toplevel="true" virtual="true">
+        <Color r="1" g="1" b="1"/>
+    </Line>
+
+    <Line name="ERACombatTimersChannelTick" thickness="2" toplevel="true" virtual="true">
+        <Color r="1" g="0" b="0"/>
+    </Line>
+
+</Ui>

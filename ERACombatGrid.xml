@@ -1,0 +1,15 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\..\FrameXML\UI.xsd">
+
+    <Frame name="ERACombatGridPlayerFrame" virtual="true" frameStrata="MEDIUM" inherits="SecureUnitButtonTemplate">
+        <Size x="111" y="44"/>
+    </Frame>
+
+    <Frame name="ERACombatGridPlayerFrameEmpty" virtual="true" frameStrata="MEDIUM">
+    </Frame>
+
+    <Line name="ERACombatGridPlayerDeadLine" thickness="3" toplevel="true" virtual="true">
+        <Color r="1" g="0.2" b="0.2"/>
+    </Line>
+
+</Ui>

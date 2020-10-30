@@ -1,0 +1,155 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\..\FrameXML\UI.xsd">
+
+    <!--
+    <FontString name="ERACombatStatusBarText" toplevel="true" outline="THICK" font="Fonts\FRIZQT__.TTF" virtual="true">
+        <FontHeight>
+            <AbsValue val="50"/>
+        </FontHeight>
+        <Color r="1" g="1" b="1"/>
+    </FontString>
+
+    <StatusBar name="ERACombatStatusBarXML" virtual="true">
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString parentKey="LText" justifyH="LEFT" inherits="ERACombatStatusBarText">
+                    <FontHeight>
+                        <AbsValue val="50"/>
+                    </FontHeight>
+                    <Anchors>
+                        <Anchor point="LEFT" relativePoint="LEFT">
+                            <Offset>
+                                <AbsDimension x="4" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString parentKey="RText" justifyH="RIGHT" inherits="ERACombatStatusBarText">
+                    <FontHeight>
+                        <AbsValue val="50"/>
+                    </FontHeight>
+                    <Anchors>
+                        <Anchor point="RIGHT" relativePoint="RIGHT">
+                            <Offset>
+                                <AbsDimension x="-4" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar-Glow"/>
+    </StatusBar>
+
+    <StatusBar name="ERACombatStatusBarWithBackground" virtual="true" inherits="ERACombatStatusBarXML">
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture setAllPoints="true">
+                    <Color r="0" g="0" b="0" a="0.7"/>
+                </Texture>
+            </Layer>
+        </Layers>
+    </StatusBar>
+    -->
+
+    <Frame name="ERACombatStatusBarFrameXML" virtual="true">
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="BG" setAllPoints="true">
+                    <Color r="0" g="0" b="0" a="0.7"/>
+                </Texture>
+            </Layer>
+            <Layer level="BORDER">
+                <Texture parentKey="BORDER_LEFT" file="Interface/Addons/ERACombatFrames/textures/leftcircle_barborder.tga">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+                        <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="BORDER_RIGHT" file="Interface/Addons/ERACombatFrames/textures/rightcircle_barborder.tga">
+                    <Anchors>
+                        <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT"/>
+                        <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="BORDER_TOP" file="Interface/Addons/ERACombatFrames/textures/horizontal_barborder.tga">
+                    <Anchors>
+                        <Anchor point="TOP" relativePoint="TOP"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="BORDER_BOTTOM" file="Interface/Addons/ERACombatFrames/textures/horizontal_barborder.tga">
+                    <Anchors>
+                        <Anchor point="BOTTOM" relativePoint="BOTTOM"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="MAIN_BAR" setAllPoints="false" file="Interface/Buttons/WHITE8x8"/>
+                <Texture parentKey="MINUS_BAR">
+                    <Color r="1" g="0" b="0" a="1"/>
+                </Texture>
+                <Texture parentKey="PLUS_BAR">
+                    <Color r="0" g="0" b="1" a="1"/>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK">
+                <Line parentKey="FORECAST_H" thickness="4" toplevel="true">
+                    <Color r="0.5" g="0.5" b="1"/>
+                </Line>
+                <Line parentKey="FORECAST_V" thickness="4" toplevel="true">
+                    <Color r="0.5" g="0.5" b="1"/>
+                </Line>
+            </Layer>
+            <Layer level="OVERLAY">
+                <MaskTexture parentKey="MASK_BARS_LEFT" file="Interface/Addons/ERACombatFrames/textures/halfdisk_left.tga" hWrapMode="CLAMPTOWHITE" vWrapMode="CLAMPTOWHITE">
+                    <MaskedTextures>
+                        <MaskedTexture childKey="MINUS_BAR"/>
+                        <MaskedTexture childKey="PLUS_BAR"/>
+                    </MaskedTextures>
+                </MaskTexture>
+                <MaskTexture parentKey="MASK_BARS_RIGHT" file="Interface/Addons/ERACombatFrames/textures/halfdisk_right.tga" hWrapMode="CLAMPTOWHITE" vWrapMode="CLAMPTOWHITE">
+                    <MaskedTextures>
+                        <MaskedTexture childKey="MINUS_BAR"/>
+                        <MaskedTexture childKey="PLUS_BAR"/>
+                    </MaskedTextures>
+                </MaskTexture>
+                <MaskTexture parentKey="MASK_MAIN_LEFT" file="Interface/Addons/ERACombatFrames/textures/halfdisk_blur_left.tga" hWrapMode="CLAMPTOWHITE" vWrapMode="CLAMPTOWHITE">
+                    <MaskedTextures>
+                        <MaskedTexture childKey="MAIN_BAR"/>
+                    </MaskedTextures>
+                </MaskTexture>
+                <MaskTexture parentKey="MASK_MAIN_RIGHT" file="Interface/Addons/ERACombatFrames/textures/halfdisk_blur_right.tga" hWrapMode="CLAMPTOWHITE" vWrapMode="CLAMPTOWHITE">
+                    <MaskedTextures>
+                        <MaskedTexture childKey="MAIN_BAR"/>
+                    </MaskedTextures>
+                </MaskTexture>
+                <MaskTexture parentKey="MASK_MAIN_MIDDLE" file="Interface/Addons/ERACombatFrames/textures/bar_blur_horizontal.tga" hWrapMode="CLAMPTOWHITE" vWrapMode="CLAMPTOWHITE">
+                    <MaskedTextures>
+                        <MaskedTexture childKey="MAIN_BAR"/>
+                    </MaskedTextures>
+                </MaskTexture>
+                <MaskTexture parentKey="MASK_BG_LEFT" file="Interface/Addons/ERACombatFrames/textures/halfdisk_left.tga" hWrapMode="CLAMPTOWHITE" vWrapMode="CLAMPTOWHITE">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+                        <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT"/>
+                    </Anchors>
+                    <MaskedTextures>
+                        <MaskedTexture childKey="BG"/>
+                    </MaskedTextures>
+                </MaskTexture>
+                <MaskTexture parentKey="MASK_BG_RIGHT" file="Interface/Addons/ERACombatFrames/textures/halfdisk_right.tga" hWrapMode="CLAMPTOWHITE" vWrapMode="CLAMPTOWHITE">
+                    <Anchors>
+                        <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT"/>
+                        <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+                    </Anchors>
+                    <MaskedTextures>
+                        <MaskedTexture childKey="BG"/>
+                    </MaskedTextures>
+                </MaskTexture>
+            </Layer>
+        </Layers>
+    </Frame>
+
+    <Line name="ERACombatPowerTick" thickness="1" toplevel="true" virtual="true">
+        <Color r="1" g="1" b="1"/>
+    </Line>
+
+</Ui>

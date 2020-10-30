@@ -281,13 +281,16 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 
 function ERACombatFrames_DruidCatSetup(cFrame)
+    local remember_default_bar_size = ERACombat_TimerBarDefaultSize
+    ERACombat_TimerBarDefaultSize = 16
+
     local talent_sabertooth = ERALIBTalent:Create(1, 2)
     local talent_incarnation = ERALIBTalent:Create(5, 3)
     local talent_berzerk = ERALIBTalent:CreateNotTalent(5, 3, 34)
     local talent_slash = ERALIBTalent:Create(6, 2)
     local talent_bloodtalons = ERALIBTalent:Create(7, 2)
 
-    ERAOutOfCombatStatusBars:Create(cFrame, -128, -32, 128, 16, 3, true, 1.0, 1.0, 0.0, false, 2) -- energy 3
+    ERAOutOfCombatStatusBars:Create(cFrame, -144, 0, 128, 22, 3, true, 1.0, 1.0, 0.0, false, 2) -- energy 3
 
     local timers = ERACombatTimersGroup:Create(cFrame, -101, 0, 1.0, 2)
 
@@ -525,6 +528,8 @@ function ERACombatFrames_DruidCatSetup(cFrame)
     ERACombatFrames_DruidMoonAffinityCC(utility, ERALIBTalent:Create(3, 1))
     ERACombatFrames_DruidBearAffinityCC(utility, ERALIBTalent:Create(3, 2))
     ERACombatFrames_DruidTreeAffinityCC(utility, ERALIBTalent:Create(3, 3))
+
+    ERACombat_TimerBarDefaultSize = remember_default_bar_size
 end
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -635,13 +640,21 @@ function ERACombatFrames_DruidTreeSetup(cFrame)
 
     local talent_moonkin = ERALIBTalent:Create(3, 1)
     local talent_incarnation = ERALIBTalent:Create(5, 3)
+    local talent_rejuv2 = ERALIBTalent:Create(7, 2)
     local talent_boosthots = ERALIBTalent:Create(7, 3)
     local talent_incarnation_with_boosthots = ERALIBTalent:CreateAnd(talent_incarnation, talent_boosthots)
     local talent_incarnation_without_boosthots = ERALIBTalent:CreateAnd(talent_incarnation, ERALIBTalent:CreateNot(talent_boosthots))
 
     ERAOutOfCombatStatusBars:Create(cFrame, -128, -64, 128, 22, 0, true, 0.1, 0.1, 1.0, false, 4) -- mana 0
 
-    local timers = ERACombatTimersGroup:Create(cFrame, -101, -88, 1.5, 4)
+    local grid = ERACombatGrid:Create(cFrame, -144, -16, "BOTTOMRIGHT", 4, 88423, "Magic", "Curse", "Poison")
+    local lifeBloomDefinition = grid:AddTrackedBuff(33763, nil)
+    local regrowthDefinition = grid:AddTrackedBuff(8936, nil)
+    local rejuvDefinition = grid:AddTrackedBuff(774, nil)
+    local rejuv2Definition = grid:AddTrackedBuff(155777, nil)
+    local growthDefinition = grid:AddTrackedBuff(48438, nil)
+
+    local timers = ERACombatTimersGroup:Create(cFrame, -144, -99, 1.5, 4)
 
     local moonfire = timers:AddAuraBar(timers:AddTrackedDebuff(164812), nil, 0.0, 0.0, 1.0)
     function moonfire:GetRemDurationOr0IfInvisible(t)
@@ -654,13 +667,10 @@ function ERACombatFrames_DruidTreeSetup(cFrame)
         return self.aura.remDuration
     end
 
-    local rejuv = timers:AddAuraBar(timers:AddTrackedBuff(774), nil, 0.0, 1.0, 0.2)
-    function rejuv:GetRemDurationOr0IfInvisible(t)
-        self.view:SetIconVisibility(self.aura.remDuration <= 4.5)
-        return self.aura.remDuration
-    end
-    local lifebloomTimer = timers:AddTrackedBuff(33763, ERALIBTalent:CreateLevel(21))
-    timers:AddAuraBar(lifebloomTimer, nil, 0.0, 1.0, 1.0)
+    ERACombatFrames_DruidRestoHOT(timers, grid, 774, 4.5, 0.0, 1.0, 0.2, nil) -- rejuv
+    ERACombatFrames_DruidRestoHOT(timers, grid, 155777, 4.5, 0.0, 1.0, 0.2, talent_rejuv2) -- rejuv2
+    ERACombatFrames_DruidRestoHOT(timers, grid, 8936, 3.6, 0.0, 0.5, 0.2, nil) -- regrowth
+    local lifebloomTimer = ERACombatFrames_DruidRestoHOT(timers, grid, 33763, 4.5, 0.0, 1.0, 1.0, ERALIBTalent:CreateLevel(21))
 
     timers:AddCooldownIcon(timers:AddTrackedCooldown(18562, ERALIBTalent:CreateLevel(11)), nil, 0, 4, true, true) -- swiftmend
     timers:AddCooldownIcon(timers:AddTrackedCooldown(48438, ERALIBTalent:CreateLevel(34)), nil, 0, 3, true, true) -- wild growth
@@ -685,13 +695,6 @@ function ERACombatFrames_DruidTreeSetup(cFrame)
     ERACombatFrames_DruidCatAffinityCC(utility, ERALIBTalent:Create(3, 2))
     ERACombatFrames_DruidBearAffinityCC(utility, ERALIBTalent:Create(3, 3))
 
-    local grid = ERACombatGrid:Create(cFrame, -100, 16, "BOTTOMRIGHT", 4, 88423, "Magic", "Curse", "Poison")
-    local lifeBloomDefinition = grid:AddTrackedBuff(33763, nil)
-    local regrowthDefinition = grid:AddTrackedBuff(8936, nil)
-    local rejuvDefinition = grid:AddTrackedBuff(774, nil)
-    local rejuv2Definition = grid:AddTrackedBuff(155777, nil)
-    local growthDefinition = grid:AddTrackedBuff(48438, nil)
-
     local treeUtility = ERACombatUtilityFrame:Create(cFrame, -88, -199, 4)
     treeUtility:AddCooldown(0, 0, 102342, nil, true, ERALIBTalent:CreateLevel(12)) -- ironbark
     treeUtility:AddCooldown(-1, 0, 740, nil, true, ERALIBTalent:CreateLevel(37)) -- tranqui
@@ -714,9 +717,25 @@ function ERACombatFrames_DruidTreeSetup(cFrame)
 
     local effloLevel = ERALIBTalent:CreateLevel(39)
     local efflo = ERACombatFrames_DruidEfflorescenceTimer_create(timers, effloLevel)
-    ERACombatFrames_DruidEfflorescenceMissing:create(timers, efflo, 1, 2)
+    ERACombatFrames_DruidEfflorescenceMissing:create(timers, efflo, 1.7, 2)
 
     ERACombat_TimerBarDefaultSize = remember_default_bar_size
+end
+
+-- personal hots
+
+function ERACombatFrames_DruidRestoHOT(timers, grid, spellID, pandemic, r, g, b, talent)
+    local timer = timers:AddTrackedBuff(spellID, talent)
+    local display = timers:AddAuraBar(timer, nil, r, g, b)
+    function display:GetRemDurationOr0IfInvisible(t)
+        if (grid.isSolo) then
+            self.view:SetIconVisibility(self.aura.remDuration <= pandemic)
+            return math.max(0.001, self.aura.remDuration)
+        else
+            return 0
+        end
+    end
+    return timer
 end
 
 -- lifebloom

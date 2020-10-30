@@ -124,7 +124,8 @@ function ERACombatFrames_PaladinProtectionSetup(cFrame)
 
     local mana = ERACombatPower:Create(cFrame, -177, -155, 144, 22, 0, false, 0.2, 0.2, 1.0, 2)
     function mana:ShouldBeVisible(t)
-        return self.currentPower / self.maxPower < 0.5 or t < sow.lastFlashHeal + 5
+        local ratio = self.currentPower / self.maxPower
+        return ratio < 1 and (ratio < 0.5 or t < sow.lastFlashHeal + 5)
     end
 end
 
@@ -163,6 +164,7 @@ function ERACombatFrames_PaladinProtectionShieldOrWOG:create(cFrame, x, y, healt
     -- calculs
 
     sow.playerGUID = UnitGUID("player")
+    sow.playerLevel = UnitLevel("player")
     sow.shieldArmourTimer = shieldArmourTimer
     sow.health = health
     sow.holyPower = holyPower
@@ -187,6 +189,9 @@ end
 
 function ERACombatFrames_PaladinProtectionShieldOrWOG:SpecInactive(wasActive)
     self.frame:Hide()
+end
+function ERACombatFrames_PaladinProtectionShieldOrWOG:CheckTalents()
+    self.playerLevel = UnitLevel("player")
 end
 function ERACombatFrames_PaladinProtectionShieldOrWOG:ResetToIdle()
     self.frame:Hide()
@@ -274,8 +279,6 @@ function ERACombatFrames_PaladinProtectionShieldOrWOG:CLEU(t)
 end
 
 function ERACombatFrames_PaladinProtectionShieldOrWOG:UpdateCombat(t)
-    local level = UnitLevel("player")
-
     while (true) do
         if (self.firstLink == self.lastLink) then
             break
@@ -306,7 +309,7 @@ function ERACombatFrames_PaladinProtectionShieldOrWOG:UpdateCombat(t)
     local damagePrevision
     local shieldStat = GetShieldBlock()
     if (totalWeight > 0) then
-        local block = GetBlockChance() * ERACombatFrames_PaladinProtectionShieldOrWOG_getArmorPct(shieldStat, level) / 100
+        local block = GetBlockChance() * ERACombatFrames_PaladinProtectionShieldOrWOG_getArmorPct(shieldStat, self.playerLevel) / 100
         damagePrevision = damageEventCount * 4.5 * (totalDamage / totalWeight) / math.max(0.1, (t - self.firstLink.t)) * (1 - block)
     else
         damagePrevision = 0
@@ -318,8 +321,8 @@ function ERACombatFrames_PaladinProtectionShieldOrWOG:UpdateCombat(t)
     if (self.shieldArmourTimer.remDuration > 0) then
         armorWithoutShield = armorWithoutShield - shieldArmorAmount
     end
-    local armorPctWithoutShield = ERACombatFrames_PaladinProtectionShieldOrWOG_getArmorPct(armorWithoutShield, level)
-    local armorPctWithShield = ERACombatFrames_PaladinProtectionShieldOrWOG_getArmorPct(armorWithoutShield + shieldArmorAmount, level)
+    local armorPctWithoutShield = ERACombatFrames_PaladinProtectionShieldOrWOG_getArmorPct(armorWithoutShield, self.playerLevel)
+    local armorPctWithShield = ERACombatFrames_PaladinProtectionShieldOrWOG_getArmorPct(armorWithoutShield + shieldArmorAmount, self.playerLevel)
 
     local maxH = self.health.maxHealth
     local missingH = maxH - self.health.currentHealth
@@ -350,10 +353,10 @@ function ERACombatFrames_PaladinProtectionShieldOrWOG:UpdateCombat(t)
     self.tick:SetEndPoint("BOTTOMLEFT", self.frame, tickPosition, 0)
 end
 
-function ERACombatFrames_PaladinProtectionShieldOrWOG_getArmorPct(stat, level)
+function ERACombatFrames_PaladinProtectionShieldOrWOG_getArmorPct(stat, playerLevel)
     local value = C_PaperDollInfo.GetArmorEffectivenessAgainstTarget(stat)
     if (not value) then
-        value = C_PaperDollInfo.GetArmorEffectiveness(stat, level)
+        value = C_PaperDollInfo.GetArmorEffectiveness(stat, playerLevel)
     end
     return value
 end

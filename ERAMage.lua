@@ -23,7 +23,7 @@ function ERACombatFrames_MageSetup(cFrame)
     local mana = ERACombatPower:Create(cFrame, -234, -88, 111, 22, 0, true, 0.2, 0.2, 1.0, fireActive, frostActive)
     function mana:ShouldBeVisible(t)
         local ratio = self.currentPower / self.maxPower
-        return ratio < 0.9 and (ratio < 0.5 or t < enemies.lastManaCast + 5)
+        return ratio < 1 and (ratio < 0.5 or t < enemies.lastManaCast + 5)
     end
 
     if (arcaneActive) then
@@ -305,14 +305,14 @@ function ERACombatFrames_MageFrostSetup(cFrame, enemies, talent_rune)
 
     timers:AddCooldownIcon(timers:AddTrackedCooldown(84714, ERALIBTalent:CreateLevel(38)), nil, -0.7, 0.3, true, true) -- orb
     timers:AddCooldownIcon(timers:AddTrackedCooldown(120, ERALIBTalent:CreateLevel(18)), nil, -1.7, 0.3, true, true) -- coc
-    timers:AddCooldownIcon(timers:AddTrackedCooldown(257537, ERALIBTalent:Create(4, 3)), nil, -0.7, 2.6, true, true) -- ebon
+    timers:AddCooldownIcon(timers:AddTrackedCooldown(257537, ERALIBTalent:Create(4, 3)), nil, -0.7, 3, true, true) -- ebon
     timers:AddCooldownIcon(timers:AddTrackedCooldown(157997, ERALIBTalent:Create(1, 3)), nil, 0, 2, true, true) -- ice nova
-    timers:AddCooldownIcon(timers:AddTrackedCooldown(108853), nil, -2.7, 2.6, true, true) -- fireblast
+    timers:AddCooldownIcon(timers:AddTrackedCooldown(108853), nil, -2.7, 3, true, true) -- fireblast
     timers:AddCooldownIcon(timers:AddTrackedCooldown(153595, ERALIBTalent:Create(6, 3)), nil, -2.7, 0.3, true, true) -- comet
     timers:AddCooldownIcon(timers:AddTrackedCooldown(205021, ERALIBTalent:Create(7, 2)), nil, -1, -0.6, true, true) -- laser glace
     timers:AddAuraIcon(icicles, -1, -0.6, nil, ERALIBTalent:Create(7, 3))
 
-    local flurryProcIcon = timers:AddAuraIcon(timers:AddTrackedDebuff(228358), -1.7, 2.6, nil)
+    local flurryProcIcon = timers:AddAuraIcon(timers:AddTrackedDebuff(228358), -1.7, 3, nil)
     function flurryProcIcon:ShouldShowWhenAbsent()
         return false
     end

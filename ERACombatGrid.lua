@@ -123,6 +123,7 @@ function ERACombatGrid:Create(cFrame, x, y, anchor, spec, dispellID, ...)
     g.trackedBuffs = {}
     g.trackedDebuffsFetcher = {}
     g.trackedDebuffs = {}
+    g.isSolo = true
 
     g:construct(cFrame, 0.3, 0.1, false, spec)
     return g
@@ -179,6 +180,7 @@ function ERACombatGrid:ResetToIdle()
     for k, v in pairs(self.gridEvents) do
         self.eventFrame:RegisterEvent(k)
     end
+    self:updateGroup()
 end
 
 function ERACombatGrid:SpecInactive(wasActive)
@@ -192,7 +194,14 @@ function ERACombatGrid:CheckTalents()
 end
 
 function ERACombatGrid:updateGroup()
-    -- TODO
+    local thisself = self
+    C_Timer.After(
+        4,
+        function()
+            thisself.isSolo = GetNumGroupMembers() <= 1
+        end
+    )
+    -- TODO affichage, le reste
 end
 
 function ERACombatGrid:updateHealth(unitID)

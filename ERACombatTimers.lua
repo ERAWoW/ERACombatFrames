@@ -1189,7 +1189,6 @@ setmetatable(ERACombatTimerAuraBar, {__index = ERACombatTimerStatusBar})
 function ERACombatTimerAuraBar:create(aura, iconID, r, g, b, talent)
     local bar = {}
     setmetatable(bar, ERACombatTimerAuraBar)
-    -- Interface/Addons/ERACombatFrames/textures/bar_darkleft.blp
     bar:construct(aura.group, iconID, r, g, b, "Interface\\TargetingFrame\\UI-StatusBar-Glow")
     -- assignation
     bar.aura = aura

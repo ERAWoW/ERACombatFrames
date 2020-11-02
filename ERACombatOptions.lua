@@ -3,6 +3,13 @@ SlashCmdList["ECF"] = function(msg)
     ERACombatOptionsFrame:Show()
 end
 
+BINDING_HEADER_ERACOMBATFRAMES = "ERACombatFrames"
+BINDING_NAME_ERACOMBATFRAMES_RELOADUI = "Reload UI"
+BINDING_NAME_ERACOMBATFRAMES_SPEC1 = "spec 1"
+BINDING_NAME_ERACOMBATFRAMES_SPEC2 = "spec 2"
+BINDING_NAME_ERACOMBATFRAMES_SPEC3 = "spec 3"
+BINDING_NAME_ERACOMBATFRAMES_SPEC4 = "spec 4"
+
 ERACombatOptions_FrameContentOffset = 32
 ERACombatOptions_FrameContentWidth = 1004
 
@@ -34,6 +41,7 @@ function ERACombatOptions_initialize()
     ERACombatOptions_addSpecOption(5, 1, ERACombatOptions_Grid) -- priest disc
     ERACombatOptions_addSpecOption(5, 2, ERACombatOptions_Grid) -- priest holy
     ERACombatOptions_addSpecOption(6, 1, ERACombatOptions_TankWindow) -- dk blood
+    ERACombatOptions_addSpecOption(10, 2, ERACombatOptions_Grid) -- monk heal
     ERACombatOptions_addSpecOption(11, 4, ERACombatOptions_Grid) -- druid heal
     ERACombatOptions_addSpecOption(12, 2, ERACombatOptions_TankWindow) -- dh vengeance
 

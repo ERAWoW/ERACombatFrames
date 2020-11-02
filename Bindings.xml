@@ -1,0 +1,17 @@
+<Bindings>
+    <Binding name="ERACOMBATFRAMES_RELOADUI" header="ERACOMBATFRAMES" category="ADDONS">
+		C_UI.Reload()
+    </Binding>
+    <Binding name="ERACOMBATFRAMES_SPEC1" category="ADDONS">
+		if (GetSpecialization() ~= 1) then SetSpecialization(1) end
+    </Binding>
+    <Binding name="ERACOMBATFRAMES_SPEC2" category="ADDONS">
+		if (GetSpecialization() ~= 2) then SetSpecialization(2) end
+    </Binding>
+    <Binding name="ERACOMBATFRAMES_SPEC3" category="ADDONS">
+		if (GetSpecialization() ~= 3) then SetSpecialization(3) end
+    </Binding>
+    <Binding name="ERACOMBATFRAMES_SPEC4" category="ADDONS">
+		if (GetSpecialization() ~= 4) then SetSpecialization(4) end
+    </Binding>
+</Bindings>

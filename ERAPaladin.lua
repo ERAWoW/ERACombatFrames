@@ -367,6 +367,7 @@ end
 
 function ERACombatFrames_PaladinRetributionSetup(cFrame)
     local talent_condemn = ERALIBTalent:Create(1, 3)
+    local talent_orbitalstrike = ERALIBTalent:Create(7, 3)
 
     ERACombatHealth:Create(cFrame, -155, -62, 128, 22, 3)
 
@@ -383,7 +384,9 @@ function ERACombatFrames_PaladinRetributionSetup(cFrame)
     timers:AddCooldownIcon(timers:AddTrackedCooldown(35395), 135891, 0, 1, true, true) -- crusader strike
     timers:AddCooldownIcon(timers:AddTrackedCooldown(184575, ERALIBTalent:CreateLevel(19)), nil, 0, 0, true, true) -- blade of justice
     timers:AddCooldownIcon(timers:AddTrackedCooldown(255937, ERALIBTalent:CreateLevel(39)), nil, -1.7, -0.7, true, true) -- wake of ashes
-    timers:AddCooldownIcon(timers:AddTrackedCooldown(343721, ERALIBTalent:Create(7, 3)), nil, -2.7, -0.7, true, true) -- orbital strike
+
+    timers:AddCooldownIcon(timers:AddTrackedCooldown(343721, talent_orbitalstrike), nil, -2.7, -0.7, true, true) -- orbital strike
+    timers:AddAuraBar(timers:AddTrackedDebuff(343721, talent_orbitalstrike), nil, 0.0, 0.8, 1.0)
 
     timers:AddCooldownIcon(timers:AddTrackedCooldown(343527, talent_condemn), nil, -1.2, -1.44, true, true) -- condemn
     timers:AddAuraBar(timers:AddTrackedDebuff(343527, talent_condemn), nil, 0.6, 0.2, 1.0)
@@ -414,8 +417,8 @@ end
 -- common avenging, execute, utility
 
 function ERACombatFrames_Paladin_simple_consecration(timers, x, y)
-    local consecrationBar = ERACombatFrames_PaladinConsecrationTimer_create(timers)
     local consecrationCDTimer = timers:AddTrackedCooldown(26573)
+    local consecrationBar = ERACombatFrames_PaladinConsecrationTimer_create(timers, false, consecrationCDTimer)
     local consecrationCDDisplay = timers:AddCooldownIcon(consecrationCDTimer, nil, x, y, false, true)
     function consecrationCDDisplay:ShouldShowMainIcon()
         if (self.cd.remDuration > 0) then
@@ -553,12 +556,22 @@ end
 
 -- consecration
 
-function ERACombatFrames_PaladinConsecrationTimer_create(timers, checkInside)
+function ERACombatFrames_PaladinConsecrationTimer_create(timers, checkInside, consecrationCD)
     local c = timers:AddTotemBar(1, 135926, 0.8, 0.8, 0.0)
     if (checkInside) then
         c.inside = timers:AddTrackedBuff(188370)
         function c:UpdatingDuration(t, remDuration)
             if (self.inside.stacks > 0) then
+                self.view:SetColor(0.8, 0.8, 0.0)
+            else
+                self.view:SetColor(1.0, 0.0, 0.0)
+            end
+            return remDuration
+        end
+    else
+        c.consecrationCD = consecrationCD
+        function c:UpdatingDuration(t, remDuration)
+            if (self.consecrationCD.remDuration > 0) then
                 self.view:SetColor(0.8, 0.8, 0.0)
             else
                 self.view:SetColor(1.0, 0.0, 0.0)

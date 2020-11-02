@@ -2,6 +2,29 @@
 -- tout
 
 function ERACombatFrames_MonkSetup(cFrame)
+    ERAPieIcon_BorderR = 0.0
+    ERAPieIcon_BorderG = 1.0
+    ERAPieIcon_BorderB = 0.8
+
+    local bmActive = ERACombatOptions_IsSpecActive(1)
+    local mwActive = ERACombatOptions_IsSpecActive(2)
+    local wwActive = ERACombatOptions_IsSpecActive(3)
+
+    ERAOutOfCombatStatusBars:Create(cFrame, -155, -66, 128, 22, 3, true, 1, 1, 0, false, bmActive, wwActive)
+    ERAOutOfCombatStatusBars:Create(cFrame, -155, -66, 128, 22, 0, true, 0.1, 0.1, 1.0, false, mwActive)
+
+    if (bmActive) then
+        ERACombatFrames_MonkBrewmasterSetup(cFrame)
+    end
+    if (mwActive) then
+        ERACombatFrames_MonkMistweaverSetup(cFrame)
+    end
+    if (wwActive) then
+        ERACombatFrames_MonkWindwalkerSetup(cFrame)
+    end
+
+    cFrame:Pack()
+
     --[[
     ------------------------------------------------------------------------------------------------------------------------
     ---- BM ----------------------------------------------------------------------------------------------------------------
@@ -70,4 +93,96 @@ function ERACombatFrames_MonkSetup(cFrame)
     end
     ]]
     cFrame:Pack()
+end
+
+------------------------------------------------------------------------------------------------------------------------
+---- BM ----------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+
+function ERACombatFrames_MonkBrewmasterSetup(cFrame)
+    local nrg = ERACombatPower:Create(cFrame, -166, -28, 155, 22, 3, false, 1.0, 1.0, 0.0, 1)
+    local tigerPalmConsumer = nrg:AddConsumer(25, 606551)
+    nrg:AddConsumer(40, 594274)
+    nrg:AddConsumer(65, 606551)
+
+    local health = ERACombatHealth:Create(cFrame, -166, -55, 155, 22, 1)
+
+    local timers = ERACombatTimersGroup:Create(cFrame, -89, 32, 1, 1)
+
+    timers:AddCooldownIcon(timers:AddTrackedCooldown(205523), nil, -1, 0.5, true, false) -- bok
+    timers:AddCooldownIcon(timers:AddTrackedCooldown(322101), nil, -2, 0.5, true, false) -- EH
+
+    local utility = ERACombatFrames_MonkUtility(cFrame, 1, 128, -32)
+
+    local bmUtility = ERACombatUtilityFrame:Create(cFrame, -128, -144, 1)
+end
+
+------------------------------------------------------------------------------------------------------------------------
+---- MW ----------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+
+function ERACombatFrames_MonkMistweaverSetup(cFrame)
+    ERACombatHealth:Create(cFrame, -166, -91, 166, 22, 2)
+    ERACombatPower:Create(cFrame, -166, -111, 166, 22, 0, false, 0.1, 0.1, 1.0, 2)
+
+    local grid = ERACombatGrid:Create(cFrame, -111, 8, "BOTTOMRIGHT", 2, 4987, "Magic", "Disease", "Poison")
+
+    local timers = ERACombatTimersGroup:Create(cFrame, -111, -64, 1.5, 2)
+    timers:AddCooldownIcon(timers:AddTrackedCooldown(107428), nil, 0, 3, true, false) -- rsk
+    timers:AddCooldownIcon(timers:AddTrackedCooldown(100784), nil, 0, 2, true, false) -- bok
+    timers:AddCooldownIcon(timers:AddTrackedCooldown(322101), nil, 0, 1, true, false) -- EH
+    local utility = ERACombatFrames_MonkUtility(cFrame, 2, 128, -32)
+    local defensive = ERACombatFrames_MonkDefensiveUtility(cFrame, 2, 0, -128)
+end
+
+------------------------------------------------------------------------------------------------------------------------
+---- WW ----------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+
+function ERACombatFrames_MonkWindwalkerSetup(cFrame)
+    ERACombatPointsUnitPower:Create(cFrame, -144, -28, 12, 5, 1.0, 1.0, 0.5, 0.0, 1.0, 0.5, nil, 3)
+
+    local nrg = ERACombatPower:Create(cFrame, -155, -51, 155, 22, 3, false, 1.0, 1.0, 0.0, 3)
+    local tigerPalmConsumer = nrg:AddConsumer(50, 606551)
+
+    local health = ERACombatHealth:Create(cFrame, -155, -77, 155, 22, 3)
+
+    local timers = ERACombatTimersGroup:Create(cFrame, -89, 32, 1, 3)
+
+    timers:AddCooldownIcon(timers:AddTrackedCooldown(107428), nil, -1, 0.5, true, false) -- rsk
+    timers:AddCooldownIcon(timers:AddTrackedCooldown(322101), nil, -3, 0.5, true, false) -- EH
+
+    local utility = ERACombatFrames_MonkUtility(cFrame, 3, 128, -32)
+    local defensive = ERACombatFrames_MonkDefensiveUtility(cFrame, 3, 0, -128)
+end
+
+------------------------------------------------------------------------------------------------------------------------
+---- COMMON ------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+
+function ERACombatFrames_MonkUtility(cFrame, spec, x, y)
+    local utility = ERACombatUtilityFrame:Create(cFrame, x, y, spec)
+    utility:AddCooldown(0, 1, 109132, nil, true, nil) -- roll
+    utility:AddCooldown(0, 0, 119381, nil, true, nil).alphaWhenOffCooldown = 0.6 -- leg sweep
+    local tod = utility:AddCooldown(0, -1, 322109, nil, true, nil) -- tod
+    function tod:IconUpdatedAndShown(t)
+        if (self.remDuration <= 0) then
+            if (IsUsableSpell(322109)) then
+                self.icon:SetAlpha(1)
+            else
+                self.icon:SetAlpha(0.2)
+            end
+        end
+    end
+
+    utility:AddWarlockPortal(0.8, 0.5)
+    utility:AddRacial(0.8, -0.5).alphaWhenOffCooldown = 0.4
+
+    return utility
+end
+
+function ERACombatFrames_MonkDefensiveUtility(cFrame, spec, x, y)
+    local utility = ERACombatUtilityFrame:Create(cFrame, x, y, spec)
+    utility:AddWarlockHealthStone(1, 0)
+    return utility
 end

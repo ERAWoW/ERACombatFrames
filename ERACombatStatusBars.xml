@@ -148,7 +148,7 @@
         </Layers>
     </Frame>
 
-    <Line name="ERACombatPowerTick" thickness="1" toplevel="true" virtual="true">
+    <Line name="ERACombatPowerTick" thickness="1.5" toplevel="true" virtual="true">
         <Color r="1" g="1" b="1"/>
     </Line>
 

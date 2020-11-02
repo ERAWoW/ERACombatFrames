@@ -49,7 +49,8 @@ function ERACombatFrames_event(event, ...)
             elseif (classID == 9) then
                 ERACombatFrames_WarlockSetup(cFrame)
             elseif (classID == 10) then
-                ERACombatFrames_MonkSetup(cFrame)
+                -- work in progress
+                --ERACombatFrames_MonkSetup(cFrame)
             elseif (classID == 11) then
                 ERACombatFrames_DruidSetup(cFrame)
             end

@@ -50,16 +50,16 @@ function ERACombatFrames_DruidMoonkinSetup(cFrame)
     local talent_moon_phases = ERALIBTalent:Create(7, 3)
 
     ERAOutOfCombatStatusBars:Create(cFrame, -128, -36, 128, 22, 8, false, 0.8, 0.5, 1.0, false, 1) -- lunar 8
-    ERACombatHealth:Create(cFrame, -177, -48, 177, 22, 1)
+    ERACombatHealth:Create(cFrame, -177, -48, 166, 22, 1)
 
-    local lunar = ERACombatPower:Create(cFrame, -177, -22, 177, 22, 8, true, 0.8, 0.5, 1.0, 1)
+    local lunar = ERACombatPower:Create(cFrame, -177, -22, 166, 22, 8, true, 0.8, 0.5, 1.0, 1)
     --lunar.bar:SetBorderColor(0.7, 0.4, 1)
     lunar:AddConsumer(30, 135730)
     lunar:AddConsumer(50, 236168)
 
-    ERACombatFrames_DruidMoonkinEclipseIcons:create(cFrame, -55, 44)
+    ERACombatFrames_DruidMoonkinEclipseIcons:create(cFrame, -66, 44)
 
-    local timers = ERACombatTimersGroup:Create(cFrame, -101, 0, 1.5, 1)
+    local timers = ERACombatTimersGroup:Create(cFrame, -123, 0, 1.5, 1)
 
     timers:AddAuraBar(timers:AddTrackedBuff(191034), nil, 0.5, 0.8, 1.0) -- starfall
 
@@ -543,7 +543,7 @@ function ERACombatFrames_DruidBearSetup(cFrame)
 
     ERAOutOfCombatStatusBars:Create(cFrame, -128, 0, 128, 22, 1, false, 1.0, 0.0, 0.0, false, 3) -- rage 1
 
-    local timers = ERACombatTimersGroup:Create(cFrame, -101, 0, 1.5, 3)
+    local timers = ERACombatTimersGroup:Create(cFrame, -123, 0, 1.5, 3)
 
     local thrashBleedTimer = timers:AddTrackedDebuff(192090)
 
@@ -555,7 +555,7 @@ function ERACombatFrames_DruidBearSetup(cFrame)
     timers:AddCooldownIcon(timers:AddTrackedCooldown(77758), nil, 0, 1, true, true, ERALIBTalent:CreateLevel(11)) -- thrash
     timers:AddCooldownIcon(timers:AddTrackedCooldown(22842), nil, 0, 0, true, false, ERALIBTalent:CreateLevel(21)) -- regen
 
-    timers:AddCooldownIcon(timers:AddTrackedCooldown(155835, ERALIBTalent:Create(1, 3)), nil, 0, -1, true, false) -- bristle
+    timers:AddCooldownIcon(timers:AddTrackedCooldown(155835, ERALIBTalent:Create(1, 3)), nil, -0.72, -0.5, true, false) -- bristle
     local pulverizeDisplay = timers:AddCooldownIcon(timers:AddTrackedCooldown(80313, ERALIBTalent:Create(7, 3)), nil, -0.72, 0.5, true, false) -- pulverize
     pulverizeDisplay.overrideSecondaryText = function()
         local s = thrashBleedTimer.stacks
@@ -578,7 +578,7 @@ function ERACombatFrames_DruidBearSetup(cFrame)
     end
     timers:AddAuraBar(timers:AddTrackedDebuff(135601, talent_maim), nil, 1.0, 0.2, 0.7)
 
-    timers:AddKick(106839, 0.9, 0.5, ERALIBTalent:CreateLevel(26))
+    timers:AddKick(106839, 0, 3, ERALIBTalent:CreateLevel(26))
     timers:AddOffensiveDispellCooldown(2908, -0.7, -1.5, ERALIBTalent:CreateLevel(41), "Enrage")
 
     local berzerkTimer = timers:AddTrackedBuff(50334, talent_berzerk)
@@ -586,16 +586,16 @@ function ERACombatFrames_DruidBearSetup(cFrame)
     timers:AddAuraBar(berzerkTimer, nil, 1.0, 0.0, 0.0)
     timers:AddAuraBar(incarnationTimer, nil, 1.0, 0.0, 0.0)
 
-    local bearUtility = ERACombatUtilityFrame:Create(cFrame, -155, -111, 3)
+    local bearUtility = ERACombatUtilityFrame:Create(cFrame, -166, -111, 3)
     bearUtility:AddCooldown(0, 0, 50334, nil, true, talent_berzerk)
     bearUtility:AddBuffIcon(bearUtility:AddTrackedBuff(50334, talent_berzerk), 613074, 0, 0, false)
     bearUtility:AddCooldown(0, 0, 102558, nil, true, talent_incarnation)
     bearUtility:AddBuffIcon(bearUtility:AddTrackedBuff(102558, talent_incarnation), 613074, 0, 0, false)
     bearUtility:AddCooldown(-1, 0, 61336, nil, true, ERALIBTalent:CreateLevel(32)) -- survival instincts
 
-    local rage = ERACombatPower:Create(cFrame, -188, -22, 155, 22, 1, true, 1.0, 0.0, 0.0, 3)
+    local rage = ERACombatPower:Create(cFrame, -212, -22, 155, 22, 1, true, 1.0, 0.0, 0.0, 3)
     rage:AddConsumer(40, 1378702)
-    ERACombatHealth:Create(cFrame, -188, -51, 155, 22, 3)
+    ERACombatHealth:Create(cFrame, -212, -51, 155, 22, 3)
 
     local dotracker =
         ERACombatDOTracker:Create(

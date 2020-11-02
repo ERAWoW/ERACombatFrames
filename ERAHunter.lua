@@ -13,8 +13,8 @@ function ERACombatFrames_HunterSetup(cFrame)
 
     ERAOutOfCombatStatusBars:Create(cFrame, 123, -32, 128, 22, 2, true, 1.0, 0.7, 0.0, true, bmActive, mmActive, svActive)
 
-    ERACombatHealth:Create(cFrame, 123, -64, 144, 22, bmActive, mmActive, svActive)
-    ERACombatHealth:Create(cFrame, 123, -88, 144, 22, bmActive, mmActive, svActive):SetUnitID("pet")
+    ERACombatHealth:Create(cFrame, 131, -64, 123, 22, bmActive, mmActive, svActive)
+    ERACombatHealth:Create(cFrame, 131, -88, 123, 22, bmActive, mmActive, svActive):SetUnitID("pet")
 
     if (bmActive) then
         ERACombatFrames_HunterBeastMasterySetup(cFrame)

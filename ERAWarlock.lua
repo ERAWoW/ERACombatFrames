@@ -8,8 +8,8 @@ function ERACombatFrames_WarlockSetup(cFrame)
 
     ERAOutOfCombatStatusBars:Create(cFrame, 128, -32, 144, 22, -1, true, 0.0, 0.0, 0.0, true, affliActive, demoActive, destruActive)
 
-    ERACombatHealth:Create(cFrame, 111, -44, 128, 22, affliActive, demoActive, destruActive)
-    ERACombatHealth:Create(cFrame, 111, -66, 128, 22, affliActive, demoActive, destruActive):SetUnitID("pet")
+    ERACombatHealth:Create(cFrame, 121, -44, 128, 22, affliActive, demoActive, destruActive)
+    ERACombatHealth:Create(cFrame, 121, -66, 128, 22, affliActive, demoActive, destruActive):SetUnitID("pet")
 
     if (affliActive) then
         ERACombatFrames_WarlockAfflictionSetup(cFrame)
@@ -268,9 +268,9 @@ function ERACombatFrames_WarlockAfflictionSetup(cFrame)
     local talent_leech = ERALIBTalent:Create(2, 3)
     local talent_fast_dots = ERALIBTalent:Create(7, 2)
 
-    ERACombatPointsUnitPower:Create(cFrame, -128, -64, 7, 5, 0.1, 0.6, 0.1, 1.0, 0.0, 1.0, nil, 1).idlePoints = 3
+    ERACombatPointsUnitPower:Create(cFrame, -155, -64, 7, 5, 0.1, 0.6, 0.1, 1.0, 0.0, 1.0, nil, 1).idlePoints = 3
 
-    local timers = ERACombatTimersGroup:Create(cFrame, -99, -32, 1.5, 1)
+    local timers = ERACombatTimersGroup:Create(cFrame, -121, -32, 1.5, 1)
 
     timers:AddChannelInfo(198590, 1)
     timers:AddChannelInfo(234153, 1)
@@ -433,7 +433,7 @@ setmetatable(ERACombatFrames_WarlockRapture, {__index = ERACombatFrames_PseudoRe
 function ERACombatFrames_WarlockRapture:create(cFrame, dotracker, eternalTalent)
     local ig = {}
     setmetatable(ig, ERACombatFrames_WarlockRapture)
-    ig:constructPseudoResource(cFrame, -77, -88, 77, 20, 2, 1)
+    ig:constructPseudoResource(cFrame, -101, -88, 77, 20, 2, 1)
 
     ig.dotracker = dotracker
     ig.eternalTalent = eternalTalent
@@ -476,9 +476,9 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 
 function ERACombatFrames_WarlockDemonologySetup(cFrame)
-    ERACombatPointsUnitPower:Create(cFrame, -166, -64, 7, 5, 0.1, 0.6, 0.1, 1.0, 0.0, 1.0, nil, 2).idlePoints = 3
+    ERACombatPointsUnitPower:Create(cFrame, -188, -64, 7, 5, 0.1, 0.6, 0.1, 1.0, 0.0, 1.0, nil, 2).idlePoints = 3
 
-    local timers = ERACombatTimersGroup:Create(cFrame, -99, -32, 1.5, 2)
+    local timers = ERACombatTimersGroup:Create(cFrame, -121, -32, 1.5, 2)
 
     local doomTimer = timers:AddTrackedDebuff(603, ERALIBTalent:Create(2, 3))
     local doomDisplay = timers:AddAuraIcon(doomTimer, 0, 3, 1397641, nil)
@@ -507,7 +507,7 @@ function ERACombatFrames_WarlockDemonologySetup(cFrame)
 
     timers:AddKick(19647, 1, 0, nil, true)
 
-    ERACombatFrames_WarlockDemonologyImps:create(cFrame, -111, -88)
+    ERACombatFrames_WarlockDemonologyImps:create(cFrame, -131, -88)
 
     local dotracker =
         ERACombatDOTracker:Create(
@@ -591,7 +591,7 @@ end
 function ERACombatFrames_WarlockDestructionSetup(cFrame)
     local embers = ERACombatWarlockDestruEmbers:create(cFrame)
 
-    local timers = ERACombatTimersGroup:Create(cFrame, -99, -32, 1.5, 3)
+    local timers = ERACombatTimersGroup:Create(cFrame, -121, -32, 1.5, 3)
 
     timers:AddCooldownIcon(timers:AddTrackedCooldown(17877, ERALIBTalent:Create(2, 3)), nil, 0, 3, true, true) -- shadowburn
     timers:AddCooldownIcon(timers:AddTrackedCooldown(17962, ERALIBTalent:CreateLevel(13)), nil, 0, 2, true, true) -- conflag
@@ -711,7 +711,7 @@ function ERACombatWarlockDestruEmbers:create(cFrame)
 
     e.frame = CreateFrame("Frame", nil, UIParent, nil)
     e.frame:SetSize(ERACombatWarlockDestruEmbers_EmberSize * 5, ERACombatWarlockDestruEmbers_EmberSize)
-    e.frame:SetPoint("TOPRIGHT", UIParent, "CENTER", -123, -55)
+    e.frame:SetPoint("TOPRIGHT", UIParent, "CENTER", -144, -55)
     e.embers = {}
     for i = 1, 5 do
         table.insert(e.embers, ERACombatWarlockDestruEmber:create(e, i))

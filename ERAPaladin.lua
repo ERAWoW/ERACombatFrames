@@ -43,13 +43,13 @@ function ERACombatFrames_PaladinHolySetup(cFrame)
     ERACombatPower:Create(cFrame, -210, -166, 155, 22, 0, false, 0.2, 0.2, 1.0, 1)
     ERACombatPointsUnitPower:Create(cFrame, -200, -111, 9, 5, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5, nil, 1)
 
-    local grid = ERACombatGrid:Create(cFrame, -111, -8, "BOTTOMRIGHT", 1, 4987, "Magic", "Disease", "Poison")
+    local grid = ERACombatGrid:Create(cFrame, -133, -8, "BOTTOMRIGHT", 1, 4987, "Magic", "Disease", "Poison")
     --, "Curse")
     grid:AddTrackedBuff(53563, nil) -- beacon
     grid:AddTrackedBuff(156910, nil, 1) -- beacon 2
     grid:AddTrackedBuff(287280, nil) -- glimmer
 
-    local timers = ERACombatTimersGroup:Create(cFrame, -128, -88, 1.5, 1)
+    local timers = ERACombatTimersGroup:Create(cFrame, -144, -88, 1.5, 1)
 
     ERACombatFrames_Paladin_simple_consecration(timers, 0.8, 0.5)
 
@@ -69,6 +69,7 @@ function ERACombatFrames_PaladinHolySetup(cFrame)
 
     local utility, tricksUtility = ERACombatFrames_Paladin_common_stuff(cFrame, timers, 100, -188, 128, 0, 1.5, 2.5, 498, 4987, false, 216331, 216331, 6, 2, ERALIBTalent:CreateLevel(41), 1)
     utility:AddCooldown(-0.5, 0, 31821, nil, true, ERALIBTalent:CreateLevel(39)) -- aura mastery
+    utility:AddCooldown(-1.5, 0, 214202, nil, true, ERALIBTalent:Create(4, 3)) -- rule of law
 
     --ERACombat_TimerBarDefaultSize = remember_default_bar_size
 end
@@ -78,10 +79,10 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 
 function ERACombatFrames_PaladinProtectionSetup(cFrame)
-    local health = ERACombatHealth:Create(cFrame, -177, -64, 155, 22, 2)
-    local holyPower = ERACombatPointsUnitPower:Create(cFrame, -155, -36, 9, 5, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5, nil, 2)
+    local health = ERACombatHealth:Create(cFrame, -200, -64, 155, 22, 2)
+    local holyPower = ERACombatPointsUnitPower:Create(cFrame, -177, -36, 9, 5, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5, nil, 2)
 
-    local timers = ERACombatTimersGroup:Create(cFrame, -123, -32, 1.5, 2)
+    local timers = ERACombatTimersGroup:Create(cFrame, -144, -32, 1.5, 2)
 
     local consecration = ERACombatFrames_PaladinConsecrationTimer_create(timers, true)
     local consecrationCDTimer = timers:AddTrackedCooldown(26573)
@@ -91,7 +92,7 @@ function ERACombatFrames_PaladinProtectionSetup(cFrame)
     timers:AddCooldownIcon(timers:AddTrackedCooldown(53595, ERALIBTalent:CreateNotTalent(1, 3)), 135891, 0, 1, true, true) -- normal hammer
     timers:AddCooldownIcon(timers:AddTrackedCooldown(204019, ERALIBTalent:Create(1, 3)), 135891, 0, 1, true, true) -- blessed hammer
     timers:AddCooldownIcon(timers:AddTrackedCooldown(31935), nil, 0, 0, true, true) -- avenger
-    timers:AddKick(96231, 1, 0, ERALIBTalent:CreateLevel(27))
+    timers:AddKick(96231, 1, 1, ERALIBTalent:CreateLevel(27))
 
     local freeWOGlevel = ERALIBTalent:CreateLevel(48)
     local buildFreeWOG = timers:AddTrackedBuff(182104, freeWOGlevel)
@@ -120,7 +121,7 @@ function ERACombatFrames_PaladinProtectionSetup(cFrame)
     utility:AddCooldown(-1.5, 0, 327193, nil, true, ERALIBTalent:Create(2, 3)) -- reset shield
     ERACombatFrames_PaladinUtilityAffectedByForebearance(utility:AddCooldown(1, -0.9, 204018, nil, true, ERALIBTalent:Create(4, 3)), forebearance) -- alternative protection
 
-    local sow = ERACombatFrames_PaladinProtectionShieldOrWOG:create(cFrame, -188, -101, health, shieldArmour, holyPower)
+    local sow = ERACombatFrames_PaladinProtectionShieldOrWOG:create(cFrame, -212, -101, health, shieldArmour, holyPower)
 
     local mana = ERACombatPower:Create(cFrame, -177, -155, 144, 22, 0, false, 0.2, 0.2, 1.0, 2)
     function mana:ShouldBeVisible(t)

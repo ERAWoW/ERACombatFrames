@@ -8,8 +8,8 @@ function ERACombatFrames_DeathKnightSetup(cFrame)
     local frostActive = ERACombatOptions_IsSpecActive(2)
     local unholyActive = ERACombatOptions_IsSpecActive(3)
 
-    ERAOutOfCombatStatusBars:Create(cFrame, 0, -44, 128, 22, 6, false, 0.2, 0.7, 1.0, false, bloodActive, frostActive)
-    local combatHealth = ERACombatHealth:Create(cFrame, -210, -77, 200, 22, bloodActive, frostActive, unholyActive)
+    ERAOutOfCombatStatusBars:Create(cFrame, 32, -44, 128, 22, 6, false, 0.2, 0.7, 1.0, false, bloodActive, frostActive)
+    local combatHealth = ERACombatHealth:Create(cFrame, -144, -77, 200, 22, bloodActive, frostActive, unholyActive)
     local runes = ERARunes:Create(cFrame, combatHealth, bloodActive, frostActive, unholyActive)
 
     if (bloodActive) then
@@ -32,35 +32,33 @@ end
 function ERACombatFrames_DeathKnightBloodSetup(cFrame, combatHealth, runes)
     local talent_bloodmark = ERALIBTalent:Create(4, 3)
 
-    local combatPower = ERACombatPower:Create(cFrame, -210, -22, 200, 12, 6, true, 0.2, 0.7, 1.0, 1)
+    local combatPower = ERACombatPower:Create(cFrame, -144, -22, 200, 12, 6, true, 0.2, 0.7, 1.0, 1)
 
-    local timers = ERACombatTimersGroup:Create(cFrame, -101, 0, 1.5, 1)
+    local timers = ERACombatTimersGroup:Create(cFrame, -111, 32, 1.5, 1)
     ERACombatFrames_DeathKnightSetupTimersAndRunes(timers, runes)
 
-    ERACombatFrames_DeathKnightFaFDisease(timers, 55078, 0, 4, 17)
+    ERACombatFrames_DeathKnightFaFDisease(timers, 55078, 0, 3, 17)
 
     local bloodmarkAura = timers:AddTrackedDebuff(206940, talent_bloodmark)
     timers:AddAuraBar(bloodmarkAura, nil, 1.0, 0.6, 0.6)
-    local bloodmarkCD = timers:AddCooldownIcon(timers:AddTrackedCooldown(206940, talent_bloodmark), nil, 0, 3, false, true)
+    local bloodmarkCD = timers:AddCooldownIcon(timers:AddTrackedCooldown(206940, talent_bloodmark), nil, 0, 1.6, false, true)
     function bloodmarkCD:ShouldShowMainIcon()
-        if (bloodmarkAura.remDuration <= 0) then
+        if (bloodmarkAura.remDuration <= 3.5) then
             self.icon:SetAlpha(1.0)
         else
-            self.icon:SetAlpha(0.2)
+            self.icon:SetAlpha(0.4)
         end
         return true
     end
 
     local boneShieldAura = timers:AddTrackedBuff(195181)
 
-    timers:AddCooldownIcon(timers:AddTrackedCooldown(50842, ERALIBTalent:CreateLevel(17)), nil, 0, 2, true, true) -- boil
-    timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 43265, runes, ERALIBTalent:CreateLevel(3)), nil, 0, 1, true, true) -- dnd
-    timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 194679, runes, ERALIBTalent:CreateLevel(19)), nil, -0.7, -0.5, true, true) -- rune tap
-    timers:AddCooldownIcon(timers:AddTrackedCooldown(221699, ERALIBTalent:Create(3, 3)), nil, 0, 0, true, true) -- blood tap
-    timers:AddAuraIcon(boneShieldAura, -0.7, 0.5, nil)
-    timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 206931, runes, ERALIBTalent:Create(1, 2)), nil, 1, -0.5, true, true)
+    timers:AddCooldownIcon(timers:AddTrackedCooldown(50842, ERALIBTalent:CreateLevel(17)), nil, 0, 0.6, true, true) -- boil
+    timers:AddAuraIcon(boneShieldAura, -1, 0.6, 237272)
+    timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 43265, runes, ERALIBTalent:CreateLevel(3)), nil, -2, 0.6, true, true) -- dnd
+    timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 194679, runes, ERALIBTalent:CreateLevel(19)), nil, -3, 0.6, true, true) -- rune tap
+    timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 206931, runes, ERALIBTalent:Create(1, 2)), nil, -4, 0.6, true, true)
     timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 219809, runes, ERALIBTalent:Create(1, 3)), nil, 1, -0.5, true, true)
-    timers:AddCooldownIcon(timers:AddTrackedCooldown(194844, ERALIBTalent:Create(7, 3)), nil, 0, -1, true, true) -- bone storm
     timers:AddKick(47528, 2, 0, ERALIBTalent:CreateLevel(7))
 
     local defUtility = ERACombatFrames_DeathKnightDefensiveUtility(cFrame, 88, -144, 1)
@@ -68,13 +66,15 @@ function ERACombatFrames_DeathKnightBloodSetup(cFrame, combatHealth, runes)
     mobUtility:AddCooldown(0, -1, 221562, nil, true, ERALIBTalent:CreateLevel(21)) -- darth vader
     mobUtility:AddCooldown(1, 1, 108199, nil, true, ERALIBTalent:CreateLevel(32)) -- mass grip
 
-    local bloodUtility = ERACombatUtilityFrame:Create(cFrame, -234, -144, 1)
+    local bloodUtility = ERACombatUtilityFrame:Create(cFrame, -234, -141, 1)
     bloodUtility:AddCooldown(2, 0, 274156, nil, true, ERALIBTalent:Create(2, 3))
     bloodUtility:AddCooldown(1, 0, 55233, nil, true, ERALIBTalent:CreateLevel(29)) -- vampiric
     bloodUtility:AddCooldown(0, 0, 49028, nil, true, ERALIBTalent:CreateLevel(34)) -- drw
     bloodUtility:AddCooldown(1.5, -0.8, 48743, nil, true, ERALIBTalent:Create(6, 2)) -- death pact
     bloodUtility:AddCooldown(0.5, -0.8, 327574, nil, true, ERALIBTalent:CreateLevel(54)) -- explode ghoul
     bloodUtility:AddCooldown(-0.5, -0.8, 46585, nil, true, ERALIBTalent:CreateLevel(12)) -- summon ghoul
+    bloodUtility:AddCooldown(-0.6, 1, 221699, nil, true, ERALIBTalent:Create(3, 3)) -- blood tap
+    bloodUtility:AddCooldown(-0.96, 0.1, 194844, nil, true, ERALIBTalent:Create(7, 3)) -- bone storm
 
     local deathStrikeConsumer45 = combatPower:AddConsumer(45, 237517)
     --[[
@@ -109,23 +109,29 @@ function ERACombatFrames_DeathKnightFrostSetup(cFrame, runes)
     local talent_not_glacial_advance = ERALIBTalent:CreateNotTalent(6, 3)
     local talent_icy_veins = ERALIBTalent:Create(6, 2)
 
-    local combatPower = ERACombatPower:Create(cFrame, -210, -22, 200, 12, 6, true, 0.2, 0.7, 1.0, 2)
+    local combatPower = ERACombatPower:Create(cFrame, -144, -22, 200, 12, 6, true, 0.2, 0.7, 1.0, 2)
     combatPower:AddConsumer(25, 237520, talent_not_glacial_advance)
     combatPower:AddConsumer(30, 537514, talent_glacial_advance)
     combatPower:AddConsumer(55, 537514, talent_glacial_advance)
 
-    local timers = ERACombatTimersGroup:Create(cFrame, -101, 0, 1.5, 2)
+    local timers = ERACombatTimersGroup:Create(cFrame, -111, 32, 1.5, 2)
     ERACombatFrames_DeathKnightSetupTimersAndRunes(timers, runes)
 
-    timers:AddProc(timers:AddTrackedBuff(101568), nil, 0, 4, false) -- succor
-    ERACombatFrames_DeathKnightFaFDisease(timers, 55095, 0, 3, 10)
-    timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 321995, runes, talent_icy_veins), nil, 0, 2, true, true) -- icy veins
-    timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 194913, runes, talent_glacial_advance), nil, 0, 2, true, true) -- glacial advance
-    timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 196770, runes, ERALIBTalent:CreateLevel(19)), nil, 0, 1, true, true) -- winter
-    timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 43265, runes, ERALIBTalent:CreateLevel(3)), nil, 0, 0, true, true) -- dnd
-    timers:AddCooldownIcon(timers:AddTrackedCooldown(57330, ERALIBTalent:Create(2, 3)), nil, -0.7, 0.5, true, true) -- how
-    timers:AddKick(47528, 0.9, 0.5, ERALIBTalent:CreateLevel(7))
-    timers:AddAuraIcon(timers:AddTrackedBuff(281209, ERALIBTalent:Create(1, 3)), -0.7, -0.5, nil)
+    timers:AddProc(timers:AddTrackedBuff(101568), nil, 0, 3.6, false) -- succor
+    ERACombatFrames_DeathKnightFaFDisease(timers, 55095, 0, 2.6, 10)
+    timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 194913, runes, talent_glacial_advance), nil, 0, 0.6, true, true) -- glacial advance
+    timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 321995, runes, talent_icy_veins), nil, 0, 0.6, true, true) -- icy veins
+    timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 196770, runes, ERALIBTalent:CreateLevel(19)), nil, -1, 0.6, true, true) -- winter
+    timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 43265, runes, ERALIBTalent:CreateLevel(3)), nil, -2, 0.6, true, true) -- dnd
+    local frozenChainsDisplay = timers:AddAuraIcon(timers:AddTrackedBuff(281209, ERALIBTalent:Create(1, 3)), -3, 0.6, nil)
+    function frozenChainsDisplay:IconUpdatedAndShown()
+        self.icon:SetAlpha(math.ceil(self.aura.stacks / 5) / 5)
+    end
+    function frozenChainsDisplay:ShouldShowWhenAbsent()
+        return false
+    end
+
+    timers:AddKick(47528, 1, 0.6, ERALIBTalent:CreateLevel(7))
 
     timers:AddAuraBar(timers:AddTrackedBuff(51271), nil, 0.7, 0.7, 1.0) -- pof
     timers:AddAuraBar(timers:AddTrackedBuff(152279, talent_icy_veins), nil, 1.0, 1.0, 1.0)
@@ -138,6 +144,7 @@ function ERACombatFrames_DeathKnightFrostSetup(cFrame, runes)
     mobUtility:AddCooldown(0, -1, 207167, nil, true, ERALIBTalent:Create(3, 3)) -- blind freeze
 
     local frostUtility = ERACombatUtilityFrame:Create(cFrame, -200, -133, 2)
+    frostUtility:AddCooldown(-1.1, 1.1, 57330, nil, true, ERALIBTalent:Create(2, 3)) -- how
     frostUtility:AddCooldown(-2, 0, 46585, nil, true, ERALIBTalent:CreateLevel(12)) -- summon ghoul
     frostUtility:AddCooldown(-1, 0, 327574, nil, true, ERALIBTalent:CreateLevel(54)) -- explode ghoul
     frostUtility:AddCooldown(0, 0, 47568, nil, true, ERALIBTalent:CreateLevel(48)) -- rune weapon
@@ -155,21 +162,25 @@ function ERACombatFrames_DeathKnightUnholySetup(cFrame, runes)
     local talent_better_wounds = ERALIBTalent:Create(2, 1)
     local talent_better_disease = ERALIBTalent:Create(2, 2)
     local talent_normal_disease = ERALIBTalent:CreateNotTalent(2, 2)
+    local talent_exec = ERALIBTalent:Create(4, 3)
+    local talent_not_exec = ERALIBTalent:CreateNotTalent(4, 3)
 
-    local combatPower = ERACombatPower:Create(cFrame, -210, -22, 200, 12, 6, true, 0.2, 0.7, 1.0, 3)
+    local combatPower = ERACombatPower:Create(cFrame, -144, -22, 200, 12, 6, true, 0.2, 0.7, 1.0, 3)
     ERAOutOfCombatStatusBars:Create(cFrame, 0, -44, 128, 22, 6, false, 0.2, 0.7, 1.0, true, 3)
-    ERACombatHealth:Create(cFrame, -210, -101, 200, 22, 3):SetUnitID("pet")
+    ERACombatHealth:Create(cFrame, -144, -101, 200, 22, 3):SetUnitID("pet")
 
-    local timers = ERACombatTimersGroup:Create(cFrame, -101, 0, 1.5, 3)
+    local timers = ERACombatTimersGroup:Create(cFrame, -111, 32, 1.5, 3)
     ERACombatFrames_DeathKnightSetupTimersAndRunes(timers, runes)
 
-    timers:AddProc(timers:AddTrackedBuff(101568), nil, 0, 3, false) -- succor
-    timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 343294, runes, ERALIBTalent:Create(4, 3)), nil, 0, 2, true, true) -- exec
-    timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 43265, runes, ERALIBTalent:CreateNotTalent(6, 3, 3)), nil, 0, 1, true, true) -- dnd
-    timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 152280, runes, ERALIBTalent:Create(6, 3)), nil, 0, 1, true, true) -- defile
-    timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 115989, runes, ERALIBTalent:Create(2, 3)), nil, 0, 0, true, true) -- mosquitos
-    timers:AddAuraIcon(timers:AddTrackedDebuff(194310), -0.7, 0.5, nil) -- wounds
-    timers:AddKick(47528, 0.9, 0.5, ERALIBTalent:CreateLevel(7))
+    timers:AddProc(timers:AddTrackedBuff(101568), nil, 0, 2.6, false) -- succor
+    timers:AddAuraIcon(timers:AddTrackedDebuff(194310), 0, 0.6, nil) -- wounds
+    timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 43265, runes, ERALIBTalent:CreateNotTalent(6, 3, 3)), nil, -1, 0.6, true, true) -- dnd
+    timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 152280, runes, ERALIBTalent:Create(6, 3)), nil, -1, 0.6, true, true) -- defile
+    timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 343294, runes, talent_exec), nil, -2, 0.6, true, true) -- exec
+    local mosquitosTimer = ERACombatCooldownIgnoringRunes:create(timers, 115989, runes, ERALIBTalent:Create(2, 3))
+    timers:AddCooldownIcon(mosquitosTimer, nil, -2, 0.6, true, true, talent_not_exec)
+    timers:AddCooldownIcon(mosquitosTimer, nil, -3, 0.6, true, true, talent_exec)
+    timers:AddKick(47528, 1, 0.6, ERALIBTalent:CreateLevel(7))
 
     local dotracker =
         ERACombatDOTracker:Create(
@@ -418,7 +429,7 @@ function ERARunes:Create(cFrame, combatHealth, ...)
     -- frame
     ru.frame = CreateFrame("Frame", nil, UIParent, nil)
     ru.frame:SetSize(ERADK_RuneSize * 6, ERADK_RuneSize)
-    ru.frame:SetPoint("CENTER", UIParent, "CENTER", -210, -88)
+    ru.frame:SetPoint("CENTER", UIParent, "CENTER", -144, -88)
 
     ru.icons = {}
     ru.infos = {}

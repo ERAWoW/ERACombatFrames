@@ -20,7 +20,7 @@ function ERACombatFrames_MageSetup(cFrame)
 
     ERAOutOfCombatStatusBars:Create(cFrame, -111, -32, 128, 22, 0, true, 0.1, 0.1, 1.0, false, arcaneActive, fireActive, frostActive)
     ERACombatHealth:Create(cFrame, 32, -64, 111, 22, arcaneActive, fireActive, frostActive)
-    local mana = ERACombatPower:Create(cFrame, -234, -88, 111, 22, 0, true, 0.2, 0.2, 1.0, fireActive, frostActive)
+    local mana = ERACombatPower:Create(cFrame, -255, -88, 111, 22, 0, true, 0.2, 0.2, 1.0, fireActive, frostActive)
     function mana:ShouldBeVisible(t)
         local ratio = self.currentPower / self.maxPower
         return ratio < 1 and (ratio < 0.5 or t < enemies.lastManaCast + 5)
@@ -46,10 +46,10 @@ end
 function ERACombatFrames_MageArcaneSetup(cFrame, enemies, talent_rune)
     local talent_familiar = ERALIBTalent:Create(1, 3)
 
-    ERACombatPower:Create(cFrame, -166, -26, 144, 22, 0, true, 0.2, 0.2, 1.0, 1)
-    ERACombatPointsUnitPower:Create(cFrame, -144, -55, 16, 4, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, nil, 1)
+    ERACombatPower:Create(cFrame, -188, -26, 144, 22, 0, true, 0.2, 0.2, 1.0, 1)
+    ERACombatPointsUnitPower:Create(cFrame, -166, -55, 16, 4, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, nil, 1)
 
-    local timers = ERACombatTimersGroup:Create(cFrame, -101, -11, 1.5, 1)
+    local timers = ERACombatTimersGroup:Create(cFrame, -121, -11, 1.5, 1)
     timers:AddCooldownIcon(timers:AddTrackedCooldown(321507, ERALIBTalent:CreateLevel(33)), nil, 0, 1, true, true) -- magi
     timers:AddCooldownIcon(timers:AddTrackedCooldown(153626, ERALIBTalent:Create(6, 2)), nil, -0.3, 0, true, true) -- orb
     timers:AddCooldownIcon(timers:AddTrackedCooldown(157980, ERALIBTalent:Create(6, 3)), nil, -0.3, 0, true, true) -- supernova
@@ -115,7 +115,7 @@ end
     spellID == 12654
 ]]
 function ERACombatFrames_MageFireSetup(cFrame, enemies, talent_rune)
-    local timers = ERACombatTimersGroup:Create(cFrame, -101, -11, 1.5, 2)
+    local timers = ERACombatTimersGroup:Create(cFrame, -121, -11, 1.5, 2)
     ERACombatMageBurnIcon:create(timers, 0, 2, enemies)
     timers:AddCooldownIcon(timers:AddTrackedCooldown(108853), nil, 0, 1, true, true) -- blast
     timers:AddCooldownIcon(timers:AddTrackedCooldown(257541, ERALIBTalent:CreateLevel(19)), nil, -0.8, 0.3, true, true) -- phenix
@@ -189,7 +189,7 @@ setmetatable(ERACombatFrames_MageIgnite, {__index = ERACombatFrames_PseudoResour
 function ERACombatFrames_MageIgnite:create(cFrame)
     local ig = {}
     setmetatable(ig, ERACombatFrames_MageIgnite)
-    ig:constructPseudoResource(cFrame, -128, -44, 100, 20, 2, 2)
+    ig:constructPseudoResource(cFrame, -144, -44, 100, 20, 2, 2)
     return ig
 end
 
@@ -222,7 +222,7 @@ function ERACombatFrames_MageFrostSetup(cFrame, enemies, talent_rune)
     local talent_procs = ERALIBTalent:Create(4, 1)
     local talent_shatter = ERALIBTalent:Create(6, 2)
 
-    local timers = ERACombatTimersGroup:Create(cFrame, -101, -11, 1.5, 3)
+    local timers = ERACombatTimersGroup:Create(cFrame, -121, -11, 1.5, 3)
 
     local icicles = timers:AddTrackedBuff(205473)
 
@@ -343,7 +343,8 @@ end
 
 function ERACombatFrames_MageUtility(cFrame, spec, alterTimeLevel)
     local utility = ERACombatUtilityFrame:Create(cFrame, 128, -64, spec)
-    utility:AddCooldown(0, 1, 1953, nil, true).alphaWhenOffCooldown = 0.5 -- blink
+    utility:AddCooldown(0, 1, 1953, nil, true, ERALIBTalent:CreateNotTalent(2, 2)).alphaWhenOffCooldown = 0.5 -- blink
+    utility:AddCooldown(0, 1, 212653, nil, true, ERALIBTalent:Create(2, 2)).alphaWhenOffCooldown = 0.5 -- alternative blink
     --utility:AddCooldown(1, 1, 195676, nil, true).alphaWhenOffCooldown = 0.5 -- reblink
     utility:AddCooldown(1, 1, 342245, nil, true, ERALIBTalent:CreateLevel(alterTimeLevel)).alphaWhenOffCooldown = 0.5 -- alter time
     utility:AddCooldown(1, 0, 55342, nil, true, ERALIBTalent:CreateLevel(44)).alphaWhenOffCooldown = 0.4 -- mirror

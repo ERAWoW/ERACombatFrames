@@ -244,13 +244,13 @@ function ERACombatFrames_DemonHunterVengeanceSetup(cFrame, enemies)
     local talent_not_fracture = ERALIBTalent:CreateNotTalent(4, 3)
     local talent_bomb = ERALIBTalent:Create(3, 3)
 
-    local timers = ERACombatTimersGroup:Create(cFrame, -101, -11, 1.5, 2)
+    local timers = ERACombatTimersGroup:Create(cFrame, -123, -11, 1.5, 2)
     timers.watchDispellableMagic = true
     local souls = timers:AddTrackedBuff(203981)
 
-    local combatHealth = ERACombatHealth:Create(cFrame, -200, -60, 177, 26, 2)
+    local combatHealth = ERACombatHealth:Create(cFrame, -224, -60, 177, 26, 2)
 
-    local fury = ERACombatPower:Create(cFrame, -200, -28, 177, 20, 18, true, 0.8, 0.1, 0.8, 2)
+    local fury = ERACombatPower:Create(cFrame, -224, -28, 177, 20, 18, true, 0.8, 0.1, 0.8, 2)
     fury:AddConsumer(30, 1344653)
     fury:AddConsumer(60, 1344653)
     fury:AddConsumer(90, 1344653)
@@ -270,8 +270,8 @@ function ERACombatFrames_DemonHunterVengeanceSetup(cFrame, enemies)
     timers:AddCooldownIcon(timers:AddTrackedCooldown(258920), nil, 0, 0, true, true) -- immo
     timers:AddCooldownIcon(timers:AddTrackedCooldown(203720), nil, -0.77, 0.5, true, true) -- fel spikes
     timers:AddCooldownIcon(timers:AddTrackedCooldown(204021), nil, -0.77, -0.5, true, true) -- fel brand
-    timers:AddCooldownIcon(timers:AddTrackedCooldown(189110), nil, 2.5, 1, true, true) -- fel jump
-    timers:AddCooldownIcon(timers:AddTrackedCooldown(204596, ERALIBTalent:CreateLevel(12)), nil, 2.5, 0, true, true) -- fel flame sigil
+    timers:AddCooldownIcon(timers:AddTrackedCooldown(189110), nil, 3, 1, true, true) -- fel jump
+    timers:AddCooldownIcon(timers:AddTrackedCooldown(204596, ERALIBTalent:CreateLevel(12)), nil, 3, 0, true, true) -- fel flame sigil
     timers:AddKick(183752, 2.5, 2)
     timers:AddOffensiveDispellCooldown(278326, 3.25, 1.5, ERALIBTalent:CreateLevel(17), "Magic")
 
@@ -313,7 +313,7 @@ function ERACombatFrames_DemonHunterVengeanceSetup(cFrame, enemies)
     utility:AddCooldown(2, -1, 217832, nil, true, ERALIBTalent:CreateLevel(34)).alphaWhenOffCooldown = 0.2 -- prison
     utility:AddCooldown(3, -1, 188501, nil, true).alphaWhenOffCooldown = 0.1 -- vision
 
-    ERACombatSoulFragments:Create(cFrame, -177, -88, souls)
+    ERACombatSoulFragments:Create(cFrame, -200, -88, souls)
 
     local pukeTimer = timers:AddTrackedCooldown(212084, talent_puke)
     local pukeConsumer = fury:AddConsumer(50, 1450143)

@@ -36,10 +36,10 @@ function ERACombatFrames_PriestDisciplineSetup(cFrame)
 
     ERAOutOfCombatStatusBars:Create(cFrame, -111, -44, 128, 22, 0, true, 0.1, 0.1, 1.0, false, 1) -- mana 0
 
-    ERACombatHealth:Create(cFrame, -166, -60, 177, 22, 1)
-    ERACombatPower:Create(cFrame, -166, -84, 177, 22, 0, false, 0.1, 0.1, 1.0, 1)
+    ERACombatHealth:Create(cFrame, -202, -60, 166, 22, 1)
+    ERACombatPower:Create(cFrame, -202, -84, 166, 22, 0, false, 0.1, 0.1, 1.0, 1)
 
-    local timers = ERACombatTimersGroup:Create(cFrame, -101, -44, 1.5, 1)
+    local timers = ERACombatTimersGroup:Create(cFrame, -144, -44, 1.5, 1)
 
     timers:AddOffensiveDispellIcon(3163628, 1, 4.5, false, ERALIBTalent:CreateLevel(24), "Magic")
 
@@ -74,12 +74,12 @@ function ERACombatFrames_PriestDisciplineSetup(cFrame)
     utility:AddCooldown(-0.5, 0.9, 204263, nil, true, ERALIBTalent:Create(4, 3)).alphaWhenOffCooldown = 0.4
     utility:AddCooldown(-2, 0, 121536, nil, true, ERALIBTalent:Create(2, 3)).alphaWhenOffCooldown = 0.4
 
-    local grid = ERACombatGrid:Create(cFrame, -144, 32, "BOTTOMRIGHT", 1, 527, "Magic", "Disease")
+    local grid = ERACombatGrid:Create(cFrame, -177, 44, "BOTTOMRIGHT", 1, 527, "Magic", "Disease")
     local expiation = grid:AddTrackedBuff(194384, nil)
     grid:AddTrackedBuff(17, nil) -- boubou
     grid:AddTrackedDebuff(6788, nil) -- pas boubou
 
-    local disciUtility = ERACombatUtilityFrame:Create(cFrame, -177, -144, 1)
+    local disciUtility = ERACombatUtilityFrame:Create(cFrame, -202, -144, 1)
     disciUtility:AddCooldown(1, 0, 200174, nil, true, talent_mindblender)
     disciUtility:AddCooldown(1, 0, 132603, nil, true, talent_not_mindblender)
     disciUtility:AddCooldown(0, 0, 33206, nil, true, ERALIBTalent:CreateLevel(38)) -- pain sup
@@ -108,13 +108,13 @@ function ERACombatFrames_PriestShadowSetup(cFrame)
     local talent_not_mindblender = ERALIBTalent:CreateNotTalent(6, 2, 20)
     local talent_madness = ERALIBTalent:Create(7, 3)
 
-    local oocbars = ERAOutOfCombatStatusBars:Create(cFrame, -111, -32, 128, 22, 13, false, 0.5, 0.0, 1.0, false, 3) -- insanity 13
+    local oocbars = ERAOutOfCombatStatusBars:Create(cFrame, -111, -32, 111, 22, 13, false, 0.5, 0.0, 1.0, false, 3) -- insanity 13
     oocbars.power:SetBorderColor(0.4, 0.4, 1.0)
 
-    local timers = ERACombatTimersGroup:Create(cFrame, -101, -11, 1.5, 3)
+    local timers = ERACombatTimersGroup:Create(cFrame, -121, -11, 1.5, 3)
 
-    ERACombatHealth:Create(cFrame, -177, -60, 123, 22, 3)
-    local insanity = ERACombatPower:Create(cFrame, -177, -32, 123, 22, 1, false, 0.5, 0.0, 1.0, 3)
+    ERACombatHealth:Create(cFrame, -200, -60, 123, 22, 3)
+    local insanity = ERACombatPower:Create(cFrame, -200, -32, 123, 22, 1, false, 0.5, 0.0, 1.0, 3)
     insanity.bar:SetBorderColor(0.4, 0.4, 1.0)
     insanity:AddConsumer(50, 252997)
     local aoeConsumer = insanity:AddConsumer(35, 1022950, ERALIBTalent:Create(3, 3))
@@ -192,7 +192,7 @@ function ERACombatFrames_PriestShadowSetup(cFrame)
     utility:AddCooldown(-0.5, 0.9, 47585, nil, true, ERALIBTalent:CreateLevel(16)).alphaWhenOffCooldown = 0.4 -- dispersion
     utility:AddCooldown(-2, 0, 15286, nil, true, ERALIBTalent:CreateLevel(25)).alphaWhenOffCooldown = 0.3 -- embrace
 
-    local shadowUtility = ERACombatUtilityFrame:Create(cFrame, -128, -122, 3)
+    local shadowUtility = ERACombatUtilityFrame:Create(cFrame, -144, -122, 3)
     shadowUtility:AddCooldown(0, 0, 200174, nil, true, talent_mindblender)
     shadowUtility:AddCooldown(0, 0, 132603, nil, true, talent_not_mindblender)
     shadowUtility:AddCooldown(-1, 0, 193223, nil, true, talent_madness)

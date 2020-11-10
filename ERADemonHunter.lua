@@ -49,6 +49,8 @@ function ERACombatFrames_DemonHunterHavocSetup(cFrame, enemies)
     local consumer_00000_expen_00000 = fury:AddConsumer(35, 1305149, talent_expensiveDance)
     local consumer_00000_cheap_00000 = fury:AddConsumer(15, 1305149, talent_cheapDance)
     local consumer_eyesb_00000_00000 = fury:AddConsumer(30, 1305156)
+    local consumer_eyesb_expen_00000 = fury:AddConsumer(65, 1305156, talent_expensiveDance)
+    local consumer_eyesb_cheap_00000 = fury:AddConsumer(45, 1305156, talent_cheapDance)
     local consumer_00000_expen_chaos = fury:AddConsumer(75, 1305152, talent_expensiveDance)
     local consumer_00000_cheap_chaos = fury:AddConsumer(55, 1305152, talent_cheapDance)
     local consumer_eyesb_00000_chaos = fury:AddConsumer(70, 1305152)
@@ -59,6 +61,8 @@ function ERACombatFrames_DemonHunterHavocSetup(cFrame, enemies)
         consumer_00000_expen_00000,
         consumer_00000_cheap_00000,
         consumer_eyesb_00000_00000,
+        consumer_eyesb_expen_00000,
+        consumer_eyesb_cheap_00000,
         consumer_00000_expen_chaos,
         consumer_00000_cheap_chaos,
         consumer_eyesb_00000_chaos,
@@ -77,6 +81,8 @@ function ERACombatFrames_DemonHunterHavocSetup(cFrame, enemies)
     local danceTimer = timers:AddTrackedCooldown(188499, ERALIBTalent:CreateLevel(12))
     local eyesTimer = timers:AddTrackedCooldown(198013, ERALIBTalent:CreateLevel(11))
     local bladestormTimer = timers:AddTrackedCooldown(342817, talent_bladetempest)
+
+    timers:AddCooldownIcon(timers:AddTrackedCooldown(295373), nil, 0, 2, true, true) -- azerite 1
 
     timers:AddCooldownIcon(timers:AddTrackedCooldown(232893, ERALIBTalent:Create(1, 3)), nil, -0.7, 0.5, true, true) -- fel blade
 
@@ -117,11 +123,8 @@ function ERACombatFrames_DemonHunterHavocSetup(cFrame, enemies)
 
     local utility = ERACombatUtilityFrame:Create(cFrame, -128, -188, 1)
 
-    utility:AddCooldown(0, 0, 179057, nil, true).alphaWhenOffCooldown = 0.6 -- nova
-    utility:AddCooldown(1, 0, 211881, nil, true, ERALIBTalent:Create(6, 3)) -- fel stun
-    utility:AddCooldown(2, 0, 258925, nil, true, talent_barrage) -- fel barrage
-    utility:AddCooldown(3, 0, 195072, nil, false) -- fel rush out of combat
-    utility:AddCooldown(4, 0, 198793, nil, false) -- fel retreat out of combat
+    utility:AddTrinket2Cooldown(-3, 0)
+    utility:AddTrinket1Cooldown(-2, 0)
 
     utility:AddCooldown(-1, 0, 191427, nil, true)
     local metaUtilityBuff = utility:AddBuffIcon(utility:AddTrackedBuff(162264), 237558, -1, 0, true)
@@ -129,11 +132,19 @@ function ERACombatFrames_DemonHunterHavocSetup(cFrame, enemies)
         return metaUtilityBuff.aura.totDuration > 8.1
     end
 
+    utility:AddCooldown(0, 0, 179057, nil, true).alphaWhenOffCooldown = 0.6 -- nova
+    utility:AddCooldown(1, 0, 211881, nil, true, ERALIBTalent:Create(6, 3)) -- fel stun
+    utility:AddCooldown(2, 0, 258925, nil, true, talent_barrage) -- fel barrage
+    utility:AddCooldown(3, 0, 195072, nil, false) -- fel rush out of combat
+    utility:AddCooldown(4, 0, 198793, nil, false) -- fel retreat out of combat
+
     utility:AddWarlockPortal(2, -1)
     utility:AddRacial(1, -1).alphaWhenOffCooldown = 0.4
     utility:AddCooldown(0, -1, 217832, nil, true, ERALIBTalent:CreateLevel(34)).alphaWhenOffCooldown = 0.2 -- prison
     utility:AddCooldown(-1, -1, 185245, nil, true).alphaWhenOffCooldown = 0.2 -- taunt
     utility:AddCooldown(-2, -1, 188501, nil, true).alphaWhenOffCooldown = 0.15 -- vision
+    utility:AddCloakCooldown(-0.5, -1.8).alphaWhenOffCooldown = 0.3
+    utility:AddBeltCooldown(0.5, -1.8).alphaWhenOffCooldown = 0.3
 
     local defensiveCooldowns = ERACombatUtilityFrame:Create(cFrame, 144, -55, 1)
     defensiveCooldowns:AddCooldown(0, 1, 196555, nil, true, ERALIBTalent:Create(4, 3)).alphaWhenOffCooldown = 0.7 -- netherwalk
@@ -145,10 +156,11 @@ function ERACombatFrames_DemonHunterHavocSetup(cFrame, enemies)
         local cheap = talent_cheapDance:PlayerHasTalent()
 
         local furyPerSecond  -- multiplicateur de 0.7 pour avoir de la marge
+        local hasteMod = 1 / (1 + GetHaste() / 100)
         if (talent_demonBlades:PlayerHasTalent()) then
-            furyPerSecond = 7.38 * (1 + GetHaste()) * 0.7
+            furyPerSecond = 7.38 * hasteMod * 0.7
         else
-            furyPerSecond = 16 * (1 + GetHaste()) * 0.7
+            furyPerSecond = 16 * hasteMod * 0.7
         end
 
         local danceVisible
@@ -171,33 +183,34 @@ function ERACombatFrames_DemonHunterHavocSetup(cFrame, enemies)
             c.computedIconVisible = false
         end
         if (danceVisible) then
+            local chaosVisible = danceTimer.remDuration > 1.5 * hasteMod * 0.8 + timers.remGCD
             if (eyesVisible) then
                 if (cheap) then
                     consumer_00000_cheap_00000.computedVisible = true
                     consumer_00000_cheap_00000.computedIconVisible = danceTimer.remDuration <= 1.5
-                    consumer_eyesb_00000_00000.computedVisible = true
-                    consumer_eyesb_00000_00000.computedIconVisible = eyesTimer.remDuration <= 1.5
+                    consumer_eyesb_cheap_00000.computedVisible = true
+                    consumer_eyesb_cheap_00000.computedIconVisible = eyesTimer.remDuration <= 1.5
                     consumer_eyesb_cheap_chaos.computedVisible = true
-                    consumer_eyesb_cheap_chaos.computedIconVisible = fury.currentPower >= 85
+                    consumer_eyesb_cheap_chaos.computedIconVisible = chaosVisible and fury.currentPower >= 85
                 else
                     consumer_00000_expen_00000.computedVisible = true
                     consumer_00000_expen_00000.computedIconVisible = danceTimer.remDuration <= 1.5
-                    consumer_eyesb_00000_00000.computedVisible = true
-                    consumer_eyesb_00000_00000.computedIconVisible = eyesTimer.remDuration <= 1.5
+                    consumer_eyesb_expen_00000.computedVisible = true
+                    consumer_eyesb_expen_00000.computedIconVisible = eyesTimer.remDuration <= 1.5
                     consumer_eyesb_expen_chaos.computedVisible = true
-                    consumer_eyesb_expen_chaos.computedIconVisible = fury.currentPower >= 105
+                    consumer_eyesb_expen_chaos.computedIconVisible = chaosVisible and fury.currentPower >= 105
                 end
             else
                 if (cheap) then
                     consumer_00000_cheap_00000.computedVisible = true
                     consumer_00000_cheap_00000.computedIconVisible = danceTimer.remDuration <= 1.5
                     consumer_00000_cheap_chaos.computedVisible = true
-                    consumer_00000_cheap_chaos.computedIconVisible = fury.currentPower >= 55
+                    consumer_00000_cheap_chaos.computedIconVisible = chaosVisible and fury.currentPower >= 55
                 else
                     consumer_00000_expen_00000.computedVisible = true
                     consumer_00000_expen_00000.computedIconVisible = danceTimer.remDuration <= 1.5
                     consumer_00000_expen_chaos.computedVisible = true
-                    consumer_00000_expen_chaos.computedIconVisible = fury.currentPower >= 75
+                    consumer_00000_expen_chaos.computedIconVisible = chaosVisible and fury.currentPower >= 75
                 end
             end
         else
@@ -293,6 +306,8 @@ function ERACombatFrames_DemonHunterVengeanceSetup(cFrame, enemies)
 
     local utility = ERACombatUtilityFrame:Create(cFrame, -128, -222, 2)
 
+    utility:AddTrinket2Cooldown(-1.5, 0.88)
+    utility:AddTrinket1Cooldown(-0.5, 0.88)
     utility:AddCooldown(0.5, 0.88, 263648, nil, true, ERALIBTalent:Create(6, 3)).alphaWhenOffCooldown = 1 -- fel barrier
     utility:AddCooldown(1.5, 0.88, 212084, nil, true, talent_puke).alphaWhenOffCooldown = 1 -- fel puke
     utility:AddCooldown(2.5, 0.88, 320341, nil, true, ERALIBTalent:Create(7, 3)).alphaWhenOffCooldown = 1 -- fel extraction
@@ -309,6 +324,9 @@ function ERACombatFrames_DemonHunterVengeanceSetup(cFrame, enemies)
     utility:AddCooldown(4, 0, 202138, nil, true, ERALIBTalent:Create(5, 3)).alphaWhenOffCooldown = 0.5 -- sigil chains
     utility:AddWarlockHealthStone(5, 0)
     utility:AddWarlockPortal(6, 0)
+
+    utility:AddCloakCooldown(-1, -1).alphaWhenOffCooldown = 0.3
+    utility:AddBeltCooldown(0, -1).alphaWhenOffCooldown = 0.3
     utility:AddCooldown(1, -1, 185245, nil, true).alphaWhenOffCooldown = 0.2 -- taunt
     utility:AddCooldown(2, -1, 217832, nil, true, ERALIBTalent:CreateLevel(34)).alphaWhenOffCooldown = 0.2 -- prison
     utility:AddCooldown(3, -1, 188501, nil, true).alphaWhenOffCooldown = 0.1 -- vision

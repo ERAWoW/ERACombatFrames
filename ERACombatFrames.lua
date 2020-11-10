@@ -40,6 +40,9 @@ function ERACombatFrames_event(event, ...)
                 ERACombatFrames_PaladinSetup(cFrame)
             elseif (classID == 3) then
                 ERACombatFrames_HunterSetup(cFrame)
+            elseif (classID == 4) then
+                -- work in progress
+                ERACombatFrames_RogueSetup(cFrame)
             elseif (classID == 5) then
                 ERACombatFrames_PriestSetup(cFrame)
             elseif (classID == 6) then
@@ -50,7 +53,7 @@ function ERACombatFrames_event(event, ...)
                 ERACombatFrames_WarlockSetup(cFrame)
             elseif (classID == 10) then
                 -- work in progress
-                --ERACombatFrames_MonkSetup(cFrame)
+                ERACombatFrames_MonkSetup(cFrame)
             elseif (classID == 11) then
                 ERACombatFrames_DruidSetup(cFrame)
             end

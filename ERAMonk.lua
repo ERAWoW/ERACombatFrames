@@ -92,7 +92,6 @@ function ERACombatFrames_MonkSetup(cFrame)
     function cFrame:UpdateCombat(t, elapsed)
     end
     ]]
-    cFrame:Pack()
 end
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -150,7 +149,9 @@ function ERACombatFrames_MonkWindwalkerSetup(cFrame)
     local timers = ERACombatTimersGroup:Create(cFrame, -89, 32, 1, 3)
 
     timers:AddCooldownIcon(timers:AddTrackedCooldown(107428), nil, -1, 0.5, true, false) -- rsk
-    timers:AddCooldownIcon(timers:AddTrackedCooldown(322101), nil, -3, 0.5, true, false) -- EH
+    timers:AddCooldownIcon(timers:AddTrackedCooldown(113656), nil, -2, 0.5, true, false) -- fof
+    timers:AddCooldownIcon(timers:AddTrackedCooldown(115098, ERALIBTalent:Create(1, 2)), nil, -3, 0.5, true, false)
+    timers:AddCooldownIcon(timers:AddTrackedCooldown(322101), nil, -4, 0.5, true, false) -- EH
 
     local utility = ERACombatFrames_MonkUtility(cFrame, 3, 128, -32)
     local defensive = ERACombatFrames_MonkDefensiveUtility(cFrame, 3, 0, -128)
@@ -174,6 +175,8 @@ function ERACombatFrames_MonkUtility(cFrame, spec, x, y)
             end
         end
     end
+
+    utility:AddCooldown(0, -2, 115546, nil, true, nil).alphaWhenOffCooldown = 0.2 -- taunt
 
     utility:AddWarlockPortal(0.8, 0.5)
     utility:AddRacial(0.8, -0.5).alphaWhenOffCooldown = 0.4

@@ -40,6 +40,7 @@ ERAMage.lua
 ERAMonk.lua
 ERAPaladin.lua
 ERAPriest.lua
+ERARogue.lua
 ERAWarlock.xml
 ERAWarlock.lua
 

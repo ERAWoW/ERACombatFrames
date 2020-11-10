@@ -16,6 +16,7 @@ function ERACombatPoints:ConstructPoints(cFrame, x, y, maxPoints, rB, gB, bB, rP
     self.frame = CreateFrame("Frame", nil, UIParent, nil)
     self.frame:SetPoint("TOP", UIParent, "CENTER", x, y)
     self.frame:SetSize(ERACombatPoints_PointSize * maxPoints, ERACombatPoints_PointSize)
+    self.currentPoints = 0
     self.maxPoints = maxPoints
     self.talent = talent
     self.points = {}
@@ -84,6 +85,9 @@ function ERACombatPoints:update(t)
     for i = self.currentPoints + 1, self.maxPoints do
         self.points[i].point:Hide()
     end
+    self:PointsUpdated(t)
+end
+function ERACombatPoints:PointsUpdated(t)
 end
 -- abstract function GetCurrentPoints(t)
 

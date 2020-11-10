@@ -69,6 +69,8 @@ function ERACombatStatusBar:create(parentFrame, x, y, barWidth, barHeight, r, g,
     bar.plus = 0
     bar.forecast = 0
 
+    bar.mainBar:Hide()
+    bar.mainVisible = false
     bar.minusBar:Hide()
     bar.minusVisible = false
     bar.plusBar:Hide()
@@ -159,6 +161,7 @@ function ERACombatStatusBar:update()
     local w = self.width - 2 * self.borderThickness
     local ratio = w / self.max
     local xCurrent = math.min(w, ratio * self.value)
+    local mainWidth
     if (self.minus > 0) then
         local valWidth
         if (self.minus >= self.value) then
@@ -174,12 +177,24 @@ function ERACombatStatusBar:update()
             self.minusVisible = true
             self.minusBar:Show()
         end
-        self.mainBar:SetWidth(valWidth)
+        mainWidth = valWidth
     else
-        self.mainBar:SetWidth(xCurrent)
+        mainWidth = xCurrent
         if (self.minusVisible) then
             self.minusVisible = false
             self.minusBar:Hide()
+        end
+    end
+    if (mainWidth > 0) then
+        if (not self.mainVisible) then
+            self.mainVisible = true
+            self.mainBar:Show()
+        end
+        self.mainBar:SetWidth(mainWidth)
+    else
+        if (self.mainVisible) then
+            self.mainVisible = false
+            self.mainBar:Hide()
         end
     end
     if (self.plus > 0) then

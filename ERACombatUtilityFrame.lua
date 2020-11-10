@@ -13,6 +13,20 @@ setmetatable(ERACombatUtilityFrame, {__index = ERACombatModule})
 function ERACombatUtilityFrame:AddCooldown(x, y, spellID, iconID, showInCombat, talent)
     return ERACombatUtilityCooldown:create(self, x, y, spellID, iconID, showInCombat, talent)
 end
+
+function ERACombatUtilityFrame:AddTrinket1Cooldown(x, y, iconID)
+    return ERACombatUtilityInventoryCooldown:create(self, x, y, iconID or 465875, INVSLOT_TRINKET1)
+end
+function ERACombatUtilityFrame:AddTrinket2Cooldown(x, y, iconID)
+    return ERACombatUtilityInventoryCooldown:create(self, x, y, iconID or 3610503, INVSLOT_TRINKET2)
+end
+function ERACombatUtilityFrame:AddCloakCooldown(x, y, iconID)
+    return ERACombatUtilityInventoryCooldown:create(self, x, y, iconID or 531415, INVSLOT_BACK)
+end
+function ERACombatUtilityFrame:AddBeltCooldown(x, y, iconID)
+    return ERACombatUtilityInventoryCooldown:create(self, x, y, iconID or 443322, INVSLOT_WAIST)
+end
+
 function ERACombatUtilityFrame:AddDebuffAnyCasterIcon(aura, iconID, x, y, showInCombat, talent)
     return ERACombatUtilityDebuffAnyCaster:create(aura, iconID, x, y, showInCombat, talent)
 end
@@ -694,6 +708,65 @@ function ERACombatUtilityDefensiveDispellCooldown:doUpdateCombat(t)
         if (not self:update_return_onCD_or_dispellable(t)) then
             self.icon:SetAlpha(0.1)
         end
+        self.icon:Show()
+    end
+end
+
+-- inventory cd
+
+ERACombatUtilityInventoryCooldown = {}
+ERACombatUtilityInventoryCooldown.__index = ERACombatUtilityInventoryCooldown
+setmetatable(ERACombatUtilityInventoryCooldown, {__index = ERACombatUtilityIcon})
+
+function ERACombatUtilityInventoryCooldown:create(owner, x, y, iconID, slotID)
+    local c = {}
+    setmetatable(c, ERACombatUtilityInventoryCooldown)
+    c:construct(owner, x, y, iconID, 0, true, nil)
+    c.slotID = slotID
+    c.remDuration = 0
+    c.totDuration = 1
+    c.hasCooldown = false
+    c.alphaWhenOffCooldown = 1
+    return c
+end
+
+function ERACombatUtilityInventoryCooldown:updateIdle(t)
+    self:update(t)
+    if (self.hasCooldown) then
+        if (self.remDuration > 0) then
+            self.icon:Show()
+        else
+            self.icon:Hide()
+        end
+    end
+end
+function ERACombatUtilityInventoryCooldown:update(t)
+    local start, duration, enable = GetInventoryItemCooldown("player", self.slotID)
+    if (enable and enable ~= 0) then
+        self.hasCooldown = true
+        if (duration and duration > 0) then
+            self.totDuration = duration
+            self.remDuration = start + duration - t
+            self.icon:SetOverlayValue(self.remDuration / duration)
+            self.icon:SetMainText(math.floor(self.remDuration))
+            self.icon:SetDesaturated(self.remDuration > ERACombatUtilityFrame_LongCooldownThreshold)
+            self.icon:SetAlpha(1)
+        else
+            self.remDuration = 0
+            self.icon:SetOverlayValue(0)
+            self.icon:SetMainText(nil)
+            self.icon:SetAlpha(self.alphaWhenOffCooldown)
+        end
+    else
+        self.remDuration = 0
+        self.totDuration = 1
+        self.hasCooldown = false
+        self.icon:Hide()
+    end
+end
+function ERACombatUtilityInventoryCooldown:doUpdateCombat(t)
+    self:update(t)
+    if (self.hasCooldown) then
         self.icon:Show()
     end
 end

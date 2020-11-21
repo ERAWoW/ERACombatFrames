@@ -149,9 +149,13 @@ function ERACombatGrid:Pack()
     else
         self.frame:SetAttribute("point", "BOTTOM")
     end
+    if (self.anchor == "LEFT" or self.anchor == "TOPLEFT" or self.anchor == "BOTTOMLEFT") then
+        self.frame:SetAttribute("columnAnchorPoint", "LEFT")
+    else
+        self.frame:SetAttribute("columnAnchorPoint", "RIGHT")
+    end
     self.frame:SetAttribute("maxColumns", 6)
     self.frame:SetAttribute("unitsPerColumn", 8)
-    self.frame:SetAttribute("columnAnchorPoint", self.anchor)
     self.frame:SetAttribute("sortMethod", "INDEX")
     self.frame:SetAttribute("groupBy", "ASSIGNEDROLE")
     self.frame:SetAttribute("groupingOrder", "MAINTANK,MAINASSIST,TANK,HEALER,DAMAGER,NONE")

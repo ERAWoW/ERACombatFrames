@@ -21,10 +21,23 @@ function ERACombatUtilityFrame:AddTrinket2Cooldown(x, y, iconID)
     return ERACombatUtilityInventoryCooldown:create(self, x, y, iconID or 3610503, INVSLOT_TRINKET2)
 end
 function ERACombatUtilityFrame:AddCloakCooldown(x, y, iconID)
-    return ERACombatUtilityInventoryCooldown:create(self, x, y, iconID or 531415, INVSLOT_BACK)
+    return ERACombatUtilityInventoryCooldown:create(self, x, y, iconID or 530999, INVSLOT_BACK)
 end
 function ERACombatUtilityFrame:AddBeltCooldown(x, y, iconID)
     return ERACombatUtilityInventoryCooldown:create(self, x, y, iconID or 443322, INVSLOT_WAIST)
+end
+
+function ERACombatUtilityFrame:AddCovenantClassAbility(x, y, kyrian, venthyr, nightfae, necrolords)
+    ERACombatUtilityCooldown:create(self, x, y, kyrian, nil, true, ERALIBTalent_Kyrian)
+    ERACombatUtilityCooldown:create(self, x, y, venthyr, nil, true, ERALIBTalent_Venthyr)
+    ERACombatUtilityCooldown:create(self, x, y, nightfae, nil, true, ERALIBTalent_Nightfae)
+    ERACombatUtilityCooldown:create(self, x, y, necrolords, nil, true, ERALIBTalent_Necrolords)
+end
+function ERACombatUtilityFrame:AddCovenantGenericAbility(x, y)
+    self:AddBagItem(x, y, 177278, 463534, false, ERALIBTalent_Kyrian)
+    ERACombatUtilityCooldown:create(self, x, y, 300728, nil, true, ERALIBTalent_Venthyr)
+    ERACombatUtilityCooldown:create(self, x, y, 310143, nil, true, ERALIBTalent_Nightfae)
+    ERACombatUtilityCooldown:create(self, x, y, 324631, nil, true, ERALIBTalent_Necrolords)
 end
 
 function ERACombatUtilityFrame:AddDebuffAnyCasterIcon(aura, iconID, x, y, showInCombat, talent)
@@ -126,8 +139,8 @@ function ERACombatUtilityFrame:AddWarlockPortal(x, y)
     d.fade = true
     return d
 end
-function ERACombatUtilityFrame:AddBagItem(x, y, itemID, iconID, warningIfMissing)
-    return ERACombatUtilityBagItem:create(self, x, y, itemID, iconID, warningIfMissing)
+function ERACombatUtilityFrame:AddBagItem(x, y, itemID, iconID, warningIfMissing, talent)
+    return ERACombatUtilityBagItem:create(self, x, y, itemID, iconID, warningIfMissing, talent)
 end
 
 function ERACombatUtilityFrame:Create(cFrame, x, y, ...)
@@ -153,6 +166,7 @@ function ERACombatUtilityFrame:Create(cFrame, x, y, ...)
     f.last_calc_missing_buff_any = 0
     f.defensiveDispells = {}
     f.bagItems = {}
+    f.dead = false
 
     f.events = {}
     function f.events:BAG_UPDATE()
@@ -251,6 +265,8 @@ function ERACombatUtilityFrame_updateAura(aura, t, stacks, durAura, expirationTi
     aura:auraFound(auraRemDuration, durAura, stacks)
 end
 function ERACombatUtilityFrame:updateData(t)
+    self.dead = UnitIsDeadOrGhost("player")
+
     if (self.mustUpdateSpells) then
         self.mustUpdateSpells = false
         self:CheckTalents()
@@ -905,10 +921,10 @@ ERACombatUtilityBagItem = {}
 ERACombatUtilityBagItem.__index = ERACombatUtilityBagItem
 setmetatable(ERACombatUtilityBagItem, ERACombatUtilityIcon)
 
-function ERACombatUtilityBagItem:create(utility, x, y, itemID, iconID, warningIfMissing)
+function ERACombatUtilityBagItem:create(utility, x, y, itemID, iconID, warningIfMissing, talent)
     local s = {}
     setmetatable(s, ERACombatUtilityBagItem)
-    s:construct(utility, x, y, iconID, 0, true)
+    s:construct(utility, x, y, iconID, 0, true, talent)
     s.totDuration = 1
     s.remDuration = 0
     s.alphaWhenOffCooldown = 0.9
@@ -1067,7 +1083,7 @@ function ERACombatUtilityMissingAura:update(t)
             return
         end
     end
-    if (UnitIsDeadOrGhost("player")) then
+    if (self.owner.dead) then
         self.icon:Hide()
     else
         self.icon:Show()
@@ -1101,12 +1117,16 @@ function ERACombatUtilityMissingBuffAnyCaster:doUpdateCombat(t)
     self:update(t)
 end
 function ERACombatUtilityMissingBuffAnyCaster:update(t)
-    if (self.owner.updatingMissingBuffsAny) then
-        if (self.found) then
-            self.found = false
-            self.icon:Hide()
-        else
-            self.icon:Show()
+    if (self.owner.dead) then
+        self.icon:Hide()
+    else
+        if (self.owner.updatingMissingBuffsAny) then
+            if (self.found) then
+                self.found = false
+                self.icon:Hide()
+            else
+                self.icon:Show()
+            end
         end
     end
 end

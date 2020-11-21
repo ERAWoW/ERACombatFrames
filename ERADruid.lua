@@ -166,11 +166,14 @@ function ERACombatFrames_DruidMoonkinSetup(cFrame)
         ERALIBTalent:Create(6, 3)
     )
 
-    local moonUtility = ERACombatUtilityFrame:Create(cFrame, -144, -111, 1)
+    local moonUtility = ERACombatUtilityFrame:Create(cFrame, -188, -111, 1)
+    moonUtility:AddTrinket2Cooldown(-2, 0)
+    moonUtility:AddTrinket1Cooldown(-1, 0)
     moonUtility:AddCooldown(0, 0, 194223, nil, true, talent_alignment)
     moonUtility:AddBuffIcon(moonUtility:AddTrackedBuff(194223, talent_alignment), 613074, 0, 0, false)
     moonUtility:AddCooldown(0, 0, 102560, nil, true, talent_incarnation)
     moonUtility:AddBuffIcon(moonUtility:AddTrackedBuff(102560, talent_incarnation), 613074, 0, 0, false)
+    moonUtility:AddCovenantClassAbility(1, 0, 338142, 323546, 323764, 325727)
 
     local utility = ERACombatFrames_DruidCommonUtility(cFrame, timers, 188, -220, 1, 132469, 28, 2782, "Curse", "Poison")
     ERACombatFrames_DruidCatAffinityCC(utility, ERALIBTalent:Create(3, 1))
@@ -336,12 +339,15 @@ function ERACombatFrames_DruidCatSetup(cFrame)
     timers:AddAuraBar(berzerkTimer, nil, 1.0, 0.0, 0.0)
     timers:AddAuraBar(incarnationTimer, nil, 1.0, 0.0, 0.0)
 
-    local catUtility = ERACombatUtilityFrame:Create(cFrame, -128, -144, 2)
+    local catUtility = ERACombatUtilityFrame:Create(cFrame, -188, -144, 2)
+    catUtility:AddCovenantClassAbility(1, 0, 338142, 323546, 323764, 325727)
     catUtility:AddCooldown(0, 0, 106951, nil, true, talent_berzerk)
     catUtility:AddBuffIcon(catUtility:AddTrackedBuff(106951, talent_berzerk), 613074, 0, 0, false)
     catUtility:AddCooldown(0, 0, 102543, nil, true, talent_incarnation)
     catUtility:AddBuffIcon(catUtility:AddTrackedBuff(102543, talent_incarnation), 613074, 0, 0, false)
     catUtility:AddCooldown(-1, 0, 61336, nil, true, ERALIBTalent:CreateLevel(32)) -- survival instincts
+    catUtility:AddTrinket1Cooldown(0.5, -0.8)
+    catUtility:AddTrinket2Cooldown(-0.5, -0.8)
 
     local snapshot = function(target, instance, isRefresh)
         instance.appliedWithFury = furyTimer.remDuration > 0
@@ -586,12 +592,15 @@ function ERACombatFrames_DruidBearSetup(cFrame)
     timers:AddAuraBar(berzerkTimer, nil, 1.0, 0.0, 0.0)
     timers:AddAuraBar(incarnationTimer, nil, 1.0, 0.0, 0.0)
 
-    local bearUtility = ERACombatUtilityFrame:Create(cFrame, -166, -111, 3)
+    local bearUtility = ERACombatUtilityFrame:Create(cFrame, -234, -111, 3)
+    bearUtility:AddCovenantClassAbility(1, 0, 338142, 323546, 323764, 325727)
     bearUtility:AddCooldown(0, 0, 50334, nil, true, talent_berzerk)
     bearUtility:AddBuffIcon(bearUtility:AddTrackedBuff(50334, talent_berzerk), 613074, 0, 0, false)
     bearUtility:AddCooldown(0, 0, 102558, nil, true, talent_incarnation)
     bearUtility:AddBuffIcon(bearUtility:AddTrackedBuff(102558, talent_incarnation), 613074, 0, 0, false)
     bearUtility:AddCooldown(-1, 0, 61336, nil, true, ERALIBTalent:CreateLevel(32)) -- survival instincts
+    bearUtility:AddTrinket1Cooldown(0.5, -0.8)
+    bearUtility:AddTrinket2Cooldown(-0.5, -0.8)
 
     local rage = ERACombatPower:Create(cFrame, -212, -22, 155, 22, 1, true, 1.0, 0.0, 0.0, 3)
     rage:AddConsumer(40, 1378702)
@@ -690,12 +699,13 @@ function ERACombatFrames_DruidTreeSetup(cFrame)
     ERACombatHealth:Create(cFrame, -177, -111, 200, 22, 4)
     ERACombatPower:Create(cFrame, -177, -133, 200, 22, 0, false, 0.1, 0.1, 1.0, 4)
 
-    local utility = ERACombatFrames_DruidCommonUtility(cFrame, timers, 177, -177, 4, 102793, 28, 88423, "Magic", "Curse", "Poison")
+    local utility = ERACombatFrames_DruidCommonUtility(cFrame, timers, 188, -177, 4, 102793, 28, 88423, "Magic", "Curse", "Poison")
     ERACombatFrames_DruidMoonAffinityCC(utility, ERALIBTalent:Create(3, 1))
     ERACombatFrames_DruidCatAffinityCC(utility, ERALIBTalent:Create(3, 2))
     ERACombatFrames_DruidBearAffinityCC(utility, ERALIBTalent:Create(3, 3))
 
     local treeUtility = ERACombatUtilityFrame:Create(cFrame, -88, -199, 4)
+    treeUtility:AddCovenantClassAbility(1, 0, 338142, 323546, 323764, 325727)
     treeUtility:AddCooldown(0, 0, 102342, nil, true, ERALIBTalent:CreateLevel(12)) -- ironbark
     treeUtility:AddCooldown(-1, 0, 740, nil, true, ERALIBTalent:CreateLevel(37)) -- tranqui
     local flourish = treeUtility:AddCooldown(-2, 0, 197721, nil, true, talent_boosthots)
@@ -712,6 +722,8 @@ function ERACombatFrames_DruidTreeSetup(cFrame)
     treeUtility:AddBuffIcon(incarnationBuff, 613074, -2, 0, true, talent_incarnation_without_boosthots)
     treeUtility:AddCooldown(-0.5, -0.8, 132158, nil, true, ERALIBTalent:CreateLevel(58)) -- swiftness
     treeUtility:AddCooldown(-1.5, -0.8, 203651, nil, true, ERALIBTalent:Create(6, 3))
+    treeUtility:AddTrinket1Cooldown(-2.5, -0.8)
+    treeUtility:AddTrinket2Cooldown(-3.5, -0.8)
 
     ERACombatFrames_DruidLifebloomMissing:create(timers, lifebloomTimer, lifeBloomDefinition, 0, 5)
 
@@ -813,6 +825,8 @@ function ERACombatFrames_DruidCommonUtility(cFrame, timers, x, y, spec, nativeIn
 
     local utility = ERACombatUtilityFrame:Create(cFrame, x, y, spec)
 
+    utility:AddCovenantGenericAbility(-0.5, 2.4)
+
     utility:AddDefensiveDispellCooldown(0, 1.6, dispellID, nil, ERALIBTalent:CreateLevel(19), ...)
     utility:AddCooldown(-1, 1.6, 22812, nil, true, ERALIBTalent:CreateLevel(24)) -- barkskin
 
@@ -838,7 +852,7 @@ function ERACombatFrames_DruidCommonUtility(cFrame, timers, x, y, spec, nativeIn
     utility:AddWarlockHealthStone(0.5, -0.8)
     utility:AddWarlockPortal(1.5, -0.8)
 
-    utility:AddCooldown(-1, -1.6, 6795, nil, true).alphaWhenOffCooldown = 0.1 -- taunt
+    utility:AddCooldown(-1, -1.6, 6795, nil, true, ERALIBTalent:CreateLevel(14)).alphaWhenOffCooldown = 0.1 -- taunt
 
     return utility
 end

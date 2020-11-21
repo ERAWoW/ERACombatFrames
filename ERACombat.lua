@@ -72,10 +72,10 @@ function ERACombatFrame:Create()
         end
     end
     function events:PLAYER_TALENT_UPDATE()
-        ERACombatFrame_updateComputeTalents()
-        for i, m in ipairs(c.activeModules) do
-            m:CheckTalents()
-        end
+        c:updateTalents()
+    end
+    function events:COVENANT_CHOSEN(cid)
+        c:updateTalents()
     end
     function events:PLAYER_LEVEL_UP()
         -- pareil que ci-dessus
@@ -116,6 +116,13 @@ function ERACombatFrame:Pack()
         m:Pack()
     end
     self:resetToIdle(true)
+end
+
+function ERACombatFrame:updateTalents()
+    ERACombatFrame_updateComputeTalents()
+    for _, m in ipairs(self.activeModules) do
+        m:CheckTalents()
+    end
 end
 
 function ERACombatFrame_updateComputeTalents()

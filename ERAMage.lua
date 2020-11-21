@@ -67,13 +67,16 @@ function ERACombatFrames_MageArcaneSetup(cFrame, enemies, talent_rune)
     local utility = ERACombatFrames_MageUtility(cFrame, 1, 19)
     utility:AddCooldown(0, 0, 235450, nil, true, ERALIBTalent:CreateNotTalent(2, 1, 21)).alphaWhenOffCooldown = 0.5 -- barrière
     utility:AddCooldown(2, 0, 110959, nil, true, ERALIBTalent:CreateLevel(47)).alphaWhenOffCooldown = 0.5 -- invi
-    local damageUtility = ERACombatUtilityFrame:Create(cFrame, -64, -177, 1)
+    local damageUtility = ERACombatUtilityFrame:Create(cFrame, -77, -177, 1)
     damageUtility:AddCooldown(-2.7, 0.7, 116011, nil, true, talent_rune)
     damageUtility:AddBagItem(-2, 0, 36799, 134132, true) -- mana gem
     damageUtility:AddCooldown(-1, 0, 12051, nil, true, ERALIBTalent:CreateLevel(27)) -- evocation
     damageUtility:AddCooldown(0, 0, 12042, nil, true, ERALIBTalent:CreateLevel(29)) -- unlimited power
     damageUtility:AddCooldown(1, 0, 205025, nil, true, ERALIBTalent:CreateLevel(42)) -- pom
-    damageUtility:AddMissingBuff(damageUtility:AddTrackedBuff(210126, talent_familiar), nil, 1, -1, true, true, talent_familiar) -- familiar
+    damageUtility:AddCovenantClassAbility(0.5, -0.9, 307443, 314793, 314791, 324220)
+    damageUtility:AddTrinket1Cooldown(-0.5, -0.9)
+    damageUtility:AddTrinket2Cooldown(-1.5, -0.9)
+    damageUtility:AddMissingBuff(damageUtility:AddTrackedBuff(210126, talent_familiar), nil, 1, -2, true, true, talent_familiar) -- familiar
 
     local dotracker =
         ERACombatDOTracker:Create(
@@ -134,9 +137,12 @@ function ERACombatFrames_MageFireSetup(cFrame, enemies, talent_rune)
     local utility = ERACombatFrames_MageUtility(cFrame, 2, 58)
     utility:AddCooldown(0, 0, 235313, nil, true, ERALIBTalent:CreateLevel(21)).alphaWhenOffCooldown = 0.5 -- barrière
     utility:AddCooldown(2, 0, 66, nil, true, ERALIBTalent:CreateLevel(34)).alphaWhenOffCooldown = 0.5 -- invi
-    local damageUtility = ERACombatUtilityFrame:Create(cFrame, -32, -166, 2)
+    local damageUtility = ERACombatUtilityFrame:Create(cFrame, -88, -166, 2)
+    damageUtility:AddCovenantClassAbility(1, 0, 307443, 314793, 314791, 324220)
     damageUtility:AddCooldown(0, 0, 190319, nil, true, ERALIBTalent:CreateLevel(29)) -- combu
     damageUtility:AddCooldown(-1, 0, 116011, nil, true, talent_rune)
+    damageUtility:AddTrinket1Cooldown(0.5, -0.9)
+    damageUtility:AddTrinket2Cooldown(-0.5, -0.9)
 end
 
 ERACombatMageBurnIcon = {}
@@ -253,11 +259,11 @@ function ERACombatFrames_MageFrostSetup(cFrame, enemies, talent_rune)
         local lanceCleaveWeakDamage
         local frozenCrit = (1 + math.min(1, 0.5 + 1.5 * crit))
         if (talent_shatter:PlayerHasTalent()) then
-            lanceMainDamage = 1.323 * frozenCrit
+            lanceMainDamage = 1.1907 * frozenCrit
             if (enemies:GetEnemiesCount() > 1) then
-                cleaveModifier = 1.89
-                lanceCleaveFrozenDamage = 1.0584 * frozenCrit
-                lanceCleaveWeakDamage = 0.336 * (1 + crit)
+                cleaveModifier = 1.7325
+                lanceCleaveFrozenDamage = 0.773955 * frozenCrit
+                lanceCleaveWeakDamage = 0.2457 * (1 + crit)
             else
                 cleaveModifier = 1.05
                 lanceCleaveFrozenDamage = 0
@@ -265,7 +271,7 @@ function ERACombatFrames_MageFrostSetup(cFrame, enemies, talent_rune)
             end
         else
             cleaveModifier = 1
-            lanceMainDamage = 1.26 * frozenCrit
+            lanceMainDamage = 1.134 * frozenCrit
             lanceCleaveFrozenDamage = 0
             lanceCleaveWeakDamage = 0
         end
@@ -330,11 +336,14 @@ function ERACombatFrames_MageFrostSetup(cFrame, enemies, talent_rune)
     utility:AddCooldown(0, 2, 108839, nil, true, ERALIBTalent:Create(2, 3)) -- ice flows
     utility:AddCooldown(1, -2, 235219, nil, true, ERALIBTalent:CreateLevel(42)) -- reset
 
-    local damageUtility = ERACombatUtilityFrame:Create(cFrame, 32, -188, 3)
-    damageUtility:AddCooldown(0, 0, 33395, nil, true, talent_pet).showOnlyIfPetSpellKnown = true -- pet frost
+    local damageUtility = ERACombatUtilityFrame:Create(cFrame, -32, -177, 3)
+    damageUtility:AddCovenantClassAbility(0, 0, 307443, 314793, 314791, 324220)
     damageUtility:AddCooldown(-1, 0, 12472, nil, true, ERALIBTalent:CreateLevel(29)) -- icy veins
     damageUtility:AddCooldown(-2, 0, 116011, nil, true, talent_rune)
-    damageUtility:AddCooldown(-0.5, -0.9, 31687, nil, true, talent_pet).alphaWhenOffCooldown = 0.2 -- summon pet
+    damageUtility:AddCooldown(-1.5, -0.9, 31687, nil, true, talent_pet).alphaWhenOffCooldown = 0.2 -- summon pet
+    damageUtility:AddCooldown(-0.5, -0.9, 33395, nil, true, talent_pet).showOnlyIfPetSpellKnown = true -- pet frost
+    damageUtility:AddTrinket1Cooldown(0.5, 0.9)
+    damageUtility:AddTrinket2Cooldown(-2.5, -0.9)
 end
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -352,9 +361,10 @@ function ERACombatFrames_MageUtility(cFrame, spec, alterTimeLevel)
     utility:AddCooldown(1, -1, 45438, nil, true, ERALIBTalent:CreateLevel(22)).alphaWhenOffCooldown = 0.4 -- ib
     utility:AddCooldown(2, -1, 113724, nil, true, ERALIBTalent:Create(5, 3)).alphaWhenOffCooldown = 0.4 -- rof
     utility:AddWarlockHealthStone(-1, -1)
-    utility:AddWarlockPortal(-1, -2)
+    utility:AddWarlockPortal(2, 1)
     utility:AddRacial(0, -2).alphaWhenOffCooldown = 0.4
     utility:AddMissingBuffAnyCaster(135932, 2, 1, nil, 1459) -- intel
+    utility:AddCovenantGenericAbility(-1, -2)
     return utility
 end
 

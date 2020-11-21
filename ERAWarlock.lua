@@ -31,7 +31,7 @@ end
 function ERACombatFrames_WarlockUtility(cFrame, x, y, spec)
     local utility = ERACombatUtilityFrame:Create(cFrame, x, y, spec)
     utility:AddCooldown(0, 0, 104773, nil, true) -- resolve
-    utility:AddCooldown(1, 1, 48018, nil, true, ERALIBTalent:CreateLevel(41)).alphaWhenOffCooldown = 0 -- tp placement
+    utility:AddCooldown(1.5, 0.9, 48018, nil, true, ERALIBTalent:CreateLevel(41)).alphaWhenOffCooldown = 0 -- tp placement
     utility:AddCooldown(1, 0, 48020, nil, true, ERALIBTalent:CreateLevel(41)) -- tp
     utility:AddWarlockHealthStone(2, 0, true)
     utility:AddWarlockPortal(3, 0)
@@ -46,6 +46,9 @@ function ERACombatFrames_WarlockUtility(cFrame, x, y, spec)
     utility:AddCooldown(1, -1, 17767, nil, true).showOnlyIfPetSpellKnown = true -- shadow bulwark
 
     utility:AddCooldown(2, -1, 333889, nil, true, ERALIBTalent:CreateLevel(22)) -- instant pet
+
+    utility:AddCovenantClassAbility(-0.5, 0.9, 312321, 321792, 325640, 325289)
+    utility:AddCovenantGenericAbility(0.5, 0.9)
 
     return utility
 end
@@ -420,6 +423,8 @@ function ERACombatFrames_WarlockAfflictionSetup(cFrame)
     local utility = ERACombatFrames_WarlockUtility(cFrame, 0, -188, 1)
     utility:AddCooldown(-1, 0, 205180, nil, true, ERALIBTalent:CreateLevel(42)) -- gazer
     utility:AddCooldown(-2, 0, 113860, nil, true, ERALIBTalent:Create(7, 3)) -- dark soul
+    utility:AddTrinket1Cooldown(-3, 0)
+    utility:AddTrinket2Cooldown(-4, 0)
 
     ERACombatFrames_WarlockRapture:create(cFrame, dotracker, talent_eternal_corruption)
 
@@ -537,11 +542,13 @@ function ERACombatFrames_WarlockDemonologySetup(cFrame)
         end
     )
 
-    local utility = ERACombatFrames_WarlockUtility(cFrame, 0, -188, 2)
+    local utility = ERACombatFrames_WarlockUtility(cFrame, 16, -202, 2)
     utility:AddCooldown(-1, 0, 265187, nil, true, ERALIBTalent:CreateLevel(42)) -- tyrant
     utility:AddCooldown(-2, 0, 111898, nil, true, ERALIBTalent:Create(6, 3)) -- big guard
     utility:AddCooldown(-3, 0, 267217, nil, true, ERALIBTalent:Create(7, 3)) -- demon portal
     utility:AddCooldown(1, -1, 89766, nil, true).showOnlyIfPetSpellKnown = true -- stun guard
+    utility:AddTrinket1Cooldown(-1.5, 0.9)
+    utility:AddTrinket2Cooldown(-4, 0)
 
     ERACombatWarlockCurses:create(cFrame, -300, -128, timers, 2)
 end
@@ -645,9 +652,11 @@ function ERACombatFrames_WarlockDestructionSetup(cFrame)
         end
     )
 
-    local utility = ERACombatFrames_WarlockUtility(cFrame, 0, -188, 3)
+    local utility = ERACombatFrames_WarlockUtility(cFrame, 32, -188, 3)
     utility:AddCooldown(-1, 0, 1122, nil, true, ERALIBTalent:CreateLevel(42)) -- infernal
     utility:AddCooldown(-2, 0, 113858, nil, true, ERALIBTalent:Create(7, 3)) -- dark soul
+    utility:AddTrinket1Cooldown(-3, 0)
+    utility:AddTrinket2Cooldown(-4, 0)
 
     ERACombatWarlockCurses:create(cFrame, -300, -128, timers, 3)
 end

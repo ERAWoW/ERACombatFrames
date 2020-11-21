@@ -1,4 +1,5 @@
 -- TODO
+-- taunt
 
 -- constantes
 ERADK_RuneSize = 32
@@ -58,13 +59,13 @@ function ERACombatFrames_DeathKnightBloodSetup(cFrame, combatHealth, runes)
     timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 43265, runes, ERALIBTalent:CreateLevel(3)), nil, -2, 0.6, true, true) -- dnd
     timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 194679, runes, ERALIBTalent:CreateLevel(19)), nil, -3, 0.6, true, true) -- rune tap
     timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 206931, runes, ERALIBTalent:Create(1, 2)), nil, -4, 0.6, true, true)
-    timers:AddCooldownIcon(ERACombatCooldownIgnoringRunes:create(timers, 219809, runes, ERALIBTalent:Create(1, 3)), nil, 1, -0.5, true, true)
+    timers:AddCooldownIcon(timers:AddTrackedCooldown(219809, ERALIBTalent:Create(1, 3)), nil, -4, 0.6, true, true)
     timers:AddKick(47528, 2, 0, ERALIBTalent:CreateLevel(7))
 
-    local defUtility = ERACombatFrames_DeathKnightDefensiveUtility(cFrame, 88, -144, 1)
-    local mobUtility = ERACombatFrames_DeathKnightMobilityUtility(cFrame, 177, 0, 1, ERALIBTalent:Create(5, 3))
-    mobUtility:AddCooldown(0, -1, 221562, nil, true, ERALIBTalent:CreateLevel(21)) -- darth vader
-    mobUtility:AddCooldown(1, 1, 108199, nil, true, ERALIBTalent:CreateLevel(32)) -- mass grip
+    local utility = ERACombatFrames_DeathKnightUtility(cFrame, 32, -144, 1, ERALIBTalent:Create(5, 3))
+    utility:AddCooldown(2.5, 0.9, 221562, nil, true, ERALIBTalent:CreateLevel(21)) -- darth vader
+    utility:AddCooldown(3.5, 2.9, 108199, nil, true, ERALIBTalent:CreateLevel(32)) -- mass grip
+    utility:AddCovenantClassAbility(0.5, 0.9, 312202, 311648, 324128, 315443)
 
     local bloodUtility = ERACombatUtilityFrame:Create(cFrame, -234, -141, 1)
     bloodUtility:AddCooldown(2, 0, 274156, nil, true, ERALIBTalent:Create(2, 3))
@@ -75,6 +76,8 @@ function ERACombatFrames_DeathKnightBloodSetup(cFrame, combatHealth, runes)
     bloodUtility:AddCooldown(-0.5, -0.8, 46585, nil, true, ERALIBTalent:CreateLevel(12)) -- summon ghoul
     bloodUtility:AddCooldown(-0.6, 1, 221699, nil, true, ERALIBTalent:Create(3, 3)) -- blood tap
     bloodUtility:AddCooldown(-0.96, 0.1, 194844, nil, true, ERALIBTalent:Create(7, 3)) -- bone storm
+    bloodUtility:AddTrinket1Cooldown(1, -1.6)
+    bloodUtility:AddTrinket2Cooldown(0, -1.6)
 
     local deathStrikeConsumer45 = combatPower:AddConsumer(45, 237517)
     --[[
@@ -88,9 +91,15 @@ function ERACombatFrames_DeathKnightBloodSetup(cFrame, combatHealth, runes)
     end
     ]]
     local damageWindow = ERACombatTankWindow:Create(timers, 200, 1, 5, 0, 4, 300, ERACombatOptions_IsSpecModuleActive(1, ERACombatOptions_TankWindow))
+    local talent_improved_ds = ERALIBTalent:Create(6, 1)
     function damageWindow:Updated(t)
         local min = combatHealth.maxHealth * 0.07
-        local h = 0.25 * self.currentDamage
+        local h
+        if (talent_improved_ds:PlayerHasTalent()) then
+            h = 0.3 * self.currentDamage
+        else
+            h = 0.25 * self.currentDamage
+        end
         if (min <= h) then
             combatHealth:SetHealing(h)
         else
@@ -137,11 +146,10 @@ function ERACombatFrames_DeathKnightFrostSetup(cFrame, runes)
     timers:AddAuraBar(timers:AddTrackedBuff(152279, talent_icy_veins), nil, 1.0, 1.0, 1.0)
     timers:AddAuraBar(timers:AddTrackedBuff(152279, talent_sindragosa), nil, 0.0, 0.0, 1.0)
 
-    local defUtility = ERACombatFrames_DeathKnightDefensiveUtility(cFrame, 64, -128, 2)
-    defUtility:AddCooldown(-1, -1.8, 48743, nil, true, ERALIBTalent:Create(5, 3)) -- death pact
-    local mobUtility = ERACombatFrames_DeathKnightMobilityUtility(cFrame, 177, 0, 2, ERALIBTalent:Create(5, 2))
-    mobUtility:AddCooldown(0, -1, 108194, nil, true, ERALIBTalent:Create(3, 2)) -- darth vader
-    mobUtility:AddCooldown(0, -1, 207167, nil, true, ERALIBTalent:Create(3, 3)) -- blind freeze
+    local utility = ERACombatFrames_DeathKnightUtility(cFrame, 32, -128, 2, ERALIBTalent:Create(5, 2))
+    utility:AddCooldown(0, -1.8, 48743, nil, true, ERALIBTalent:Create(5, 3)) -- death pact
+    utility:AddCooldown(2.5, 0.9, 108194, nil, true, ERALIBTalent:Create(3, 2)) -- darth vader
+    utility:AddCooldown(2.5, 0.9, 207167, nil, true, ERALIBTalent:Create(3, 3)) -- blind freeze
 
     local frostUtility = ERACombatUtilityFrame:Create(cFrame, -200, -133, 2)
     frostUtility:AddCooldown(-1.1, 1.1, 57330, nil, true, ERALIBTalent:Create(2, 3)) -- how
@@ -149,8 +157,11 @@ function ERACombatFrames_DeathKnightFrostSetup(cFrame, runes)
     frostUtility:AddCooldown(-1, 0, 327574, nil, true, ERALIBTalent:CreateLevel(54)) -- explode ghoul
     frostUtility:AddCooldown(0, 0, 47568, nil, true, ERALIBTalent:CreateLevel(48)) -- rune weapon
     frostUtility:AddCooldown(1, 0, 51271, nil, true, ERALIBTalent:CreateLevel(29)) -- pof
+    frostUtility:AddCovenantClassAbility(2, 0, 312202, 311648, 324128, 315443)
     frostUtility:AddCooldown(-0.5, -0.9, 152279, nil, true, talent_sindragosa)
     frostUtility:AddCooldown(0.5, -0.9, 279302, nil, true, ERALIBTalent:CreateLevel(44)) -- frostwyrm
+    frostUtility:AddTrinket1Cooldown(1.5, -0.9)
+    frostUtility:AddTrinket2Cooldown(1, -1.8)
 end
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -243,17 +254,19 @@ function ERACombatFrames_DeathKnightUnholySetup(cFrame, runes)
         talent_better_disease
     )
 
-    local defUtility = ERACombatFrames_DeathKnightDefensiveUtility(cFrame, 64, -128, 3)
-    defUtility:AddCooldown(-1, -1.8, 48743, nil, true, ERALIBTalent:Create(5, 3)) -- death pact
-    local mobUtility = ERACombatFrames_DeathKnightMobilityUtility(cFrame, 177, 0, 3, ERALIBTalent:Create(5, 2))
-    mobUtility:AddCooldown(0, -1, 108194, nil, true, ERALIBTalent:Create(3, 3)) -- darth vader
-    mobUtility:AddCooldown(1, -1, 47481, nil, true) -- gnaw
+    local utility = ERACombatFrames_DeathKnightUtility(cFrame, 32, -128, 3, ERALIBTalent:Create(5, 2))
+    utility:AddCooldown(0, -1.8, 48743, nil, true, ERALIBTalent:Create(5, 3)) -- death pact
+    utility:AddCooldown(2.5, 0.9, 108194, nil, true, ERALIBTalent:Create(3, 3)) -- darth vader
+    utility:AddCooldown(3.5, 0.9, 47481, nil, true) -- gnaw
 
     local unholyUtility = ERACombatUtilityFrame:Create(cFrame, -222, -161, 3)
     unholyUtility:AddCooldown(-1, 0, 49206, nil, true, ERALIBTalent:Create(7, 2)) -- gargoyle
     unholyUtility:AddCooldown(-1, 0, 207289, nil, true, ERALIBTalent:Create(7, 3)) -- frenzy
     unholyUtility:AddCooldown(0, 0, 275699, nil, true, ERALIBTalent:CreateLevel(19)) -- apo
     unholyUtility:AddCooldown(1, 0, 63560, nil, true, ERALIBTalent:CreateLevel(32)) -- transformation
+    unholyUtility:AddCovenantClassAbility(2, 0, 312202, 311648, 324128, 315443)
+    unholyUtility:AddTrinket2Cooldown(-1.5, -0.8)
+    unholyUtility:AddTrinket1Cooldown(-0.5, -0.8)
     unholyUtility:AddCooldown(0.5, -0.8, 46584, nil, true, ERALIBTalent:CreateLevel(12)).alphaWhenOffCooldown = 0.2 -- call pet
     unholyUtility:AddCooldown(1.5, -0.8, 327574, nil, true, ERALIBTalent:CreateLevel(54)) -- explode ghoul
 
@@ -278,23 +291,19 @@ end
 ---- COMMON ------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
 
-function ERACombatFrames_DeathKnightDefensiveUtility(cFrame, x, y, spec)
+function ERACombatFrames_DeathKnightUtility(cFrame, x, y, spec, walkTalent)
     local utility = ERACombatUtilityFrame:Create(cFrame, x, y, spec)
-    utility:AddCooldown(-1, 0, 48792, nil, true, ERALIBTalent:CreateLevel(38)) -- fortitude
-    utility:AddCooldown(0, 0, 48707, nil, true, ERALIBTalent:CreateLevel(9)) -- ams
-    utility:AddCooldown(1, 0, 51052, nil, true, ERALIBTalent:CreateLevel(47)) -- amz
-    utility:AddCooldown(-1.5, -0.9, 49039, nil, true, ERALIBTalent:CreateLevel(33)) -- licheborne
-    utility:AddRacial(-0.5, -0.9)
-    utility:AddWarlockHealthStone(0.5, -0.9)
-    utility:AddWarlockPortal(1.5, -0.9)
-    return utility
-end
-
-function ERACombatFrames_DeathKnightMobilityUtility(cFrame, x, y, spec, walkTalent)
-    local utility = ERACombatUtilityFrame:Create(cFrame, x, y, spec)
-    utility:AddCooldown(0, 1, 49576, nil, true) -- grip
-    utility:AddCooldown(0, 0, 48265, nil, true, ERALIBTalent:CreateLevel(42)) -- advance
-    utility:AddCooldown(1, 0, 212552, nil, true, walkTalent)
+    utility:AddCooldown(0, 0, 48792, nil, true, ERALIBTalent:CreateLevel(38)) -- fortitude
+    utility:AddCooldown(1, 0, 48707, nil, true, ERALIBTalent:CreateLevel(9)) -- ams
+    utility:AddCooldown(2, 0, 51052, nil, true, ERALIBTalent:CreateLevel(47)) -- amz
+    utility:AddCooldown(-0.5, -0.9, 49039, nil, true, ERALIBTalent:CreateLevel(33)) -- licheborne
+    utility:AddRacial(0.5, -0.9)
+    utility:AddWarlockHealthStone(1.5, -0.9)
+    utility:AddWarlockPortal(2.5, -0.9)
+    utility:AddCovenantGenericAbility(1.5, 0.9)
+    utility:AddCooldown(2.5, 2.9, 49576, nil, true) -- grip
+    utility:AddCooldown(2.5, 1.9, 48265, nil, true, ERALIBTalent:CreateLevel(42)) -- advance
+    utility:AddCooldown(3.5, 1.9, 212552, nil, true, walkTalent)
     return utility
 end
 

@@ -79,18 +79,21 @@ function ERACombatFrames_PriestDisciplineSetup(cFrame)
     grid:AddTrackedBuff(17, nil) -- boubou
     grid:AddTrackedDebuff(6788, nil) -- pas boubou
 
-    local disciUtility = ERACombatUtilityFrame:Create(cFrame, -202, -144, 1)
+    local disciUtility = ERACombatUtilityFrame:Create(cFrame, -222, -144, 1)
     disciUtility:AddCooldown(1, 0, 200174, nil, true, talent_mindblender)
     disciUtility:AddCooldown(1, 0, 132603, nil, true, talent_not_mindblender)
     disciUtility:AddCooldown(0, 0, 33206, nil, true, ERALIBTalent:CreateLevel(38)) -- pain sup
     disciUtility:AddCooldown(-1, 0, 62618, nil, true, ERALIBTalent:CreateLevel(44)) -- barrier
     disciUtility:AddCooldown(-2, 0, 10060, nil, true, ERALIBTalent:CreateLevel(58)) -- infu
+    disciUtility:AddCovenantClassAbility(1.5, -0.9, 325013, 323673, 327661, 324724)
     disciUtility:AddCooldown(0.5, -0.9, 47536, nil, true, ERALIBTalent:CreateNotTalent(7, 2)) -- rapture
     disciUtility:AddCooldown(0.5, -0.9, 109964, nil, true, ERALIBTalent:Create(7, 2)) -- spirit shell
     local evangelismDisplay = disciUtility:AddCooldown(-0.5, -0.9, 246287, nil, true, ERALIBTalent:Create(7, 3))
     function evangelismDisplay:IconUpdatedAndShown(t)
         self.icon:SetSecondaryText(#(expiation.instances))
     end
+    disciUtility:AddTrinket1Cooldown(-1.5, 0.9)
+    disciUtility:AddTrinket2Cooldown(-2.5, 0.9)
 end
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -192,12 +195,15 @@ function ERACombatFrames_PriestShadowSetup(cFrame)
     utility:AddCooldown(-0.5, 0.9, 47585, nil, true, ERALIBTalent:CreateLevel(16)).alphaWhenOffCooldown = 0.4 -- dispersion
     utility:AddCooldown(-2, 0, 15286, nil, true, ERALIBTalent:CreateLevel(25)).alphaWhenOffCooldown = 0.3 -- embrace
 
-    local shadowUtility = ERACombatUtilityFrame:Create(cFrame, -144, -122, 3)
+    local shadowUtility = ERACombatUtilityFrame:Create(cFrame, -188, -122, 3)
+    shadowUtility:AddCovenantClassAbility(1, 0, 325013, 323673, 327661, 324724)
     shadowUtility:AddCooldown(0, 0, 200174, nil, true, talent_mindblender)
     shadowUtility:AddCooldown(0, 0, 132603, nil, true, talent_not_mindblender)
     shadowUtility:AddCooldown(-1, 0, 193223, nil, true, talent_madness)
     shadowUtility:AddBuffIcon(shadowUtility:AddTrackedBuff(193223, talent_madness), 136221, -1, 0, false)
-    shadowUtility:AddCooldown(-0.5, -0.9, 10060, nil, true, ERALIBTalent:CreateLevel(58))
+    shadowUtility:AddCooldown(0.5, -0.9, 10060, nil, true, ERALIBTalent:CreateLevel(58)) -- infu
+    shadowUtility:AddTrinket1Cooldown(-0.5, -0.9)
+    shadowUtility:AddTrinket2Cooldown(-1.5, -0.9)
     shadowUtility:AddMissingBuff(shadowUtility:AddTrackedBuff(232698), iconID, -2, 0, true, true, ERALIBTalent:CreateLevel(12), shadowUtility:AddTrackedBuff(194249))
 
     local dotracker =
@@ -274,6 +280,7 @@ function ERACombatFrames_PriestUtility(cFrame, x, y, spec, psyTalent)
     utility:AddWarlockHealthStone(3, 0)
     utility:AddWarlockPortal(4, 0)
     utility:AddMissingBuffAnyCaster(135987, 4, 0, nil, 21562)
+    utility:AddCovenantGenericAbility(-2.5, -0.9)
     utility:AddCooldown(-1.5, -0.9, 19236, nil, true).alphaWhenOffCooldown = 0.4 -- desperate prayer
     utility:AddRacial(-0.5, -0.9)
     utility:AddCooldown(0.5, -0.9, 73325, nil, true, ERALIBTalent:CreateLevel(49)).alphaWhenOffCooldown = 0.4 -- leap

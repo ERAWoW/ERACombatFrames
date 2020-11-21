@@ -5,7 +5,7 @@ function ERACombatFrames_DemonHunterSetup(cFrame)
     local havocActive = ERACombatOptions_IsSpecActive(1)
     local vengeanceActive = ERACombatOptions_IsSpecActive(2)
 
-    ERAOutOfCombatStatusBars:Create(cFrame, 0, -77, 144, 26, 17, false, 0.8, 0.1, 0.8, false, havocActive, vengeanceActive)
+    ERAOutOfCombatStatusBars:Create(cFrame, 0, -77, 123, 26, 17, false, 0.8, 0.1, 0.8, false, havocActive, vengeanceActive)
 
     local enemies = ERACombatEnemies:Create(cFrame, havocActive, vengeanceActive)
 
@@ -56,6 +56,8 @@ function ERACombatFrames_DemonHunterHavocSetup(cFrame, enemies)
     local consumer_eyesb_00000_chaos = fury:AddConsumer(70, 1305152)
     local consumer_eyesb_expen_chaos = fury:AddConsumer(105, 1305152, talent_expensiveDance)
     local consumer_eyesb_cheap_chaos = fury:AddConsumer(85, 1305152, talent_cheapDance)
+    local consumer_tempest = fury:AddConsumer(30, 1455916, talent_bladetempest)
+    local consumer_2chaos = fury:AddConsumer(80, 1305152)
     local consumers = {
         consumer_00000_00000_chaos,
         consumer_00000_expen_00000,
@@ -67,7 +69,9 @@ function ERACombatFrames_DemonHunterHavocSetup(cFrame, enemies)
         consumer_00000_cheap_chaos,
         consumer_eyesb_00000_chaos,
         consumer_eyesb_expen_chaos,
-        consumer_eyesb_cheap_chaos
+        consumer_eyesb_cheap_chaos,
+        consumer_tempest,
+        consumer_2chaos
     }
     for i, c in ipairs(consumers) do
         function c:ComputeVisibility()
@@ -82,7 +86,7 @@ function ERACombatFrames_DemonHunterHavocSetup(cFrame, enemies)
     local eyesTimer = timers:AddTrackedCooldown(198013, ERALIBTalent:CreateLevel(11))
     local bladestormTimer = timers:AddTrackedCooldown(342817, talent_bladetempest)
 
-    timers:AddCooldownIcon(timers:AddTrackedCooldown(295373), nil, 0, 2, true, true) -- azerite 1
+    --timers:AddCooldownIcon(timers:AddTrackedCooldown(295373), nil, 0, 2, true, true) -- azerite 1
 
     timers:AddCooldownIcon(timers:AddTrackedCooldown(232893, ERALIBTalent:Create(1, 3)), nil, -0.7, 0.5, true, true) -- fel blade
 
@@ -121,7 +125,7 @@ function ERACombatFrames_DemonHunterHavocSetup(cFrame, enemies)
     timers:AddAuraBar(timers:AddTrackedDebuff(320338, talent_essence), nil, 1.0, 0.5, 0.6) -- essence shadowlands
     timers:AddAuraBar(timers:AddTrackedBuff(208628, talent_momentum), nil, 0.7, 0.6, 0.0) -- momentum
 
-    local utility = ERACombatUtilityFrame:Create(cFrame, -128, -188, 1)
+    local utility = ERACombatUtilityFrame:Create(cFrame, -144, -188, 1)
 
     utility:AddTrinket2Cooldown(-3, 0)
     utility:AddTrinket1Cooldown(-2, 0)
@@ -132,11 +136,12 @@ function ERACombatFrames_DemonHunterHavocSetup(cFrame, enemies)
         return metaUtilityBuff.aura.totDuration > 8.1
     end
 
+    utility:AddCovenantClassAbility(-1.5, 0.88, 306830, 317009, 323639, 329554)
+
     utility:AddCooldown(0, 0, 179057, nil, true).alphaWhenOffCooldown = 0.6 -- nova
     utility:AddCooldown(1, 0, 211881, nil, true, ERALIBTalent:Create(6, 3)) -- fel stun
     utility:AddCooldown(2, 0, 258925, nil, true, talent_barrage) -- fel barrage
-    utility:AddCooldown(3, 0, 195072, nil, false) -- fel rush out of combat
-    utility:AddCooldown(4, 0, 198793, nil, false) -- fel retreat out of combat
+    utility:AddCovenantGenericAbility(3, 0)
 
     utility:AddWarlockPortal(2, -1)
     utility:AddRacial(1, -1).alphaWhenOffCooldown = 0.4
@@ -151,6 +156,8 @@ function ERACombatFrames_DemonHunterHavocSetup(cFrame, enemies)
     defensiveCooldowns:AddCooldown(0, 0, 196718, nil, true, ERALIBTalent:CreateLevel(39)).alphaWhenOffCooldown = 0.7 -- darnkess
     defensiveCooldowns:AddCooldown(0, -1, 198589, nil, true, ERALIBTalent:CreateLevel(21)).alphaWhenOffCooldown = 0.7 -- veil
     defensiveCooldowns:AddWarlockHealthStone(0, -2)
+    defensiveCooldowns:AddCooldown(-0.8, 0.5, 195072, nil, false) -- fel rush out of combat
+    defensiveCooldowns:AddCooldown(-0.8, -0.5, 198793, nil, false) -- fel retreat out of combat
 
     function fury:PreUpdateCombat(t)
         local cheap = talent_cheapDance:PlayerHasTalent()
@@ -221,6 +228,10 @@ function ERACombatFrames_DemonHunterHavocSetup(cFrame, enemies)
                 consumer_eyesb_00000_chaos.computedIconVisible = fury.currentPower >= 70
             else
                 consumer_00000_00000_chaos.computedVisible = true
+                consumer_2chaos.computedVisible = true
+                consumer_2chaos.computedIconVisible = fury.currentPower >= 80
+                consumer_tempest.computedVisible = bladestormTimer.remDuration <= 3
+                consumer_tempest.computedIconVisible = consumer_tempest.computedVisible
             end
         end
     end
@@ -311,6 +322,9 @@ function ERACombatFrames_DemonHunterVengeanceSetup(cFrame, enemies)
     utility:AddCooldown(0.5, 0.88, 263648, nil, true, ERALIBTalent:Create(6, 3)).alphaWhenOffCooldown = 1 -- fel barrier
     utility:AddCooldown(1.5, 0.88, 212084, nil, true, talent_puke).alphaWhenOffCooldown = 1 -- fel puke
     utility:AddCooldown(2.5, 0.88, 320341, nil, true, ERALIBTalent:Create(7, 3)).alphaWhenOffCooldown = 1 -- fel extraction
+    utility:AddCovenantClassAbility(3.5, 0.88, 306830, 317009, 323639, 329554)
+    utility:AddCovenantGenericAbility(4, 1.72)
+    utility:AddCooldown(3, 1.72, 189110, nil, false)-- fel jump out of combat
 
     utility:AddCooldown(1, 0, 187827, nil, true)
     local metaUtilityBuff = utility:AddBuffIcon(utility:AddTrackedBuff(187827), 237558, 0, 0, true)

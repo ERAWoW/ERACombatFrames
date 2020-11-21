@@ -72,6 +72,9 @@ function ERACombatFrames_HunterBeastMasterySetup(cFrame)
     burstUtility:AddCooldown(0, 0, 19574, nil, true, ERALIBTalent:CreateLevel(20)) -- wrath
     burstUtility:AddCooldown(-1, 0, 193530, nil, true, ERALIBTalent:CreateLevel(38)) -- nature
     burstUtility:AddCooldown(-2, 0, 201430, nil, true, ERALIBTalent:Create(6, 3)) -- stampede
+    burstUtility:AddCovenantClassAbility(-0.5, -0.9, 308491, 324149, 328231, 325028)
+    burstUtility:AddTrinket1Cooldown(-1.5, -0.9)
+    burstUtility:AddTrinket2Cooldown(-2.5, -0.9)
 
     local pullUtility = ERACombatUtilityFrame:Create(cFrame, 0, 128, 1)
     pullUtility:AddCooldown(0, 0, 217200, nil, false, ERALIBTalent:CreateLevel(12))
@@ -194,6 +197,9 @@ function ERACombatFrames_HunterMarksmanshipSetup(cFrame)
 
     local burstUtility = ERACombatUtilityFrame:Create(cFrame, -234, -100, 2)
     burstUtility:AddCooldown(0, 0, 288613, nil, true, ERALIBTalent:CreateLevel(34)) -- precision
+    burstUtility:AddCovenantClassAbility(0.5, -0.9, 308491, 324149, 328231, 325028)
+    burstUtility:AddTrinket1Cooldown(-1, 0)
+    burstUtility:AddTrinket2Cooldown(-0.5, -0.9)
 end
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -293,6 +299,9 @@ function ERACombatFrames_HunterSurvivalSetup(cFrame)
     burstUtility:AddCooldown(0, 0, 266779, nil, true, ERALIBTalent:CreateLevel(34)) -- assault
     burstUtility:AddCooldown(-1, 0, 186289, nil, true, ERALIBTalent:CreateLevel(24)) -- eagle aspect
     timers:AddAuraBar(timers:AddTrackedBuff(186289), nil, 1.0, 0.8, 0.7)
+    burstUtility:AddCovenantClassAbility(-0.5, -0.9, 308491, 324149, 328231, 325028)
+    burstUtility:AddTrinket1Cooldown(-2, 0)
+    burstUtility:AddTrinket2Cooldown(-1.5, -0.9)
 
     local pullUtility = ERACombatUtilityFrame:Create(cFrame, 0, 128, 3)
     pullUtility:AddCooldown(0, 0, 190925, nil, false, ERALIBTalent:CreateLevel(14))
@@ -360,6 +369,8 @@ function ERACombatFrames_Hunter_common_tricks(cFrame, spec, tetherTalent)
             self.icon:Hide()
         end
     end
+
+    utility:AddCovenantGenericAbility(-4, -1)
 
     return utility, healPet
 end

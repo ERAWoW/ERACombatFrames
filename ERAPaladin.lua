@@ -40,7 +40,7 @@ function ERACombatFrames_PaladinHolySetup(cFrame)
     local talent_groundordelayed_and_prism = ERALIBTalent:CreateAnd(talent_prism, talent_groundhammer_or_delayedheal)
 
     ERACombatHealth:Create(cFrame, -210, -141, 155, 22, 1)
-    ERACombatPower:Create(cFrame, -210, -166, 155, 22, 0, false, 0.2, 0.2, 1.0, 1)
+    ERACombatPower:Create(cFrame, -210, -161, 155, 22, 0, false, 0.2, 0.2, 1.0, 1)
     ERACombatPointsUnitPower:Create(cFrame, -200, -111, 9, 5, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5, nil, 1)
 
     local grid = ERACombatGrid:Create(cFrame, -133, -8, "BOTTOMRIGHT", 1, 4987, "Magic", "Disease", "Poison")
@@ -67,7 +67,7 @@ function ERACombatFrames_PaladinHolySetup(cFrame)
     timers:AddCooldownIcon(timers:AddTrackedCooldown(35395), 135891, 0, 1, true, true) -- crusader strike
     ERACombatFrames_Paladin_seraph(timers, 0, 0)
 
-    local utility, tricksUtility = ERACombatFrames_Paladin_common_stuff(cFrame, timers, 100, -188, 128, 0, 1.5, 2.5, 498, 4987, false, 216331, 216331, 6, 2, ERALIBTalent:CreateLevel(41), 1)
+    local utility, burstUtility = ERACombatFrames_Paladin_common_stuff(cFrame, timers, 88, -188, -144, -222, 1.5, 2.5, 498, 4987, false, 216331, 216331, 6, 2, ERALIBTalent:CreateLevel(41), 1)
     utility:AddCooldown(-0.5, 0, 31821, nil, true, ERALIBTalent:CreateLevel(39)) -- aura mastery
     utility:AddCooldown(-1.5, 0, 214202, nil, true, ERALIBTalent:Create(4, 3)) -- rule of law
 
@@ -115,15 +115,14 @@ function ERACombatFrames_PaladinProtectionSetup(cFrame)
     pullUtility:AddCooldown(-0.5, 0, 31935, nil, false) -- avenger
     pullUtility:AddCooldown(0.5, 0, 20271, nil, false) -- judgement
 
-    local utility, tricksUtility, forebearance =
-        ERACombatFrames_Paladin_common_stuff(cFrame, timers, 44, -166, 144, 0, 0, 3, 31850, 213644, false, -1, -1, 0, 0, ERALIBTalent:CreateNotTalent(4, 3, 41), 2)
+    local utility, burstUtility, forebearance = ERACombatFrames_Paladin_common_stuff(cFrame, timers, 44, -166, -166, -166, 0, 3, 31850, 213644, false, -1, -1, 0, 0, ERALIBTalent:CreateNotTalent(4, 3, 41), 2)
     utility:AddCooldown(-0.5, 0, 86659, nil, true) -- king
-    utility:AddCooldown(-1.5, 0, 327193, nil, true, ERALIBTalent:Create(2, 3)) -- reset shield
+    burstUtility:AddCooldown(0.5, -0.9, 327193, nil, true, ERALIBTalent:Create(2, 3)) -- reset shield
     ERACombatFrames_PaladinUtilityAffectedByForebearance(utility:AddCooldown(1, -0.9, 204018, nil, true, ERALIBTalent:Create(4, 3)), forebearance) -- alternative protection
 
     local sow = ERACombatFrames_PaladinProtectionShieldOrWOG:create(cFrame, -212, -101, health, shieldArmour, holyPower)
 
-    local mana = ERACombatPower:Create(cFrame, -177, -155, 144, 22, 0, false, 0.2, 0.2, 1.0, 2)
+    local mana = ERACombatPower:Create(cFrame, -353, -60, 144, 22, 0, false, 0.2, 0.2, 1.0, 2)
     function mana:ShouldBeVisible(t)
         local ratio = self.currentPower / self.maxPower
         return ratio < 1 and (ratio < 0.5 or t < sow.lastFlashHeal + 5)
@@ -328,10 +327,10 @@ function ERACombatFrames_PaladinProtectionShieldOrWOG:UpdateCombat(t)
     local maxH = self.health.maxHealth
     local missingH = maxH - self.health.currentHealth
     local crit = GetCritChance() / 100
-    local wog = 2.9 * GetSpellBonusHealing() * (1 + (GetCombatRatingBonus(29) + GetVersatilityBonus(29)) / 100)
-    local currentWOG = wog * (1 + 3 * missingH / maxH)
+    local wog = 3.15 * GetSpellBonusHealing() * (1 + (GetCombatRatingBonus(29) + GetVersatilityBonus(29)) / 100)
+    local currentWOG = wog * (1 + 2.5 * missingH / maxH)
     local damageSavedByWOG = math.min(missingH, currentWOG) * (1 - crit) + crit * (math.min(missingH, 2 * currentWOG))
-    local damageSavedByShield = damagePrevision * (armorPctWithShield - armorPctWithoutShield) + (1 + crit) * wog * 2.5 / 5 -- on considère un futur wog lancé à 50% de pv
+    local damageSavedByShield = damagePrevision * (armorPctWithShield - armorPctWithoutShield) + (1 + crit) * wog * 2.25 / 5 -- on considère un futur wog lancé à 50% de pv
 
     local tickPosition = damageSavedByWOG / (damageSavedByShield + damageSavedByWOG)
     if (damageSavedByWOG > damageSavedByShield) then
@@ -378,7 +377,7 @@ function ERACombatFrames_PaladinRetributionSetup(cFrame)
 
     ERACombatFrames_Paladin_simple_consecration(timers, -0.7, -0.7)
 
-    timers:AddProc(timers:AddTrackedBuff(326733, ERALIBTalent:Create(2, 3)), nil, 0, 3, true)
+    timers:AddProc(timers:AddTrackedBuff(326733, ERALIBTalent:Create(2, 3)), nil, 0, 4, true)
     timers:AddAuraIcon(timers:AddTrackedBuff(114250, ERALIBTalent:Create(6, 1)), -3.7, 0, nil)
 
     timers:AddCooldownIcon(timers:AddTrackedCooldown(20271), nil, 0, 2, true, true) -- judgement
@@ -386,23 +385,23 @@ function ERACombatFrames_PaladinRetributionSetup(cFrame)
     timers:AddCooldownIcon(timers:AddTrackedCooldown(184575, ERALIBTalent:CreateLevel(19)), nil, 0, 0, true, true) -- blade of justice
     timers:AddCooldownIcon(timers:AddTrackedCooldown(255937, ERALIBTalent:CreateLevel(39)), nil, -1.7, -0.7, true, true) -- wake of ashes
 
-    timers:AddCooldownIcon(timers:AddTrackedCooldown(343721, talent_orbitalstrike), nil, -2.7, -0.7, true, true) -- orbital strike
     timers:AddAuraBar(timers:AddTrackedDebuff(343721, talent_orbitalstrike), nil, 0.0, 0.8, 1.0)
 
-    timers:AddCooldownIcon(timers:AddTrackedCooldown(343527, talent_condemn), nil, -1.2, -1.44, true, true) -- condemn
+    timers:AddCooldownIcon(timers:AddTrackedCooldown(343527, talent_condemn), nil, -2.7, -0.7, true, true) -- condemn
     timers:AddAuraBar(timers:AddTrackedDebuff(343527, talent_condemn), nil, 0.6, 0.2, 1.0)
 
-    ERACombatFrames_Paladin_seraph(timers, -2.2, -1.44)
+    ERACombatFrames_Paladin_seraph(timers, 0.22, -0.88)
 
-    timers:AddKick(96231, 0.5, -1, ERALIBTalent:CreateLevel(27))
+    timers:AddKick(96231, 1.5, 1, ERALIBTalent:CreateLevel(27))
 
     local pullUtility = ERACombatUtilityFrame:Create(cFrame, 0, 128, 3)
     pullUtility:AddCooldown(-0.5, 0, 184575, nil, false, ERALIBTalent:CreateLevel(19)) -- blade of light
     pullUtility:AddCooldown(0.5, 0, 20271, nil, false) -- judgement
 
-    local utility, tricksUtility = ERACombatFrames_Paladin_common_stuff(cFrame, timers, 32, -188, 144, 0, 0, 3, 184662, 213644, false, 231895, 231895, 7, 2, ERALIBTalent:CreateLevel(41), 3)
+    local utility, burstUtility = ERACombatFrames_Paladin_common_stuff(cFrame, timers, 64, -188, -166, -166, 0, 3, 184662, 213644, false, 231895, 231895, 7, 2, ERALIBTalent:CreateLevel(41), 3)
     utility:AddCooldown(-0.5, 0, 205191, nil, true, ERALIBTalent:Create(4, 3)) -- an eye for an eye
-    tricksUtility:AddCooldown(0, 2, 183218, nil, true, ERALIBTalent:CreateLevel(18)) -- slow
+    utility:AddCooldown(1.5, 3.8, 183218, nil, true, ERALIBTalent:CreateLevel(18)) -- slow
+    burstUtility:AddCooldown(0.5, -0.9, 343721, nil, true, talent_orbitalstrike)
 end
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -440,8 +439,8 @@ function ERACombatFrames_Paladin_common_stuff(
     timers,
     xUtility,
     yUtility,
-    xUtilityTricks,
-    yUtilityTricks,
+    xBurst,
+    yBurst,
     xHammerExecute,
     yHammerExecute,
     defenseID,
@@ -462,8 +461,6 @@ function ERACombatFrames_Paladin_common_stuff(
     -- main utility
 
     local utility = ERACombatUtilityFrame:Create(cFrame, xUtility, yUtility, spec)
-    utility:AddCooldown(1, 0.9, 31884, nil, true, talent_avenging)
-    utility:AddCooldown(1, 0.9, avengerAlternativeSpellID, nil, true, talent_alternative_avenging)
     utility:AddCooldown(0.5, 0, defenseID, nil, true, ERALIBTalent:CreateLevel(26)) -- defense
     utility:AddCooldown(1.5, 0, 6940, nil, true, ERALIBTalent:CreateLevel(32)) -- sacrifice
     if (includeDispellMagic) then
@@ -483,20 +480,28 @@ function ERACombatFrames_Paladin_common_stuff(
     utility:AddCooldown(1.5, -1.8, 10326, nil, true, ERALIBTalent:CreateLevel(24)).alphaWhenOffCooldown = 0.1 -- turn evil
     utility:AddWarlockHealthStone(2.5, -1.8)
     utility:AddWarlockPortal(3.5, -1.8)
+    utility:AddBeltCooldown(-1.5, -1.8).alphaWhenOffCooldown = 0.3
+    utility:AddCloakCooldown(-2.5, -1.8).alphaWhenOffCooldown = 0.3
 
-    -- tricks/CC utility
+    utility:AddCovenantGenericAbility(1, 0.9)
 
-    local tricksUtility = ERACombatUtilityFrame:Create(cFrame, xUtilityTricks, yUtilityTricks, spec)
-    tricksUtility:AddCooldown(0, 1, 853, nil, true) -- stun hammer
-    tricksUtility:AddCooldown(1, 1, 20066, nil, true, ERALIBTalent:Create(3, 2)) -- repent !
-    tricksUtility:AddCooldown(1, 1, 115750, nil, true, ERALIBTalent:Create(3, 3)) -- blinding light
-    tricksUtility:AddCooldown(0, 0, 190784, nil, true, ERALIBTalent:CreateLevel(17)) -- horse
-    tricksUtility:AddCooldown(1, 0, 1044, nil, true, ERALIBTalent:CreateLevel(22)) -- freedom
+    utility:AddCooldown(1.5, 2.8, 853, nil, true) -- stun hammer
+    utility:AddCooldown(2.5, 2.8, 20066, nil, true, ERALIBTalent:Create(3, 2)) -- repent !
+    utility:AddCooldown(2.5, 2.8, 115750, nil, true, ERALIBTalent:Create(3, 3)) -- blinding light
+    utility:AddCooldown(1.5, 1.8, 190784, nil, true, ERALIBTalent:CreateLevel(17)) -- horse
+    utility:AddCooldown(2.5, 1.8, 1044, nil, true, ERALIBTalent:CreateLevel(22)) -- freedom
+
+    local burstUtility = ERACombatUtilityFrame:Create(cFrame, xBurst, yBurst, spec)
+    burstUtility:AddCooldown(0, 0, 31884, nil, true, talent_avenging)
+    burstUtility:AddCooldown(0, 0, avengerAlternativeSpellID, nil, true, talent_alternative_avenging)
+    burstUtility:AddCovenantClassAbility(1, 0, 304971, 316958, 328620, 328204)
+    burstUtility:AddTrinket1Cooldown(-0.5, -0.9)
+    burstUtility:AddTrinket2Cooldown(-1.5, -0.9)
 
     -- common talents
     local talent_double_holy = ERALIBTalent:Create(5, 2)
     timers:AddAuraBar(timers:AddTrackedBuff(105809, talent_double_holy), nil, 0.2, 0.7, 0.7)
-    utility:AddCooldown(2, 0.9, 105809, nil, true, talent_double_holy)
+    burstUtility:AddCooldown(-1, 0, 105809, nil, true, talent_double_holy)
 
     -- avenging wrath
 
@@ -543,7 +548,7 @@ function ERACombatFrames_Paladin_common_stuff(
         return iconHammerExecute.hammerUsable
     end
 
-    return utility, tricksUtility, forebearance
+    return utility, burstUtility, forebearance
 end
 function ERACombatFrames_PaladinUtilityAffectedByForebearance(icon, forebearance)
     function icon:IconUpdatedAndShown(t)

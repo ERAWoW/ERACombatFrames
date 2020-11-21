@@ -17,6 +17,18 @@ end
 function ERALIBTalent:CreateLevel(lvl)
     return ERALIBTalentLevel:create(lvl)
 end
+function ERALIBTalent:CreateKyrian()
+    return ERALIBTalentCovenant:create(1)
+end
+function ERALIBTalent:CreateVenthyr()
+    return ERALIBTalentCovenant:create(2)
+end
+function ERALIBTalent:CreateNightfae()
+    return ERALIBTalentCovenant:create(3)
+end
+function ERALIBTalent:CreateNecrolords()
+    return ERALIBTalentCovenant:create(4)
+end
 function ERALIBTalent:CreateNotTalent(tier, column, lvl)
     return ERALIBTalentNotTalent:create(tier, column, lvl)
 end
@@ -61,6 +73,20 @@ function ERALIBTalentLevel:create(lvl)
 end
 function ERALIBTalentLevel:computeHasTalent()
     return self.lvl <= UnitLevel("player")
+end
+
+ERALIBTalentCovenant = {}
+ERALIBTalentCovenant.__index = ERALIBTalentCovenant
+setmetatable(ERALIBTalentCovenant, {__index = ERALIBTalent})
+function ERALIBTalentCovenant:create(cid)
+    local t = {}
+    setmetatable(t, ERALIBTalentCovenant)
+    t.cid = cid
+    t:construct()
+    return t
+end
+function ERALIBTalentCovenant:computeHasTalent()
+    return self.cid == C_Covenants.GetActiveCovenantID()
 end
 
 ERALIBTalentYes = {}
@@ -184,3 +210,8 @@ function ERALIBTalentNOR:computeHasTalent()
     local t2v = self.t2:computeHasTalent()
     return not (t1v or t2v)
 end
+
+ERALIBTalent_Kyrian = ERALIBTalent:CreateKyrian()
+ERALIBTalent_Venthyr = ERALIBTalent:CreateVenthyr()
+ERALIBTalent_Nightfae = ERALIBTalent:CreateNightfae()
+ERALIBTalent_Necrolords = ERALIBTalent:CreateNecrolords()

@@ -85,6 +85,13 @@ function ERACombatTimersGroup:AddAuraIcon(aura, x, y, iconID, talent)
     return ERACombatAuraIcon:create(aura, x, y, iconID, talent)
 end
 
+function ERACombatTimersGroup:AddCovenantClassCooldown(x, y, kyrian, venthyr, nightfae, necrolords)
+    self:AddCooldownIcon(self:AddTrackedCooldown(kyrian, ERALIBTalent_Kyrian), nil, x, y, true, true, nil)
+    self:AddCooldownIcon(self:AddTrackedCooldown(venthyr, ERALIBTalent_Venthyr), nil, x, y, true, true, nil)
+    self:AddCooldownIcon(self:AddTrackedCooldown(nightfae, ERALIBTalent_Nightfae), nil, x, y, true, true, nil)
+    self:AddCooldownIcon(self:AddTrackedCooldown(necrolords, ERALIBTalent_Necrolords), nil, x, y, true, true, nil)
+end
+
 function ERACombatTimersGroup:AddMissingAura(aura, iconID, x, y, beam, talent)
     if (not iconID) then
         _, _, iconID = GetSpellInfo(aura.spellID)

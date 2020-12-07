@@ -2,6 +2,10 @@
 -- tout
 
 function ERACombatFrames_MonkSetup(cFrame)
+    ERACombatGlobals_SpecID1 = 268
+    ERACombatGlobals_SpecID2 = 270
+    ERACombatGlobals_SpecID3 = 269
+
     ERAPieIcon_BorderR = 0.0
     ERAPieIcon_BorderG = 1.0
     ERAPieIcon_BorderB = 0.8

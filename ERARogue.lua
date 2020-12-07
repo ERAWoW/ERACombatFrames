@@ -1,4 +1,8 @@
 function ERACombatFrames_RogueSetup(cFrame)
+    ERACombatGlobals_SpecID1 = 259
+    ERACombatGlobals_SpecID2 = 260
+    ERACombatGlobals_SpecID3 = 261
+
     local assaActive = ERACombatOptions_IsSpecActive(1)
     local outlawActive = ERACombatOptions_IsSpecActive(2)
     local subActive = ERACombatOptions_IsSpecActive(4)

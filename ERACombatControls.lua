@@ -120,7 +120,7 @@ function ERAIcon:SetVertexColor(r, g, b, a)
         self.g = g
         self.b = b
         self.alpha = a
-        self.icon:SetVertexColor(self.r, self.g, self.b, a)
+        self.icon:SetVertexColor(r, g, b, a)
     end
 end
 
@@ -236,27 +236,7 @@ function ERAPieIcon:Create(parentFrame, relativePoint, size, iconID)
     i.blt = i.frame.BLT
     i.brt = i.frame.BRT
     i.brr = i.frame.BRR
-    i.rec = {}
-    i.overlayAlpha = ERAPieIcon_DefaultOverlayAlpha
-    table.insert(i.rec, i.tlr)
-    table.insert(i.rec, i.trr)
-    table.insert(i.rec, i.brr)
-    table.insert(i.rec, i.blr)
-    for i, r in ipairs(i.rec) do
-        r:SetColorTexture(0, 0, 0, ERAPieIcon_DefaultOverlayAlpha)
-        r:Hide()
-    end
-    i.tri = {}
-    table.insert(i.tri, i.tlt)
-    table.insert(i.tri, i.trt)
-    table.insert(i.tri, i.brt)
-    table.insert(i.tri, i.blt)
-    for i, t in ipairs(i.tri) do
-        t:SetVertexColor(0, 0, 0, ERAPieIcon_DefaultOverlayAlpha)
-        t:Hide()
-    end
-    i.oClear = true
-    i.quadrant = 0
+    ERAPieControl_Init(i)
 
     i.border = i.frame.AROUND
     i.border:SetVertexColor(ERAPieIcon_BorderR, ERAPieIcon_BorderG, ERAPieIcon_BorderB, 1.0)
@@ -273,177 +253,208 @@ function ERAPieIcon:additionalSetDesaturated(d)
 end
 
 function ERAPieIcon:SetOverlayAlpha(a)
-    if (self.overlayAlpha ~= a) then
-        self.overlayAlpha = a
-        for i, r in ipairs(self.rec) do
+    ERAPieControl_SetOverlayAlpha(self, a)
+end
+
+function ERAPieIcon:SetOverlayValue(value)
+    ERAPieControl_SetOverlayValue(self, value)
+end
+
+function ERAPieControl_Init(x)
+    x.rec = {}
+    x.overlayAlpha = ERAPieIcon_DefaultOverlayAlpha
+    table.insert(x.rec, x.tlr)
+    table.insert(x.rec, x.trr)
+    table.insert(x.rec, x.brr)
+    table.insert(x.rec, x.blr)
+    for _, r in ipairs(x.rec) do
+        r:SetColorTexture(0, 0, 0, ERAPieIcon_DefaultOverlayAlpha)
+        r:Hide()
+    end
+    x.tri = {}
+    table.insert(x.tri, x.tlt)
+    table.insert(x.tri, x.trt)
+    table.insert(x.tri, x.brt)
+    table.insert(x.tri, x.blt)
+    for _, t in ipairs(x.tri) do
+        t:SetVertexColor(0, 0, 0, ERAPieIcon_DefaultOverlayAlpha)
+        t:Hide()
+    end
+    x.oClear = true
+    x.quadrant = 0
+end
+
+function ERAPieControl_SetOverlayAlpha(x, a)
+    if (x.overlayAlpha ~= a) then
+        x.overlayAlpha = a
+        for i, r in ipairs(x.rec) do
             r:SetColorTexture(0, 0, 0, a)
         end
-        for i, t in ipairs(self.tri) do
+        for i, t in ipairs(x.tri) do
             t:SetVertexColor(0, 0, 0, a)
         end
     end
 end
 
-function ERAPieIcon_calcPosition(p, halfSize, straight)
+function ERAPieControl_calcPosition(p, halfSize, straight)
     if (straight) then
         return halfSize * math.tan(2 * p * 3.1416)
     else
         return halfSize * (1 - math.tan((1 - 8 * p) * 3.1416 / 4))
     end
 end
-
-function ERAPieIcon:SetOverlayValue(value)
-    local halfSize = self.size / 2
+function ERAPieControl_SetOverlayValue(x, value)
+    local halfSize = x.size / 2
     if ((not value) or value <= 0) then
-        if (not self.oClear) then
-            self.oClear = true
-            self.quadrant = 0
-            for i, t in ipairs(self.tri) do
+        if (not x.oClear) then
+            x.oClear = true
+            x.quadrant = 0
+            for i, t in ipairs(x.tri) do
                 t:Hide()
             end
-            for i, r in ipairs(self.rec) do
+            for i, r in ipairs(x.rec) do
                 r:Hide()
             end
         end
     elseif (value >= 1) then
-        self.oClear = false
-        self.quadrant = 0
-        for i, t in ipairs(self.tri) do
+        x.oClear = false
+        x.quadrant = 0
+        for i, t in ipairs(x.tri) do
             t:Hide()
         end
-        for i, r in ipairs(self.rec) do
+        for i, r in ipairs(x.rec) do
             r:Show()
         end
-        self.trr:SetWidth(halfSize)
-        self.brr:SetHeight(halfSize)
-        self.blr:SetWidth(halfSize)
-        self.tlr:SetHeight(halfSize)
+        x.trr:SetWidth(halfSize)
+        x.brr:SetHeight(halfSize)
+        x.blr:SetWidth(halfSize)
+        x.tlr:SetHeight(halfSize)
     else
-        self.oClear = false
+        x.oClear = false
         if (value <= 0.125) then
-            if (self.quadrant ~= 1) then
-                self.quadrant = 1
-                self.trr:Hide()
-                self.brr:Hide()
-                self.blr:Hide()
-                self.tlr:Hide()
-                self.trt:Hide()
-                self.brt:Hide()
-                self.blt:Hide()
-                self.tlt:Show()
+            if (x.quadrant ~= 1) then
+                x.quadrant = 1
+                x.trr:Hide()
+                x.brr:Hide()
+                x.blr:Hide()
+                x.tlr:Hide()
+                x.trt:Hide()
+                x.brt:Hide()
+                x.blt:Hide()
+                x.tlt:Show()
             end
-            self.tlt:SetPoint("TOPLEFT", self.frame, "TOP", -ERAPieIcon_calcPosition(value, halfSize, true), 0)
+            x.tlt:SetPoint("TOPLEFT", x.frame, "TOP", -ERAPieControl_calcPosition(value, halfSize, true), 0)
         elseif (value <= 0.25) then
-            if (self.quadrant ~= 2) then
-                self.quadrant = 2
-                self.trr:Hide()
-                self.brr:Hide()
-                self.blr:Hide()
-                self.tlr:Show()
-                self.trt:Hide()
-                self.brt:Hide()
-                self.blt:Hide()
-                self.tlt:Show()
+            if (x.quadrant ~= 2) then
+                x.quadrant = 2
+                x.trr:Hide()
+                x.brr:Hide()
+                x.blr:Hide()
+                x.tlr:Show()
+                x.trt:Hide()
+                x.brt:Hide()
+                x.blt:Hide()
+                x.tlt:Show()
             end
-            local h = ERAPieIcon_calcPosition(value - 0.125, halfSize, false)
-            self.tlt:SetPoint("TOPLEFT", self.frame, "TOPLEFT", 0, -h)
-            self.tlr:SetHeight(h)
+            local h = ERAPieControl_calcPosition(value - 0.125, halfSize, false)
+            x.tlt:SetPoint("TOPLEFT", x.frame, "TOPLEFT", 0, -h)
+            x.tlr:SetHeight(h)
         elseif (value <= 0.375) then
-            if (self.quadrant ~= 3) then
-                self.quadrant = 3
-                self.trr:Hide()
-                self.brr:Hide()
-                self.blr:Hide()
-                self.tlr:Show()
-                self.trt:Hide()
-                self.brt:Hide()
-                self.blt:Show()
-                self.tlt:Hide()
+            if (x.quadrant ~= 3) then
+                x.quadrant = 3
+                x.trr:Hide()
+                x.brr:Hide()
+                x.blr:Hide()
+                x.tlr:Show()
+                x.trt:Hide()
+                x.brt:Hide()
+                x.blt:Show()
+                x.tlt:Hide()
             end
-            self.tlr:SetHeight(halfSize)
-            self.blt:SetPoint("BOTTOMLEFT", self.frame, "LEFT", 0, -ERAPieIcon_calcPosition(value - 0.25, halfSize, true))
+            x.tlr:SetHeight(halfSize)
+            x.blt:SetPoint("BOTTOMLEFT", x.frame, "LEFT", 0, -ERAPieControl_calcPosition(value - 0.25, halfSize, true))
         elseif (value <= 0.5) then
-            if (self.quadrant ~= 4) then
-                self.quadrant = 4
-                self.trr:Hide()
-                self.brr:Hide()
-                self.blr:Show()
-                self.tlr:Show()
-                self.trt:Hide()
-                self.brt:Hide()
-                self.blt:Show()
-                self.tlt:Hide()
+            if (x.quadrant ~= 4) then
+                x.quadrant = 4
+                x.trr:Hide()
+                x.brr:Hide()
+                x.blr:Show()
+                x.tlr:Show()
+                x.trt:Hide()
+                x.brt:Hide()
+                x.blt:Show()
+                x.tlt:Hide()
             end
-            self.tlr:SetHeight(halfSize)
-            local w = ERAPieIcon_calcPosition(value - 0.375, halfSize, false)
-            self.blt:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT", w, 0)
-            self.blr:SetWidth(w)
+            x.tlr:SetHeight(halfSize)
+            local w = ERAPieControl_calcPosition(value - 0.375, halfSize, false)
+            x.blt:SetPoint("BOTTOMLEFT", x.frame, "BOTTOMLEFT", w, 0)
+            x.blr:SetWidth(w)
         elseif (value <= 0.625) then
-            if (self.quadrant ~= 5) then
-                self.quadrant = 5
-                self.trr:Hide()
-                self.brr:Hide()
-                self.blr:Show()
-                self.tlr:Show()
-                self.trt:Hide()
-                self.brt:Show()
-                self.blt:Hide()
-                self.tlt:Hide()
+            if (x.quadrant ~= 5) then
+                x.quadrant = 5
+                x.trr:Hide()
+                x.brr:Hide()
+                x.blr:Show()
+                x.tlr:Show()
+                x.trt:Hide()
+                x.brt:Show()
+                x.blt:Hide()
+                x.tlt:Hide()
             end
-            self.tlr:SetHeight(halfSize)
-            self.blr:SetWidth(halfSize)
-            self.brt:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOM", ERAPieIcon_calcPosition(value - 0.5, halfSize, true), 0)
+            x.tlr:SetHeight(halfSize)
+            x.blr:SetWidth(halfSize)
+            x.brt:SetPoint("BOTTOMRIGHT", x.frame, "BOTTOM", ERAPieControl_calcPosition(value - 0.5, halfSize, true), 0)
         elseif (value <= 0.75) then
-            if (self.quadrant ~= 6) then
-                self.quadrant = 6
-                self.trr:Hide()
-                self.brr:Show()
-                self.blr:Show()
-                self.tlr:Show()
-                self.trt:Hide()
-                self.brt:Show()
-                self.blt:Hide()
-                self.tlt:Hide()
+            if (x.quadrant ~= 6) then
+                x.quadrant = 6
+                x.trr:Hide()
+                x.brr:Show()
+                x.blr:Show()
+                x.tlr:Show()
+                x.trt:Hide()
+                x.brt:Show()
+                x.blt:Hide()
+                x.tlt:Hide()
             end
-            self.tlr:SetHeight(halfSize)
-            self.blr:SetWidth(halfSize)
-            local h = ERAPieIcon_calcPosition(value - 0.625, halfSize, false)
-            self.brr:SetHeight(h)
-            self.brt:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", 0, h)
+            x.tlr:SetHeight(halfSize)
+            x.blr:SetWidth(halfSize)
+            local h = ERAPieControl_calcPosition(value - 0.625, halfSize, false)
+            x.brr:SetHeight(h)
+            x.brt:SetPoint("BOTTOMRIGHT", x.frame, "BOTTOMRIGHT", 0, h)
         elseif (value <= 0.875) then
-            if (self.quadrant ~= 7) then
-                self.quadrant = 7
-                self.trr:Hide()
-                self.brr:Show()
-                self.blr:Show()
-                self.tlr:Show()
-                self.trt:Show()
-                self.brt:Hide()
-                self.blt:Hide()
-                self.tlt:Hide()
+            if (x.quadrant ~= 7) then
+                x.quadrant = 7
+                x.trr:Hide()
+                x.brr:Show()
+                x.blr:Show()
+                x.tlr:Show()
+                x.trt:Show()
+                x.brt:Hide()
+                x.blt:Hide()
+                x.tlt:Hide()
             end
-            self.tlr:SetHeight(halfSize)
-            self.blr:SetWidth(halfSize)
-            self.brr:SetHeight(halfSize)
-            self.trt:SetPoint("TOPRIGHT", self.frame, "RIGHT", 0, ERAPieIcon_calcPosition(value - 0.75, halfSize, true))
+            x.tlr:SetHeight(halfSize)
+            x.blr:SetWidth(halfSize)
+            x.brr:SetHeight(halfSize)
+            x.trt:SetPoint("TOPRIGHT", x.frame, "RIGHT", 0, ERAPieControl_calcPosition(value - 0.75, halfSize, true))
         else
-            if (self.quadrant ~= 8) then
-                self.quadrant = 8
-                self.trr:Show()
-                self.brr:Show()
-                self.blr:Show()
-                self.tlr:Show()
-                self.trt:Show()
-                self.brt:Hide()
-                self.blt:Hide()
-                self.tlt:Hide()
+            if (x.quadrant ~= 8) then
+                x.quadrant = 8
+                x.trr:Show()
+                x.brr:Show()
+                x.blr:Show()
+                x.tlr:Show()
+                x.trt:Show()
+                x.brt:Hide()
+                x.blt:Hide()
+                x.tlt:Hide()
             end
-            self.tlr:SetHeight(halfSize)
-            self.blr:SetWidth(halfSize)
-            self.brr:SetHeight(halfSize)
-            local w = ERAPieIcon_calcPosition(value - 0.875, halfSize, false)
-            self.trr:SetWidth(w)
-            self.trt:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", -w, 0)
+            x.tlr:SetHeight(halfSize)
+            x.blr:SetWidth(halfSize)
+            x.brr:SetHeight(halfSize)
+            local w = ERAPieControl_calcPosition(value - 0.875, halfSize, false)
+            x.trr:SetWidth(w)
+            x.trt:SetPoint("TOPRIGHT", x.frame, "TOPRIGHT", -w, 0)
         end
     end
 end

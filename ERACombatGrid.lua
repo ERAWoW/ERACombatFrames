@@ -4,7 +4,7 @@
 -- test : if (true or self.numPlayers > 1) then (dans updateGroup)
 -- talents
 
-ERACombatGrid_AuraIconSize = 16
+ERACombatGrid_AuraSize = 20
 ERACombatGrid_CellHeight = 44
 ERACombatGrid_CellWidth = 111
 ERACombatGrid_CellPadding = 2
@@ -25,31 +25,15 @@ ERACombatGrid = {}
 ERACombatGrid.__index = ERACombatGrid
 setmetatable(ERACombatGrid, {__index = ERACombatModule})
 
-function ERACombatGrid:AddTrackedBuff(spellID, iconID, position)
-    if (position) then
-        self.maxBuffPosition = math.max(self.maxBuffPosition, position)
-    else
-        position = self.maxBuffPosition + 1
-        self.maxBuffPosition = position
-    end
-    return self:addTrackedAura(spellID, iconID, self.trackedBuffs, self.trackedBuffsFetcher, false, position)
+function ERACombatGrid:AddTrackedBuff(spellID, position, priority, rC, gC, bC, rB, gB, bB, talent)
+    return self:addTrackedAura(spellID, position, priority, rC, gC, bC, rB, gB, bB, talent, false, self.allTrackedBuffs)
 end
-function ERACombatGrid:AddTrackedDebuff(spellID, iconID, position)
-    if (position) then
-        self.maxDebuffPosition = math.max(self.maxDebuffPosition, position)
-    else
-        position = self.maxDebuffPosition + 1
-        self.maxDebuffPosition = position
-    end
-    return self:addTrackedAura(spellID, iconID, self.trackedDebuffs, self.trackedDebuffsFetcher, true, position)
+function ERACombatGrid:AddTrackedDebuff(spellID, position, priority, rC, gC, bC, rB, gB, bB, talent)
+    return self:addTrackedAura(spellID, position, priority, rC, gC, bC, rB, gB, bB, talent, true, self.allTrackedDebuffs)
 end
-function ERACombatGrid:addTrackedAura(spellID, iconID, array, fetcher, isDebuff, position)
-    if (not iconID) then
-        _, _, iconID = GetSpellInfo(spellID)
-    end
-    local x = ERACombatGridAuraDefinition:create(self, 1 + #array, spellID, iconID, isDebuff, position)
+function ERACombatGrid:addTrackedAura(spellID, position, priority, rC, gC, bC, rB, gB, bB, talent, isDebuff, array)
+    local x = ERACombatGridAuraDefinition:create(self, 1 + #array, spellID, isDebuff, position, priority, rC, gC, bC, rB, gB, bB, talent)
     table.insert(array, x)
-    fetcher[spellID] = x
     return x
 end
 
@@ -117,12 +101,12 @@ function ERACombatGrid:Create(cFrame, x, y, anchor, spec, dispellID, ...)
         end
     )
 
-    g.maxBuffPosition = 0
-    g.maxDebuffPosition = 0
-    g.trackedBuffsFetcher = {}
-    g.trackedBuffs = {}
-    g.trackedDebuffsFetcher = {}
-    g.trackedDebuffs = {}
+    g.allTrackedBuffs = {}
+    g.activeTrackedBuffsFetcher = {}
+    g.activeTrackedBuffsArray = {}
+    g.allTrackedDebuffs = {}
+    g.activeTrackedDebuffsFetcher = {}
+    g.activeTrackedDebuffsArray = {}
     g.isSolo = true
 
     g:construct(cFrame, 0.3, 0.1, false, spec)
@@ -194,7 +178,29 @@ function ERACombatGrid:SpecInactive(wasActive)
     end
 end
 function ERACombatGrid:CheckTalents()
-    -- TODO
+    local index = 1
+    self.activeTrackedBuffsFetcher = {}
+    self.activeTrackedBuffsArray = {}
+    for _, a in ipairs(self.allTrackedBuffs) do
+        if (a:computeTalent(index)) then
+            index = index + 1
+            self.activeTrackedBuffsFetcher[a.spellID] = a
+            table.insert(self.activeTrackedBuffsArray, a)
+        end
+    end
+    index = 1
+    self.activeTrackedDebuffsFetcher = {}
+    self.activeTrackedDebuffsArray = {}
+    for _, a in ipairs(self.allTrackedDebuffs) do
+        if (a:computeTalent(index)) then
+            index = index + 1
+            self.activeTrackedDebuffsFetcher[a.spellID] = a
+            table.insert(self.activeTrackedDebuffsArray, a)
+        end
+    end
+    for _, u in pairs(self.unitsByID) do
+        u:computeTalents()
+    end
 end
 
 function ERACombatGrid:updateGroup()
@@ -205,7 +211,11 @@ function ERACombatGrid:updateGroup()
             thisself.isSolo = GetNumGroupMembers() <= 1
         end
     )
-    -- TODO affichage, le reste
+    if (self.isGridVisible) then
+        for _, u in pairs(self.unitsByID) do
+            u:updateDefaultBorder()
+        end
+    end
 end
 
 function ERACombatGrid:updateHealth(unitID)
@@ -219,10 +229,10 @@ function ERACombatGrid:UpdateIdle(t)
     self:UpdateCombat(t)
 end
 function ERACombatGrid:UpdateCombat(t)
-    for i, x in ipairs(self.trackedBuffs) do
+    for i, x in ipairs(self.activeTrackedBuffsArray) do
         x:prepareUpdate()
     end
-    for i, x in ipairs(self.trackedDebuffs) do
+    for i, x in ipairs(self.activeTrackedDebuffsArray) do
         x:prepareUpdate()
     end
     local started, duration = GetSpellCooldown(self.dispellID)
@@ -325,14 +335,17 @@ function ERACombatGrid_initialConfigFunction(gridframe, unitframe)
     unitframe.absorbDamageValue = 0
     unitframe.absorbHealingValue = 0
 
-    unitframe.buffs = {}
-    for i, x in ipairs(gridframe.grid.trackedBuffs) do
-        table.insert(unitframe.buffs, ERACombatGridAuraInstance:create(x, unitframe))
+    unitframe.allBuffs = {}
+    for _, x in ipairs(gridframe.grid.allTrackedBuffs) do
+        table.insert(unitframe.allBuffs, ERACombatGridAuraInstance:create(x, unitframe))
     end
-    unitframe.debuffs = {}
-    for i, x in ipairs(gridframe.grid.trackedDebuffs) do
-        table.insert(unitframe.debuffs, ERACombatGridAuraInstance:create(x, unitframe))
+    unitframe.allDebuffs = {}
+    for _, x in ipairs(gridframe.grid.allTrackedDebuffs) do
+        table.insert(unitframe.allDebuffs, ERACombatGridAuraInstance:create(x, unitframe))
     end
+    unitframe.activeBuffs = {}
+    unitframe.activeDebuffs = {}
+    unitframe:computeTalents()
 end
 
 function ERACombatGridUnitEvents:OnShow()
@@ -368,9 +381,59 @@ function ERACombatGridUnitEvents:OnAttributeChanged(name, value)
                 self.b = b
                 self:SetAlpha(1.0)
                 self.health:SetColorTexture(r, g, b, 1.0)
+                self:updateDefaultBorder()
             end
             self:updateHealth()
         end
+    end
+end
+
+function ERACombatGridUnitPrototype:updateDefaultBorder()
+    if (self.isThisPlayer) then
+        self.defBR = 0.0
+        self.defBG = 0.8
+        self.defBB = 1.0
+    else
+        local role = UnitGroupRolesAssigned(self.unit)
+        if (role == "TANK") then
+            self.defBR = 0.8
+            self.defBG = 0.0
+            self.defBB = 0.8
+        elseif (role == "HEALER") then
+            self.defBR = 0.0
+            self.defBG = 0.8
+            self.defBB = 0.1
+        else
+            self.defBR = 0.3
+            self.defBG = 0.3
+            self.defBB = 0.3
+        end
+    end
+end
+
+function ERACombatGridUnitPrototype:computeTalents()
+    for _, a in ipairs(self.activeBuffs) do
+        if (a.def.indexInActiveAuras <= 0) then
+            a:deactivate()
+        end
+    end
+    self.activeBuffs = {}
+    for _, a in ipairs(self.grid.activeTrackedBuffsArray) do
+        local i = self.allBuffs[a.indexInAllAuras]
+        i:activate()
+        table.insert(self.activeBuffs, i)
+    end
+
+    for _, a in ipairs(self.activeDebuffs) do
+        if (a.def.indexInActiveAuras <= 0) then
+            a:deactivate()
+        end
+    end
+    self.activeDebuffs = {}
+    for _, a in ipairs(self.grid.activeTrackedDebuffsArray) do
+        local i = self.allDebuffs[a.indexInAllAuras]
+        i:activate()
+        table.insert(self.activeDebuffs, i)
     end
 end
 
@@ -480,21 +543,42 @@ function ERACombatGridUnitPrototype:updateHealth()
     end
 end
 
+function ERACombatGridUnitPrototype_updateAura(t, expirationTime, durAura, stacks, def, array)
+    local auraRemDuration
+    if (expirationTime and expirationTime > 0) then
+        auraRemDuration = expirationTime - t
+    else
+        auraRemDuration = 4096
+    end
+    if (not durAura or durAura < auraRemDuration) then
+        durAura = auraRemDuration
+    end
+    if (not (stacks and stacks > 0)) then
+        auraStacks = 1
+    end
+    array[def.indexInActiveAuras]:auraFound(auraRemDuration, durAura, stacks)
+end
 function ERACombatGridUnitPrototype:update(t)
     self:updateHealth()
 
     if (self.grid.isGridVisible) then
-        if (UnitIsUnit("player", self.unit)) then
-            if (UnitIsUnit("target", self.unit)) then
-                self:setBorder(0.5, 1.0, 0.5)
+        local threat = UnitThreatSituation(self.unit)
+        local isTanking = threat and threat >= 2
+        if (UnitIsUnit("target", self.unit)) then
+            if (self.isThisPlayer) then
+                self:setBorder(1.0, 0.5, 1.0)
             else
-                self:setBorder(0.0, 0.6, 0.0)
+                if (isTanking) then
+                    self:setBorder(1.0, 1.0, 1.0)
+                else
+                    self:setBorder(1.0, 0.5, 0.5)
+                end
             end
         else
-            if (UnitIsUnit("target", self.unit)) then
-                self:setBorder(1.0, 1.0, 1.0)
+            if (isTanking) then
+                self:setBorder(1.0, 0.0, 0.0)
             else
-                self:setBorder(0.3, 0.3, 0.3)
+                self:setBorder(self.defBR, self.defBG, self.defBB)
             end
         end
     end
@@ -503,18 +587,9 @@ function ERACombatGridUnitPrototype:update(t)
     for i = 1, 40 do
         local _, _, stacks, type, durAura, expirationTime, _, isStealable, _, spellID = UnitDebuff(self.unit, i)
         if (spellID) then
-            local td = self.grid.trackedDebuffsFetcher[spellID]
+            local td = self.grid.activeTrackedDebuffsFetcher[spellID]
             if (td ~= nil) then
-                local auraRemDuration
-                if (expirationTime and expirationTime > 0) then
-                    auraRemDuration = expirationTime - t
-                else
-                    auraRemDuration = 4096
-                end
-                if (not (stacks and stacks > 0)) then
-                    auraStacks = 1
-                end
-                self.debuffs[td.index]:auraFound(auraRemDuration, durAura, stacks)
+                ERACombatGridUnitPrototype_updateAura(t, expirationTime, durAura, stacks, td, self.activeDebuffs)
             end
             if (not dispellable) then
                 for i, dis in ipairs(self.grid.dispells) do
@@ -562,39 +637,39 @@ function ERACombatGridUnitPrototype:update(t)
     for i = 1, 40 do
         local _, _, stacks, _, durAura, expirationTime, _, _, _, spellID = UnitBuff(self.unit, i, "PLAYER")
         if (spellID) then
-            local tb = self.grid.trackedBuffsFetcher[spellID]
+            local tb = self.grid.activeTrackedBuffsFetcher[spellID]
             if (tb ~= nil) then
-                local auraRemDuration
-                if (expirationTime and expirationTime > 0) then
-                    auraRemDuration = expirationTime - t
-                else
-                    auraRemDuration = 4096
-                end
-                if (not (stacks and stacks > 0)) then
-                    auraStacks = 1
-                end
-                self.buffs[tb.index]:auraFound(auraRemDuration, durAura, stacks)
+                ERACombatGridUnitPrototype_updateAura(t, expirationTime, durAura, stacks, tb, self.activeBuffs)
             end
         else
             break
         end
     end
 
-    for i, x in ipairs(self.buffs) do
-        x:update()
+    for i, x in ipairs(self.activeBuffs) do
+        x:updateData()
     end
-    for i, x in ipairs(self.debuffs) do
-        x:update()
+    for i, x in ipairs(self.activeDebuffs) do
+        x:updateData()
+    end
+    if (self.grid.isGridVisible) then
+        for i, x in ipairs(self.activeBuffs) do
+            x.def:updateDisplay(x)
+        end
+        for i, x in ipairs(self.activeDebuffs) do
+            x.def:updateDisplay(x)
+        end
     end
 end
 
 function ERACombatGridUnitPrototype:GetAura(a)
     if (a.isDebuff) then
-        return self.debuffs[a.index]
+        return self.allDebuffs[a.indexInAllAuras]
     else
-        return self.buffs[a.index]
+        return self.allBuffs[a.indexInAllAuras]
     end
 end
+
 --------------------------------------------------------------------------------------------------------------------------------
 ---- AURA DEFINITION -----------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------
@@ -602,21 +677,57 @@ end
 ERACombatGridAuraDefinition = {}
 ERACombatGridAuraDefinition.__index = ERACombatGridAuraDefinition
 
-function ERACombatGridAuraDefinition:create(g, index, spellID, iconID, isDebuff, position)
+function ERACombatGridAuraDefinition:create(g, indexInAllAuras, spellID, isDebuff, position, priority, rC, gC, bC, rB, gB, bB, talent)
     local a = {}
     setmetatable(a, ERACombatGridAuraDefinition)
     a.grid = g
-    a.index = index
+    a.priority = priority
     a.position = position
+    a.talent = talent
     a.isDebuff = isDebuff
     a.spellID = spellID
-    a.iconID = iconID
+    a.indexInAllAuras = indexInAllAuras
+    a.indexInActiveAuras = -1
     a.instances = {}
+    a.rC = rC
+    a.gC = gC
+    a.bC = bC
+    a.rB = rB
+    a.gB = gB
+    a.bB = bB
     return a
+end
+
+function ERACombatGridAuraDefinition:computeTalent(index)
+    if (self.talent and not self.talent:PlayerHasTalent()) then
+        self.indexInActiveAuras = -1
+        self.instances = {}
+        return false
+    else
+        self.indexInActiveAuras = index
+        return true
+    end
 end
 
 function ERACombatGridAuraDefinition:prepareUpdate()
     self.instances = {}
+end
+
+function ERACombatGridAuraDefinition:updateDisplay(instance)
+    self:updateDisplayDefault(instance)
+end
+function ERACombatGridAuraDefinition:updateDisplayDefault(instance)
+    if (instance.remDuration > 0) then
+        ERAPieControl_SetOverlayValue(instance, 1 - instance.remDuration / instance.totDuration)
+        if (instance.stacks > 1) then
+            instance.text:SetText(instance.stacks)
+        else
+            instance.text:SetText(nil)
+        end
+        instance:show()
+    else
+        instance:hide()
+    end
 end
 
 --------------------------------------------------------------------------------------------------------------------------------
@@ -631,21 +742,59 @@ function ERACombatGridAuraInstance:create(def, unitframe)
     setmetatable(a, ERACombatGridAuraInstance)
     a.def = def
     a.unitframe = unitframe
-    if (unitframe.grid.isGridVisible) then
-        a.icon = ERAPieIcon:Create(unitframe.mainFrame, "BOTTOMLEFT", ERACombatGrid_AuraIconSize, def.iconID)
-        if (def.isDebuff) then
-            a.icon:Draw(
-                ERACombatGrid_MainFrameWidthIncludingBorder - ERACombatGrid_HealthOffsetFromMainFrame - (def.position - 0.5) * ERACombatGrid_AuraIconSize,
-                ERACombatGrid_HealthOffsetFromMainFrame + 0.5 * ERACombatGrid_AuraIconSize,
-                false
+    return a
+end
+
+function ERACombatGridAuraInstance:activate()
+    if (self.unitframe.grid.isGridVisible and not self.frame) then
+        self.frame = CreateFrame("Frame", nil, self.unitframe.mainFrame, "ERACombatGridAuraFrame")
+        self.size = ERACombatGrid_AuraSize
+        self.frame:SetSize(ERACombatGrid_AuraSize, ERACombatGrid_AuraSize)
+        self.frame:SetFrameLevel(3 + self.def.priority)
+        if (self.def.isDebuff) then
+            self.frame:SetPoint(
+                "BOTTOMRIGHT",
+                self.unitframe.mainFrame,
+                "BOTTOMRIGHT",
+                -ERACombatGrid_HealthOffsetFromMainFrame - self.def.position * ERACombatGrid_AuraSize,
+                ERACombatGrid_HealthOffsetFromMainFrame
             )
         else
-            a.icon:Draw(ERACombatGrid_HealthOffsetFromMainFrame + (def.position - 0.5) * ERACombatGrid_AuraIconSize, ERACombatGrid_HealthOffsetFromMainFrame + 0.5 * ERACombatGrid_AuraIconSize, false)
+            self.frame:SetPoint(
+                "BOTTOMLEFT",
+                self.unitframe.mainFrame,
+                "BOTTOMLEFT",
+                ERACombatGrid_HealthOffsetFromMainFrame + self.def.position * ERACombatGrid_AuraSize,
+                ERACombatGrid_HealthOffsetFromMainFrame
+            )
         end
-        a.icon:SetOverlayAlpha(0.7)
-        a.icon:Hide()
+        self.frame.BORDER:SetVertexColor(self.def.rB, self.def.gB, self.def.bB, 1.0)
+        self.frame.CENTER:SetVertexColor(self.def.rC, self.def.gC, self.def.bC, 1.0)
+        self.trt = self.frame.TRT
+        self.trr = self.frame.TRR
+        self.tlt = self.frame.TLT
+        self.tlr = self.frame.TLR
+        self.blr = self.frame.BLR
+        self.blt = self.frame.BLT
+        self.brt = self.frame.BRT
+        self.brr = self.frame.BRR
+        ERAPieControl_Init(self)
+        ERAPieControl_SetOverlayAlpha(self, 1.0)
+        self.text = self.frame.Text
+        ERALIB_SetFont(self.text, ERACombatGrid_AuraSize * 0.8)
+        self.frame:Hide()
+        self.visible = false
     end
-    return a
+end
+
+function ERACombatGridAuraInstance:deactivate()
+    self.remDuration = 0
+    if (not self.totDuration) then
+        self.totDuration = 1
+    end
+    self.stacks = 0
+    self.visible = false
+    self.frame:Hide()
 end
 
 function ERACombatGridAuraInstance:auraFound(auraRemDuration, durAura, stacks)
@@ -655,25 +804,32 @@ function ERACombatGridAuraInstance:auraFound(auraRemDuration, durAura, stacks)
     self.stacks = stacks
 end
 
-function ERACombatGridAuraInstance:update()
+function ERACombatGridAuraInstance:updateData()
     if (self.found) then
         self.found = false
         table.insert(self.def.instances, self)
-        if (self.icon) then
-            self.icon:SetOverlayValue(1 - self.remDuration / self.totDuration)
-            if (self.stacks > 1) then
-                self.icon:SetMainText(self.stacks)
-            else
-                self.icon:SetMainText(nil)
-            end
-            self.icon:Show()
-        end
     else
         self.remDuration = 0
         self.totDuration = 1
         self.stacks = 0
-        if (self.icon) then
-            self.icon:Hide()
-        end
     end
 end
+
+function ERACombatGridAuraInstance:show()
+    if (not self.visible) then
+        self.visible = true
+        self.frame:Show()
+    end
+end
+function ERACombatGridAuraInstance:hide()
+    if (self.frame and self.visible) then
+        self.visible = false
+        self.frame:Hide()
+    end
+end
+
+--------------------------------------------------------------------------------------------------------------------------------
+---- INSTANCES -----------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------
+
+ERALIBTalent_Nathria = ERALIBTalent:CreateInstance(2296)

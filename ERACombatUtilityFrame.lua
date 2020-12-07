@@ -27,17 +27,37 @@ function ERACombatUtilityFrame:AddBeltCooldown(x, y, iconID)
     return ERACombatUtilityInventoryCooldown:create(self, x, y, iconID or 443322, INVSLOT_WAIST)
 end
 
-function ERACombatUtilityFrame:AddCovenantClassAbility(x, y, kyrian, venthyr, nightfae, necrolords)
-    ERACombatUtilityCooldown:create(self, x, y, kyrian, nil, true, ERALIBTalent_Kyrian)
-    ERACombatUtilityCooldown:create(self, x, y, venthyr, nil, true, ERALIBTalent_Venthyr)
-    ERACombatUtilityCooldown:create(self, x, y, nightfae, nil, true, ERALIBTalent_Nightfae)
-    ERACombatUtilityCooldown:create(self, x, y, necrolords, nil, true, ERALIBTalent_Necrolords)
+function ERACombatUtilityFrame:AddCovenantClassAbility(x, y, kyrian, venthyr, nightfae, necrolords, kyrianSpellKnown)
+    ERACombatUtilityCooldown:create(self, x, y, kyrian, nil, true, ERALIBTalent:CreateKyrianOrSpellKnown(kyrianSpellKnown or kyrian))
+    if (venthyr) then
+        ERACombatUtilityCooldown:create(self, x, y, venthyr, nil, true, ERALIBTalent:CreateVenthyrOrSpellKnown(venthyr))
+    end
+    if (nightfae) then
+        ERACombatUtilityCooldown:create(self, x, y, nightfae, nil, true, ERALIBTalent:CreateNightfaeOrSpellKnown(nightfae))
+    end
+    ERACombatUtilityCooldown:create(self, x, y, necrolords, nil, true, ERALIBTalent:CreateNecrolordsOrSpellKnown(necrolords))
 end
 function ERACombatUtilityFrame:AddCovenantGenericAbility(x, y)
     self:AddBagItem(x, y, 177278, 463534, false, ERALIBTalent_Kyrian)
-    ERACombatUtilityCooldown:create(self, x, y, 300728, nil, true, ERALIBTalent_Venthyr)
-    ERACombatUtilityCooldown:create(self, x, y, 310143, nil, true, ERALIBTalent_Nightfae)
-    ERACombatUtilityCooldown:create(self, x, y, 324631, nil, true, ERALIBTalent_Necrolords)
+
+    ERACombatUtilityCooldown:create(self, x, y, 300728, nil, true, ERALIBTalent_VenthyrOrGenericSpell)
+
+    local talent_nightfae = ERALIBTalent:CreateNightfaeOrSpellKnown(310143)
+    local blink = ERACombatUtilityCooldown:create(self, x, y, 324701, 3586269, true, talent_nightfae)
+    local foxBuff = self:AddTrackedBuff(310143, talent_nightfae)
+    function blink:IconUpdatedAndShown(t)
+        if (foxBuff.remDuration <= 0) then
+            self.icon:Hide()
+        end
+    end
+    local fox = ERACombatUtilityCooldown:create(self, x, y, 310143, 3586268, true, talent_nightfae)
+    function fox:IconUpdatedAndShown(t)
+        if (blink.remDuration > 0) then
+            self.icon:Hide()
+        end
+    end
+
+    ERACombatUtilityCooldown:create(self, x, y, 324631, nil, true, ERALIBTalent:CreateNecrolordsOrSpellKnown(324631))
 end
 
 function ERACombatUtilityFrame:AddDebuffAnyCasterIcon(aura, iconID, x, y, showInCombat, talent)
@@ -547,7 +567,7 @@ function ERACombatUtilityCooldown:create(owner, x, y, spellID, iconID, showInCom
 end
 
 function ERACombatUtilityCooldown:updateIdle(t)
-    if (self.showOnlyIfPetSpellKnown and not IsSpellKnown(self.spellID, true)) then
+    if ((self.showOnlyIfPetSpellKnown and not IsSpellKnown(self.spellID, true)) or self.showOnlyIfSpellUsable and not IsUsableSpell(self.spellID)) then
         self.icon:Hide()
     else
         ERACombatCooldown_Update(self, t, 2)
@@ -598,7 +618,7 @@ function ERACombatUtilityCooldown:IconUpdatedAndShown(t)
 end
 
 function ERACombatUtilityCooldown:doUpdateCombat(t)
-    if (self.showOnlyIfPetSpellKnown and not IsSpellKnown(self.spellID, true)) then
+    if ((self.showOnlyIfPetSpellKnown and not IsSpellKnown(self.spellID, true)) or self.showOnlyIfSpellUsable and not IsUsableSpell(self.spellID)) then
         self.icon:Hide()
     else
         ERACombatCooldown_Update(self, t, 2)

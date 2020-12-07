@@ -1,12 +1,18 @@
 function ERACombatFrames_PriestSetup(cFrame)
+    ERACombatGlobals_SpecID1 = 256
+    ERACombatGlobals_SpecID2 = 257
+    ERACombatGlobals_SpecID3 = 258
+
     local discActive = ERACombatOptions_IsSpecActive(1)
     local shadowActive = ERACombatOptions_IsSpecActive(3)
 
+    local kyrian_talent = ERALIBTalent:CreateKyrianOrSpellKnown(325013)
+
     if (discActive) then
-        ERACombatFrames_PriestDisciplineSetup(cFrame)
+        ERACombatFrames_PriestDisciplineSetup(cFrame, kyrian_talent)
     end
     if (shadowActive) then
-        ERACombatFrames_PriestShadowSetup(cFrame)
+        ERACombatFrames_PriestShadowSetup(cFrame, kyrian_talent)
     end
 
     cFrame:Pack()
@@ -27,7 +33,7 @@ end
 ---- DISCI -------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
 
-function ERACombatFrames_PriestDisciplineSetup(cFrame)
+function ERACombatFrames_PriestDisciplineSetup(cFrame, kyrian_talent)
     local talent_schism = ERALIBTalent:Create(1, 3)
     local talent_mindblender = ERALIBTalent:Create(3, 2)
     local talent_not_mindblender = ERALIBTalent:CreateNotTalent(3, 2, 20)
@@ -40,6 +46,8 @@ function ERACombatFrames_PriestDisciplineSetup(cFrame)
     ERACombatPower:Create(cFrame, -202, -84, 166, 22, 0, false, 0.1, 0.1, 1.0, 1)
 
     local timers = ERACombatTimersGroup:Create(cFrame, -144, -44, 1.5, 1)
+
+    ERACombatFrames_PriestKyrian(timers, 0.8, 3.5, kyrian_talent)
 
     timers:AddOffensiveDispellIcon(3163628, 1, 4.5, false, ERALIBTalent:CreateLevel(24), "Magic")
 
@@ -75,9 +83,10 @@ function ERACombatFrames_PriestDisciplineSetup(cFrame)
     utility:AddCooldown(-2, 0, 121536, nil, true, ERALIBTalent:Create(2, 3)).alphaWhenOffCooldown = 0.4
 
     local grid = ERACombatGrid:Create(cFrame, -177, 44, "BOTTOMRIGHT", 1, 527, "Magic", "Disease")
-    local expiation = grid:AddTrackedBuff(194384, nil)
-    grid:AddTrackedBuff(17, nil) -- boubou
-    grid:AddTrackedDebuff(6788, nil) -- pas boubou
+    -- spellID, position, priority, rC, gC, bC, rB, gB, bB, talent
+    local expiation = grid:AddTrackedBuff(194384, 1, 1, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, nil)
+    grid:AddTrackedBuff(17, 0, 1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, nil) -- boubou
+    grid:AddTrackedDebuff(6788, 1, 1, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, nil) -- pas boubou
 
     local disciUtility = ERACombatUtilityFrame:Create(cFrame, -222, -144, 1)
     disciUtility:AddCooldown(1, 0, 200174, nil, true, talent_mindblender)
@@ -100,7 +109,7 @@ end
 ---- SHADOW ------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
 
-function ERACombatFrames_PriestShadowSetup(cFrame)
+function ERACombatFrames_PriestShadowSetup(cFrame, kyrian_talent)
     local talent_vampiric_instant_damage = ERALIBTalent:Create(1, 3)
     local talent_mindbomb = ERALIBTalent:Create(4, 2)
     local talent_not_mindbomb = ERALIBTalent:CreateNotTalent(4, 2)
@@ -150,7 +159,9 @@ function ERACombatFrames_PriestShadowSetup(cFrame)
 
     ERACombatFrames_PriestSWD(timers, 0, 3)
 
-    timers:AddOffensiveDispellIcon(3163628, 1, 2, false, nil, "Magic")
+    timers:AddOffensiveDispellIcon(3163628, 1, 1, false, nil, "Magic")
+
+    ERACombatFrames_PriestKyrian(timers, 0.7, 2.5, kyrian_talent)
 
     local mindBlastTimer = timers:AddTrackedCooldown(8092)
     mindBlastTimer.mustAlwaysUpdateKind = true
@@ -178,6 +189,7 @@ function ERACombatFrames_PriestShadowSetup(cFrame)
 
     timers:AddKick(15487, 1, 0, ERALIBTalent:CreateLevel(29))
 
+    --[[
     local devouringTimer = timers:AddTrackedDebuff(335467)
     local devouringDisplay = timers:AddAuraBar(devouringTimer, nil, 0.1, 0.7, 0.3, talent_torrent)
     function devouringDisplay:GetRemDurationOr0IfInvisible(t)
@@ -187,7 +199,7 @@ function ERACombatFrames_PriestShadowSetup(cFrame)
             return 0
         end
     end
-
+    ]]
     local utility = ERACombatFrames_PriestUtility(cFrame, 111, -144, 3, talent_not_mindbomb)
     utility:AddDefensiveDispellCooldown(1.5, 0.9, 213634, nil, ERALIBTalent:CreateLevel(18), "Disease")
     utility:AddCooldown(0, 0, 205369, nil, true, talent_mindbomb).alphaWhenOffCooldown = 0.4
@@ -257,6 +269,18 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 ---- COMMON ------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
+
+function ERACombatFrames_PriestKyrian(timers, x, y, talent)
+    local boonAura = timers:AddTrackedBuff(325013, talent)
+    timers:AddAuraBar(boonAura, nil, 0.4, 0.8, 1.0)
+    local blastDisplay = timers:AddCooldownIcon(timers:AddTrackedCooldown(325283, talent), 3528286, x, y, true, true)
+    function blastDisplay:ShouldShowMainIcon()
+        return boonAura.remDuration > 0
+    end
+    function blastDisplay:OverrideTimerVisibility()
+        return boonAura.remDuration > 0
+    end
+end
 
 function ERACombatFrames_PriestSWD(timers, x, y)
     local swdTimer = timers:AddTrackedCooldown(32379, ERALIBTalent:CreateLevel(14))

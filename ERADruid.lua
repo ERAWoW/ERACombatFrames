@@ -10,6 +10,11 @@
 /cast [talent:1/2][@mouseover,exists,help,nodead][exists,help,nodead][@player] Nourrir;[talent:1/3][@mouseover,exists,help,nodead][exists,help,nodead][@player] Protection cénarienne
 ]]
 function ERACombatFrames_DruidSetup(cFrame)
+    ERACombatGlobals_SpecID1 = 102
+    ERACombatGlobals_SpecID2 = 103
+    ERACombatGlobals_SpecID3 = 104
+    ERACombatGlobals_SpecID4 = 105
+
     ERAPieIcon_BorderR = 0.7
     ERAPieIcon_BorderG = 0.6
     ERAPieIcon_BorderB = 0.1
@@ -173,7 +178,7 @@ function ERACombatFrames_DruidMoonkinSetup(cFrame)
     moonUtility:AddBuffIcon(moonUtility:AddTrackedBuff(194223, talent_alignment), 613074, 0, 0, false)
     moonUtility:AddCooldown(0, 0, 102560, nil, true, talent_incarnation)
     moonUtility:AddBuffIcon(moonUtility:AddTrackedBuff(102560, talent_incarnation), 613074, 0, 0, false)
-    moonUtility:AddCovenantClassAbility(1, 0, 338142, 323546, 323764, 325727)
+    ERACombatFrames_DruidCovenantClass(timers, moonUtility, 1, 0)
 
     local utility = ERACombatFrames_DruidCommonUtility(cFrame, timers, 188, -220, 1, 132469, 28, 2782, "Curse", "Poison")
     ERACombatFrames_DruidCatAffinityCC(utility, ERALIBTalent:Create(3, 1))
@@ -340,7 +345,7 @@ function ERACombatFrames_DruidCatSetup(cFrame)
     timers:AddAuraBar(incarnationTimer, nil, 1.0, 0.0, 0.0)
 
     local catUtility = ERACombatUtilityFrame:Create(cFrame, -188, -144, 2)
-    catUtility:AddCovenantClassAbility(1, 0, 338142, 323546, 323764, 325727)
+    ERACombatFrames_DruidCovenantClass(timers, catUtility, 1, 0)
     catUtility:AddCooldown(0, 0, 106951, nil, true, talent_berzerk)
     catUtility:AddBuffIcon(catUtility:AddTrackedBuff(106951, talent_berzerk), 613074, 0, 0, false)
     catUtility:AddCooldown(0, 0, 102543, nil, true, talent_incarnation)
@@ -593,7 +598,7 @@ function ERACombatFrames_DruidBearSetup(cFrame)
     timers:AddAuraBar(incarnationTimer, nil, 1.0, 0.0, 0.0)
 
     local bearUtility = ERACombatUtilityFrame:Create(cFrame, -234, -111, 3)
-    bearUtility:AddCovenantClassAbility(1, 0, 338142, 323546, 323764, 325727)
+    ERACombatFrames_DruidCovenantClass(timers, bearUtility, 1, 0)
     bearUtility:AddCooldown(0, 0, 50334, nil, true, talent_berzerk)
     bearUtility:AddBuffIcon(bearUtility:AddTrackedBuff(50334, talent_berzerk), 613074, 0, 0, false)
     bearUtility:AddCooldown(0, 0, 102558, nil, true, talent_incarnation)
@@ -657,11 +662,32 @@ function ERACombatFrames_DruidTreeSetup(cFrame)
     ERAOutOfCombatStatusBars:Create(cFrame, -128, -64, 128, 22, 0, true, 0.1, 0.1, 1.0, false, 4) -- mana 0
 
     local grid = ERACombatGrid:Create(cFrame, -144, -16, "BOTTOMRIGHT", 4, 88423, "Magic", "Curse", "Poison")
-    local lifeBloomDefinition = grid:AddTrackedBuff(33763, nil)
-    local regrowthDefinition = grid:AddTrackedBuff(8936, nil)
-    local rejuvDefinition = grid:AddTrackedBuff(774, nil)
-    local rejuv2Definition = grid:AddTrackedBuff(155777, nil)
-    local growthDefinition = grid:AddTrackedBuff(48438, nil)
+    -- spellID, position, priority, rC, gC, bC, rB, gB, bB, talent
+    local lifeBloomDefinition = grid:AddTrackedBuff(33763, 0, 1, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, nil)
+    local regrowthDefinition = grid:AddTrackedBuff(8936, 1, 1, 0.0, 0.8, 0.0, 0.0, 1.0, 0.0, nil)
+    local rejuvDefinition = grid:AddTrackedBuff(774, 2, 1, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, nil)
+    local rejuv2Definition = grid:AddTrackedBuff(155777, 2, 1, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, talent_rejuv2)
+    local rejuvBothDefinition = grid:AddTrackedBuff(1, 2, 1, 1.0, 0.5, 0.0, 0.0, 0.8, 0.0, talent_rejuv2)
+    ERACombatFrames_DruidRestoRejuv(rejuvDefinition, rejuv2Definition)
+    ERACombatFrames_DruidRestoRejuv(rejuv2Definition, rejuvDefinition)
+    function rejuvBothDefinition:updateDisplay(instance)
+        local i1 = instance.unitframe:GetAura(rejuvDefinition)
+        local i2 = instance.unitframe:GetAura(rejuv2Definition)
+        if (i1.remDuration > 0 and i2.remDuration > 0) then
+            local i
+            if (i1.remDuration > i2.remDuration) then
+                i = i2
+            else
+                i = i1
+            end
+            ERAPieControl_SetOverlayValue(instance, 1 - i.remDuration / i.totDuration)
+            i.text:SetText("X")
+            instance:show()
+        else
+            instance:hide()
+        end
+    end
+    local growthDefinition = grid:AddTrackedBuff(48438, 3, 1, 0.5, 1.0, 0.5, 1.0, 1.0, 1.0)
 
     local timers = ERACombatTimersGroup:Create(cFrame, -144, -99, 1.5, 4)
 
@@ -696,8 +722,8 @@ function ERACombatFrames_DruidTreeSetup(cFrame)
     local incarnationTimer = timers:AddTrackedBuff(33891, talent_incarnation)
     timers:AddAuraBar(incarnationTimer, nil, 1.0, 0.0, 0.0)
 
-    ERACombatHealth:Create(cFrame, -177, -111, 200, 22, 4)
-    ERACombatPower:Create(cFrame, -177, -133, 200, 22, 0, false, 0.1, 0.1, 1.0, 4)
+    ERACombatHealth:Create(cFrame, -202, -111, 166, 22, 4)
+    ERACombatPower:Create(cFrame, -202, -133, 166, 22, 0, false, 0.1, 0.1, 1.0, 4)
 
     local utility = ERACombatFrames_DruidCommonUtility(cFrame, timers, 188, -177, 4, 102793, 28, 88423, "Magic", "Curse", "Poison")
     ERACombatFrames_DruidMoonAffinityCC(utility, ERALIBTalent:Create(3, 1))
@@ -705,7 +731,7 @@ function ERACombatFrames_DruidTreeSetup(cFrame)
     ERACombatFrames_DruidBearAffinityCC(utility, ERALIBTalent:Create(3, 3))
 
     local treeUtility = ERACombatUtilityFrame:Create(cFrame, -88, -199, 4)
-    treeUtility:AddCovenantClassAbility(1, 0, 338142, 323546, 323764, 325727)
+    ERACombatFrames_DruidCovenantClass(timers, treeUtility, 1, 0)
     treeUtility:AddCooldown(0, 0, 102342, nil, true, ERALIBTalent:CreateLevel(12)) -- ironbark
     treeUtility:AddCooldown(-1, 0, 740, nil, true, ERALIBTalent:CreateLevel(37)) -- tranqui
     local flourish = treeUtility:AddCooldown(-2, 0, 197721, nil, true, talent_boosthots)
@@ -732,6 +758,19 @@ function ERACombatFrames_DruidTreeSetup(cFrame)
     ERACombatFrames_DruidEfflorescenceMissing:create(timers, efflo, 1.7, 2)
 
     ERACombat_TimerBarDefaultSize = remember_default_bar_size
+end
+
+-- grid rejuv
+
+function ERACombatFrames_DruidRestoRejuv(aura, other)
+    function aura:updateDisplay(instance)
+        local otherInstance = instance.unitframe:GetAura(other)
+        if (otherInstance.remDuration > 0) then
+            instance:hide()
+        else
+            self:updateDisplayDefault(instance)
+        end
+    end
 end
 
 -- personal hots
@@ -855,6 +894,11 @@ function ERACombatFrames_DruidCommonUtility(cFrame, timers, x, y, spec, nativeIn
     utility:AddCooldown(-1, -1.6, 6795, nil, true, ERALIBTalent:CreateLevel(14)).alphaWhenOffCooldown = 0.1 -- taunt
 
     return utility
+end
+
+function ERACombatFrames_DruidCovenantClass(timers, utility, x, y)
+    utility:AddCovenantClassAbility(1, 0, 338142, 323546, 323764, 325727, 326434)
+    timers:AddAuraBar(timers:AddTrackedBuff(323546, ERALIBTalent:CreateVenthyrOrSpellKnown(323546)), nil, 0.7, 0.0, 0.0)
 end
 
 ------------------------------------------------------------------------------------------------------------------------

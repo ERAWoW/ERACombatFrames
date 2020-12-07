@@ -1,4 +1,8 @@
 function ERACombatFrames_PaladinSetup(cFrame)
+    ERACombatGlobals_SpecID1 = 65
+    ERACombatGlobals_SpecID2 = 66
+    ERACombatGlobals_SpecID3 = 70
+
     ERAPieIcon_BorderR = 1.0
     ERAPieIcon_BorderG = 1.0
     ERAPieIcon_BorderB = 1.0
@@ -8,6 +12,8 @@ function ERACombatFrames_PaladinSetup(cFrame)
     local retributionActive = ERACombatOptions_IsSpecActive(3)
 
     ERAOutOfCombatStatusBars:Create(cFrame, -155, -66, 128, 22, 0, true, 0.1, 0.1, 1.0, false, holyActive, protectionActive, retributionActive)
+
+    ERACombatFrames_PaladinAuras:create(cFrame, 0, 256, holyActive, protectionActive, retributionActive)
 
     if (holyActive) then
         ERACombatFrames_PaladinHolySetup(cFrame)
@@ -45,9 +51,11 @@ function ERACombatFrames_PaladinHolySetup(cFrame)
 
     local grid = ERACombatGrid:Create(cFrame, -133, -8, "BOTTOMRIGHT", 1, 4987, "Magic", "Disease", "Poison")
     --, "Curse")
-    grid:AddTrackedBuff(53563, nil) -- beacon
-    grid:AddTrackedBuff(156910, nil, 1) -- beacon 2
-    grid:AddTrackedBuff(287280, nil) -- glimmer
+    -- spellID, position, priority, rC, gC, bC, rB, gB, bB, talent
+    grid:AddTrackedBuff(53563, 0, 2, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, nil) -- beacon
+    grid:AddTrackedBuff(156910, 0, 1, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, ERALIBTalent:Create(7, 2)) -- beacon 2
+    grid:AddTrackedBuff(200025, 0, 1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, ERALIBTalent:Create(7, 3)) -- beacon 3
+    grid:AddTrackedBuff(287280, 1, 1, 1.0, 1.0, 0.0, 1.0, 0.5, 0.0, nil) -- glimmer
 
     local timers = ERACombatTimersGroup:Create(cFrame, -144, -88, 1.5, 1)
 
@@ -67,7 +75,7 @@ function ERACombatFrames_PaladinHolySetup(cFrame)
     timers:AddCooldownIcon(timers:AddTrackedCooldown(35395), 135891, 0, 1, true, true) -- crusader strike
     ERACombatFrames_Paladin_seraph(timers, 0, 0)
 
-    local utility, burstUtility = ERACombatFrames_Paladin_common_stuff(cFrame, timers, 88, -188, -144, -222, 1.5, 2.5, 498, 4987, false, 216331, 216331, 6, 2, ERALIBTalent:CreateLevel(41), 1)
+    local utility, burstUtility = ERACombatFrames_Paladin_common_stuff(cFrame, timers, 123, -188, -144, -222, 1.5, 2.5, 498, 4987, true, 216331, 216331, 6, 2, ERALIBTalent:CreateLevel(41), 1)
     utility:AddCooldown(-0.5, 0, 31821, nil, true, ERALIBTalent:CreateLevel(39)) -- aura mastery
     utility:AddCooldown(-1.5, 0, 214202, nil, true, ERALIBTalent:Create(4, 3)) -- rule of law
 
@@ -84,8 +92,8 @@ function ERACombatFrames_PaladinProtectionSetup(cFrame)
 
     local timers = ERACombatTimersGroup:Create(cFrame, -144, -32, 1.5, 2)
 
-    local consecration = ERACombatFrames_PaladinConsecrationTimer_create(timers, true)
     local consecrationCDTimer = timers:AddTrackedCooldown(26573)
+    local consecration = ERACombatFrames_PaladinConsecrationTimer_create(timers, true, consecrationCDTimer)
     ERACombatFrames_PaladinConsecrationMissing:create(consecration, 0, 4, consecrationCDTimer)
 
     timers:AddCooldownIcon(timers:AddTrackedCooldown(20271), nil, 0, 2, true, true) -- judgement
@@ -115,12 +123,13 @@ function ERACombatFrames_PaladinProtectionSetup(cFrame)
     pullUtility:AddCooldown(-0.5, 0, 31935, nil, false) -- avenger
     pullUtility:AddCooldown(0.5, 0, 20271, nil, false) -- judgement
 
-    local utility, burstUtility, forebearance = ERACombatFrames_Paladin_common_stuff(cFrame, timers, 44, -166, -166, -166, 0, 3, 31850, 213644, false, -1, -1, 0, 0, ERALIBTalent:CreateNotTalent(4, 3, 41), 2)
+    local utility, burstUtility, forebearance =
+        ERACombatFrames_Paladin_common_stuff(cFrame, timers, 44, -166, -166, -166, 0, 3, 31850, 213644, false, -1, -1, 0, 0, ERALIBTalent:CreateNotTalent(4, 3, 41), 2)
     utility:AddCooldown(-0.5, 0, 86659, nil, true) -- king
     burstUtility:AddCooldown(0.5, -0.9, 327193, nil, true, ERALIBTalent:Create(2, 3)) -- reset shield
     ERACombatFrames_PaladinUtilityAffectedByForebearance(utility:AddCooldown(1, -0.9, 204018, nil, true, ERALIBTalent:Create(4, 3)), forebearance) -- alternative protection
 
-    local sow = ERACombatFrames_PaladinProtectionShieldOrWOG:create(cFrame, -212, -101, health, shieldArmour, holyPower)
+    local sow = ERACombatFrames_PaladinProtectionShieldOrWOG:create(cFrame, -212, -101, health, shieldArmour, holyPower, freeWOG)
 
     local mana = ERACombatPower:Create(cFrame, -353, -60, 144, 22, 0, false, 0.2, 0.2, 1.0, 2)
     function mana:ShouldBeVisible(t)
@@ -137,7 +146,7 @@ ERACombatFrames_PaladinProtectionShieldOrWOG = {}
 ERACombatFrames_PaladinProtectionShieldOrWOG.__index = ERACombatFrames_PaladinProtectionShieldOrWOG
 setmetatable(ERACombatFrames_PaladinProtectionShieldOrWOG, {__index = ERACombatModule})
 
-function ERACombatFrames_PaladinProtectionShieldOrWOG:create(cFrame, x, y, health, shieldArmourTimer, holyPower)
+function ERACombatFrames_PaladinProtectionShieldOrWOG:create(cFrame, x, y, health, shieldArmourTimer, holyPower, freeWOG)
     local sow = {}
     setmetatable(sow, ERACombatFrames_PaladinProtectionShieldOrWOG)
     sow:construct(cFrame, -1, 0.2, true, 2)
@@ -168,6 +177,7 @@ function ERACombatFrames_PaladinProtectionShieldOrWOG:create(cFrame, x, y, healt
     sow.shieldArmourTimer = shieldArmourTimer
     sow.health = health
     sow.holyPower = holyPower
+    sow.freeWOG = freeWOG
     sow.firstLink = {}
     sow.firstLink.t = 0
     sow.firstLink.d = 0
@@ -351,6 +361,11 @@ function ERACombatFrames_PaladinProtectionShieldOrWOG:UpdateCombat(t)
     tickPosition = tickPosition * ERACombatFrames_PaladinProtectionShieldOrWOG_BarWidth + ERACombatFrames_PaladinProtectionShieldOrWOG_IconSize
     self.tick:SetStartPoint("TOPLEFT", self.frame, tickPosition, 0)
     self.tick:SetEndPoint("BOTTOMLEFT", self.frame, tickPosition, 0)
+    if (self.freeWOG.remDuration > 0) then
+        self.health.bar:SetPrevisionColor(0.5, 1.0, 1.0)
+    else
+        self.health.bar:SetPrevisionColor(0.5, 0.5, 1.0)
+    end
 end
 
 function ERACombatFrames_PaladinProtectionShieldOrWOG_getArmorPct(stat, playerLevel)
@@ -474,7 +489,6 @@ function ERACombatFrames_Paladin_common_stuff(
     ERACombatFrames_PaladinUtilityAffectedByForebearance(utility:AddCooldown(-1, -0.9, 633, nil, true), forebearance) -- impo
     ERACombatFrames_PaladinUtilityAffectedByForebearance(utility:AddCooldown(0, -0.9, 642, nil, true), forebearance) -- divine shield
     ERACombatFrames_PaladinUtilityAffectedByForebearance(utility:AddCooldown(1, -0.9, 1022, nil, true, ERALIBTalent:CreateLevel(41)), forebearance) -- protection
-    utility:AddMissingBuffAnyCaster(135893, -1.5, -1.8, ERALIBTalent:CreateLevel(21), 465, 32223, 183435)
     utility:AddCooldown(-0.5, -1.8, 62124, nil, true, ERALIBTalent:CreateLevel(14)).alphaWhenOffCooldown = 0.05 -- taunt
     utility:AddRacial(0.5, -1.8).alphaWhenOffCooldown = 0.4
     utility:AddCooldown(1.5, -1.8, 10326, nil, true, ERALIBTalent:CreateLevel(24)).alphaWhenOffCooldown = 0.1 -- turn evil
@@ -494,9 +508,25 @@ function ERACombatFrames_Paladin_common_stuff(
     local burstUtility = ERACombatUtilityFrame:Create(cFrame, xBurst, yBurst, spec)
     burstUtility:AddCooldown(0, 0, 31884, nil, true, talent_avenging)
     burstUtility:AddCooldown(0, 0, avengerAlternativeSpellID, nil, true, talent_alternative_avenging)
-    burstUtility:AddCovenantClassAbility(1, 0, 304971, 316958, 328620, 328204)
     burstUtility:AddTrinket1Cooldown(-0.5, -0.9)
     burstUtility:AddTrinket2Cooldown(-1.5, -0.9)
+
+    burstUtility:AddCovenantClassAbility(1, 0, 304971, 316958, nil, 328204)
+    --burstUtility:AddCooldown(1, 0, 328281, 3636846, true, ERALIBTalent_Nightfae).showOnlyIfSpellUsable = true
+    --burstUtility:AddCooldown(1, 0, 328282, 3636844, true, ERALIBTalent_Nightfae).showOnlyIfSpellUsable = true
+    --burstUtility:AddCooldown(1, 0, 328620, 3636845, true, ERALIBTalent_Nightfae).showOnlyIfSpellUsable = true
+    --burstUtility:AddCooldown(1, 0, 328622, 3636843, true, ERALIBTalent_Nightfae).showOnlyIfSpellUsable = true
+    local talent_nightfae =
+        ERALIBTalent:CreateOr(
+        ERALIBTalent:CreateNightfaeOrSpellKnown(328281),
+        ERALIBTalent:CreateNightfaeOrSpellKnown(328282),
+        ERALIBTalent:CreateNightfaeOrSpellKnown(328620),
+        ERALIBTalent:CreateNightfaeOrSpellKnown(328622)
+    )
+    ERACombatFrames_PaladinNightfae(burstUtility, 328281, 3636846, 1, 0, talent_nightfae)
+    ERACombatFrames_PaladinNightfae(burstUtility, 328282, 3636844, 1, 0, talent_nightfae)
+    ERACombatFrames_PaladinNightfae(burstUtility, 328620, 3636845, 1, 0, talent_nightfae)
+    ERACombatFrames_PaladinNightfae(burstUtility, 328622, 3636843, 1, 0, talent_nightfae)
 
     -- common talents
     local talent_double_holy = ERALIBTalent:Create(5, 2)
@@ -550,6 +580,31 @@ function ERACombatFrames_Paladin_common_stuff(
 
     return utility, burstUtility, forebearance
 end
+function ERACombatFrames_PaladinNightfae(utility, spellID, iconID, x, y, talent_nightfae)
+    local cd = utility:AddCooldown(x, y, spellID, iconID, true, talent_nightfae)
+    function cd:IconUpdatedAndShown(t)
+        local type
+        local id
+        if (not self.slot) then
+            self.slot = -1
+            for s = 1, 72 do
+                type, id = GetActionInfo(s)
+                if (type == "spell" and (id == 328281 or id == 328282 or id == 328620 or id == 328622)) then
+                    self.slot = s
+                    break
+                end
+            end
+        end
+        if (self.slot > 0) then
+            type, id = GetActionInfo(self.slot)
+            if ((type ~= "spell" or id ~= self.spellID) and self.spell ~= 328281) then
+                self.icon:Hide()
+            end
+        elseif (self.spellID ~= 328281) then
+            self.icon:Hide()
+        end
+    end
+end
 function ERACombatFrames_PaladinUtilityAffectedByForebearance(icon, forebearance)
     function icon:IconUpdatedAndShown(t)
         if (self.remDuration > 0 or forebearance.aura.remDuration <= 0) then
@@ -564,18 +619,26 @@ end
 
 function ERACombatFrames_PaladinConsecrationTimer_create(timers, checkInside, consecrationCD)
     local c = timers:AddTotemBar(1, 135926, 0.8, 0.8, 0.0)
+    c.consecrationCD = consecrationCD
     if (checkInside) then
         c.inside = timers:AddTrackedBuff(188370)
         function c:UpdatingDuration(t, remDuration)
-            if (self.inside.stacks > 0) then
-                self.view:SetColor(0.8, 0.8, 0.0)
+            if (self.consecrationCD.remDuration > 0) then
+                if (self.inside.stacks > 0) then
+                    self.view:SetColor(0.6, 0.6, 0.0)
+                else
+                    self.view:SetColor(0.6, 0.1, 0.0)
+                end
             else
-                self.view:SetColor(1.0, 0.0, 0.0)
+                if (self.inside.stacks > 0) then
+                    self.view:SetColor(0.9, 0.9, 0.0)
+                else
+                    self.view:SetColor(1.0, 0.0, 0.0)
+                end
             end
             return remDuration
         end
     else
-        c.consecrationCD = consecrationCD
         function c:UpdatingDuration(t, remDuration)
             if (self.consecrationCD.remDuration > 0) then
                 self.view:SetColor(0.8, 0.8, 0.0)
@@ -603,4 +666,252 @@ end
 
 function ERACombatFrames_PaladinConsecrationMissing:ComputeIsVisible(t)
     return self.ccd.remDuration <= 0 and self.bar.remDuration <= 0
+end
+
+------------------------------------------------------------------------------------------------------------------------
+---- AURAS -------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+
+ERACombatFrames_PaladinAuras = {}
+ERACombatFrames_PaladinAuras.__index = ERACombatFrames_PaladinAuras
+setmetatable(ERACombatFrames_PaladinAuras, {__index = ERACombatModule})
+
+function ERACombatFrames_PaladinAuras:create(cFrame, x, y, ...)
+    local a = {}
+    setmetatable(a, ERACombatFrames_PaladinAuras)
+    a:construct(cFrame, 0.5, 0.5, false, ...)
+
+    a.frame = CreateFrame("Frame", nil, UIParent, nil)
+    a.frame:SetPoint("CENTER", UIParent, "CENTER", x, y)
+    a.frame:SetSize(128, 128)
+    a.icon = ERASquareIcon:Create(a.frame, "CENTER", 64, 135893)
+    a.icon:Draw(0, 0)
+    a.icon:Hide()
+    a.frame:Hide()
+    a.active = false
+
+    a.level = 0
+    a.aurasByID = {}
+    a.crusader = a:makeAura(32223, 135890, 21)
+    a.devotion = a:makeAura(465, 135893, 28)
+    a.retribution = a:makeAura(183435, 135889, 38)
+    a.concentration = a:makeAura(317920, 135933, 52)
+    a.paladins = {}
+    a.groupChange = 0
+    a.inGroup = false
+
+    a.events = {}
+    function a.events:GROUP_ROSTER_UPDATE()
+        a:updateMembers()
+    end
+    function a.events:GROUP_JOINED()
+        a:updateMembers()
+    end
+    function a.events:GROUP_LEFT()
+        a:updateMembers()
+    end
+    a.frame:SetScript(
+        "OnEvent",
+        function(self, event, ...)
+            a.events[event](self, ...)
+        end
+    )
+
+    return a
+end
+function ERACombatFrames_PaladinAuras:makeAura(id, icon, level)
+    local a = {}
+    a.active = false
+    a.level = level
+    a.id = id
+    a.icon = icon
+    self.aurasByID[id] = a
+    return a
+end
+
+function ERACombatFrames_PaladinAuras:CheckTalents()
+    self.level = UnitLevel("player")
+    if (self.level < 21) then
+        self.active = false
+        self.frame:Hide()
+    else
+        self.active = true
+        self.frame:Show()
+    end
+end
+function ERACombatFrames_PaladinAuras:SpecInactive(wasActive)
+    self.frame:Hide()
+end
+
+function ERACombatFrames_PaladinAuras:EnterVehicle(fromCombat)
+    self.frame:Hide()
+end
+function ERACombatFrames_PaladinAuras:ExitVehicle(toCombat)
+    self.frame:Show()
+end
+
+function ERACombatFrames_PaladinAuras:ResetToIdle()
+    self:updateMembers()
+end
+
+function ERACombatFrames_PaladinAuras:updateMembers()
+    if (IsInGroup()) then
+        self.inGroup = true
+        local t = GetTime()
+        if (self.groupChange) then
+            self.groupChange = math.max(self.groupChange, t - 2.5)
+        else
+            self.groupChange = t
+        end
+    else
+        self.inGroup = false
+        self.icon:StopBeam()
+        self.groupChange = nil
+        self.paladins = {}
+    end
+end
+
+function ERACombatFrames_PaladinAuras:UpdateCombat(t)
+    self:update(t, true)
+end
+function ERACombatFrames_PaladinAuras:UpdateIdle(t)
+    self:update(t, false)
+end
+function ERACombatFrames_PaladinAuras:update(t, combat)
+    if (self.active) then
+        for _, v in pairs(self.aurasByID) do
+            v.active = false
+            v.byPlayer = false
+            v.byOtherPaladin = false
+        end
+        local activeCount = 0
+        local oneByPlayer = false
+        for i = 1, 40 do
+            local _, _, stacks, _, durAura, expirationTime, source, _, _, spellID = UnitBuff("player", i)
+            if (spellID) then
+                local a = self.aurasByID[spellID]
+                if (a ~= nil) then
+                    if (not a.active) then
+                        activeCount = activeCount + 1
+                        a.active = true
+                    end
+                    if (source == "player") then
+                        a.byPlayer = true
+                        oneByPlayer = true
+                    end
+                end
+            else
+                break
+            end
+        end
+
+        if (self.groupChange) then
+            if (self.groupChange + 3 <= t) then
+                self.icon:Hide()
+                return
+            else
+                self.groupChange = nil
+                self.paladins = {}
+                if (IsInGroup()) then
+                    self.inGroup = true
+                    self.icon:Beam()
+                    local prefix
+                    local maxi = GetNumGroupMembers()
+                    if (IsInRaid()) then
+                        prefix = "raid"
+                    else
+                        prefix = "party"
+                    end
+                    for i = 1, maxi do
+                        local unit = prefix .. i
+                        if (not UnitIsUnit(unit, "player")) then
+                            local _, _, classID = UnitClass(unit)
+                            if (classID == 2) then
+                                table.insert(self.paladins, unit)
+                            end
+                        end
+                    end
+                else
+                    self.inGroup = false
+                    self.icon:StopBeam()
+                end
+            end
+        end
+
+        local pCount = 1
+        for _, p in ipairs(self.paladins) do
+            if (UnitInRange(p)) then
+                pCount = pCount + 1
+                for i = 1, 40 do
+                    local _, _, stacks, _, durAura, expirationTime, source, _, _, spellID = UnitBuff(p, i)
+                    if (spellID) then
+                        local a = self.aurasByID[spellID]
+                        if (a ~= nil and source == p) then
+                            a.byOtherPaladin = true
+                        end
+                    else
+                        break
+                    end
+                end
+            end
+        end
+
+        if (IsMounted()) then
+            if (self.crusader.active) then
+                if (self.crusader.byPlayer) then
+                    self.icon:Hide()
+                    return
+                end
+            else
+                self.icon:SetIconTexture(self.crusader.icon)
+                self.icon:Show()
+                return
+            end
+        end
+        if (oneByPlayer) then
+            -- ici, notre propre aura du croisé n'est pas active, ou pas utile
+            if (self.retribution.active and self.retribution.byPlayer) then
+                if (self.inGroup) then
+                    self.icon:Hide()
+                else
+                    self.icon:SetIconTexture(self.devotion.icon)
+                    self.icon:Show()
+                end
+            else
+                local missingAura
+                if (self.level >= self.retribution.level) then
+                    missingAura = self.retribution
+                else
+                    missingAura = nil
+                end
+                local availableAura = self.crusader.byPlayer and combat
+                missingAura, availableAura = self:computeAura(self.concentration, missingAura, availableAura)
+                missingAura, availableAura = self:computeAura(self.devotion, missingAura, availableAura)
+                if (missingAura and availableAura) then
+                    self.icon:SetIconTexture(missingAura.icon)
+                    self.icon:Show()
+                else
+                    self.icon:Hide()
+                end
+            end
+        else
+            self.icon:SetIconTexture(self.devotion.icon)
+            self.icon:Show()
+        end
+    end
+end
+function ERACombatFrames_PaladinAuras:computeAura(a, missing, available)
+    if (self.level >= a.level) then
+        if (a.active) then
+            if (a.byPlayer and a.byOtherPaladin) then
+                return missing, true
+            else
+                return missing, available
+            end
+        else
+            return a, available
+        end
+    else
+        return missing, available
+    end
 end

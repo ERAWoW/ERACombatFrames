@@ -1,10 +1,15 @@
 function ERACombatFrames_MageSetup(cFrame)
+    ERACombatGlobals_SpecID1 = 62
+    ERACombatGlobals_SpecID2 = 63
+    ERACombatGlobals_SpecID3 = 64
+
     local arcaneActive = ERACombatOptions_IsSpecActive(1)
     local fireActive = ERACombatOptions_IsSpecActive(2)
     local frostActive = ERACombatOptions_IsSpecActive(3)
 
     local enemies = ERACombatEnemiesTracker:Create(cFrame, 0.2, arcaneActive, fireActive, frostActive)
     local talent_rune = ERALIBTalent:Create(3, 3)
+    local talent_necrolords = ERALIBTalent:CreateNecrolordsOrSpellKnown(324220)
 
     enemies.lastRuneCast = 0
     enemies.lastManaCast = 0
@@ -18,7 +23,7 @@ function ERACombatFrames_MageSetup(cFrame)
         end
     end
 
-    ERAOutOfCombatStatusBars:Create(cFrame, -111, -32, 128, 22, 0, true, 0.1, 0.1, 1.0, false, arcaneActive, fireActive, frostActive)
+    ERAOutOfCombatStatusBars:Create(cFrame, -144, -8, 128, 22, 0, true, 0.1, 0.1, 1.0, false, arcaneActive, fireActive, frostActive)
     ERACombatHealth:Create(cFrame, 32, -64, 111, 22, arcaneActive, fireActive, frostActive)
     local mana = ERACombatPower:Create(cFrame, -255, -88, 111, 22, 0, true, 0.2, 0.2, 1.0, fireActive, frostActive)
     function mana:ShouldBeVisible(t)
@@ -27,13 +32,13 @@ function ERACombatFrames_MageSetup(cFrame)
     end
 
     if (arcaneActive) then
-        ERACombatFrames_MageArcaneSetup(cFrame, enemies, talent_rune)
+        ERACombatFrames_MageArcaneSetup(cFrame, enemies, talent_rune, talent_necrolords)
     end
     if (fireActive) then
-        ERACombatFrames_MageFireSetup(cFrame, enemies, talent_rune)
+        ERACombatFrames_MageFireSetup(cFrame, enemies, talent_rune, talent_necrolords)
     end
     if (frostActive) then
-        ERACombatFrames_MageFrostSetup(cFrame, enemies, talent_rune)
+        ERACombatFrames_MageFrostSetup(cFrame, enemies, talent_rune, talent_necrolords)
     end
 
     cFrame:Pack()
@@ -43,7 +48,7 @@ end
 ---- ARCANE ------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
 
-function ERACombatFrames_MageArcaneSetup(cFrame, enemies, talent_rune)
+function ERACombatFrames_MageArcaneSetup(cFrame, enemies, talent_rune, talent_necrolords)
     local talent_familiar = ERALIBTalent:Create(1, 3)
 
     ERACombatPower:Create(cFrame, -188, -26, 144, 22, 0, true, 0.2, 0.2, 1.0, 1)
@@ -59,8 +64,10 @@ function ERACombatFrames_MageArcaneSetup(cFrame, enemies, talent_rune)
     timers:AddOffensiveDispellIcon(135729, 1, 2, true, ERALIBTalent:CreateLevel(39), "Magic")
 
     timers:AddAuraBar(timers:AddTrackedBuff(12042), nil, 0.6, 0.0, 1.0) -- arcane power
-    timers:AddAuraBar(timers:AddTrackedBuff(210824), nil, 1.0, 0.1, 0.6) -- magi
+    timers:AddAuraBar(timers:AddTrackedDebuff(210824), nil, 1.0, 0.1, 0.6) -- magi
     ERACombatMageRuneBar_create(timers, talent_rune)
+
+    timers:AddAuraBar(timers:AddTrackedDebuff(31589), nil, 0.4, 0.4, 0.4) -- slow
 
     timers:AddKick(2139, 2, 1, ERALIBTalent:CreateLevel(7))
 
@@ -73,10 +80,11 @@ function ERACombatFrames_MageArcaneSetup(cFrame, enemies, talent_rune)
     damageUtility:AddCooldown(-1, 0, 12051, nil, true, ERALIBTalent:CreateLevel(27)) -- evocation
     damageUtility:AddCooldown(0, 0, 12042, nil, true, ERALIBTalent:CreateLevel(29)) -- unlimited power
     damageUtility:AddCooldown(1, 0, 205025, nil, true, ERALIBTalent:CreateLevel(42)) -- pom
-    damageUtility:AddCovenantClassAbility(0.5, -0.9, 307443, 314793, 314791, 324220)
     damageUtility:AddTrinket1Cooldown(-0.5, -0.9)
     damageUtility:AddTrinket2Cooldown(-1.5, -0.9)
     damageUtility:AddMissingBuff(damageUtility:AddTrackedBuff(210126, talent_familiar), nil, 1, -2, true, true, talent_familiar) -- familiar
+
+    ERACombatMage_Covenant(timers, damageUtility, 0.5, -0.9, talent_necrolords)
 
     local dotracker =
         ERACombatDOTracker:Create(
@@ -117,7 +125,7 @@ end
     local _, _, stacks, _, durAura, expirationTime, _, _, _, spellID, false, false, true, false, 1, amount = UnitDebuff("target", i, "PLAYER")
     spellID == 12654
 ]]
-function ERACombatFrames_MageFireSetup(cFrame, enemies, talent_rune)
+function ERACombatFrames_MageFireSetup(cFrame, enemies, talent_rune, talent_necrolords)
     local timers = ERACombatTimersGroup:Create(cFrame, -121, -11, 1.5, 2)
     ERACombatMageBurnIcon:create(timers, 0, 2, enemies)
     timers:AddCooldownIcon(timers:AddTrackedCooldown(108853), nil, 0, 1, true, true) -- blast
@@ -138,11 +146,12 @@ function ERACombatFrames_MageFireSetup(cFrame, enemies, talent_rune)
     utility:AddCooldown(0, 0, 235313, nil, true, ERALIBTalent:CreateLevel(21)).alphaWhenOffCooldown = 0.5 -- barrière
     utility:AddCooldown(2, 0, 66, nil, true, ERALIBTalent:CreateLevel(34)).alphaWhenOffCooldown = 0.5 -- invi
     local damageUtility = ERACombatUtilityFrame:Create(cFrame, -88, -166, 2)
-    damageUtility:AddCovenantClassAbility(1, 0, 307443, 314793, 314791, 324220)
     damageUtility:AddCooldown(0, 0, 190319, nil, true, ERALIBTalent:CreateLevel(29)) -- combu
     damageUtility:AddCooldown(-1, 0, 116011, nil, true, talent_rune)
     damageUtility:AddTrinket1Cooldown(0.5, -0.9)
     damageUtility:AddTrinket2Cooldown(-0.5, -0.9)
+
+    ERACombatMage_Covenant(timers, damageUtility, 1, 0, talent_necrolords)
 end
 
 ERACombatMageBurnIcon = {}
@@ -222,7 +231,7 @@ end
 ---- FROST -------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
 
-function ERACombatFrames_MageFrostSetup(cFrame, enemies, talent_rune)
+function ERACombatFrames_MageFrostSetup(cFrame, enemies, talent_rune, talent_necrolords)
     local talent_lonewolf = ERALIBTalent:Create(1, 2)
     local talent_pet = ERALIBTalent:CreateNotTalent(1, 2, 12)
     local talent_procs = ERALIBTalent:Create(4, 1)
@@ -337,13 +346,14 @@ function ERACombatFrames_MageFrostSetup(cFrame, enemies, talent_rune)
     utility:AddCooldown(1, -2, 235219, nil, true, ERALIBTalent:CreateLevel(42)) -- reset
 
     local damageUtility = ERACombatUtilityFrame:Create(cFrame, -32, -177, 3)
-    damageUtility:AddCovenantClassAbility(0, 0, 307443, 314793, 314791, 324220)
     damageUtility:AddCooldown(-1, 0, 12472, nil, true, ERALIBTalent:CreateLevel(29)) -- icy veins
     damageUtility:AddCooldown(-2, 0, 116011, nil, true, talent_rune)
     damageUtility:AddCooldown(-1.5, -0.9, 31687, nil, true, talent_pet).alphaWhenOffCooldown = 0.2 -- summon pet
     damageUtility:AddCooldown(-0.5, -0.9, 33395, nil, true, talent_pet).showOnlyIfPetSpellKnown = true -- pet frost
     damageUtility:AddTrinket1Cooldown(0.5, 0.9)
     damageUtility:AddTrinket2Cooldown(-2.5, -0.9)
+
+    ERACombatMage_Covenant(timers, damageUtility, 0, 0, talent_necrolords)
 end
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -379,4 +389,9 @@ function ERACombatMageRuneBar_create(timers, talent_rune)
         end
         return remDuration
     end
+end
+
+function ERACombatMage_Covenant(timers, utility, x, y, talent_necrolords)
+    utility:AddCovenantClassAbility(x, y, 307443, 314793, 314791, 324220)
+    timers:AddAuraBar(timers:AddTrackedBuff(324220, talent_necrolords), nil, 0.1, 0.7, 0.4)
 end

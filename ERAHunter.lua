@@ -3,6 +3,10 @@
 -- vérifier la position de AddRacial
 
 function ERACombatFrames_HunterSetup(cFrame)
+    ERACombatGlobals_SpecID1 = 253
+    ERACombatGlobals_SpecID2 = 254
+    ERACombatGlobals_SpecID3 = 255
+
     ERAPieIcon_BorderR = 0.0
     ERAPieIcon_BorderG = 0.7
     ERAPieIcon_BorderB = 0.2

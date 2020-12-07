@@ -2,6 +2,10 @@
 -- rien
 
 function ERACombatFrames_WarlockSetup(cFrame)
+    ERACombatGlobals_SpecID1 = 265
+    ERACombatGlobals_SpecID2 = 266
+    ERACombatGlobals_SpecID3 = 267
+
     local affliActive = ERACombatOptions_IsSpecActive(1)
     local demoActive = ERACombatOptions_IsSpecActive(2)
     local destruActive = ERACombatOptions_IsSpecActive(3)
@@ -28,7 +32,7 @@ end
 ---- COMMON ------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
 
-function ERACombatFrames_WarlockUtility(cFrame, x, y, spec)
+function ERACombatFrames_WarlockUtilityAndCovenant(cFrame, timers, x, y, spec)
     local utility = ERACombatUtilityFrame:Create(cFrame, x, y, spec)
     utility:AddCooldown(0, 0, 104773, nil, true) -- resolve
     utility:AddCooldown(1.5, 0.9, 48018, nil, true, ERALIBTalent:CreateLevel(41)).alphaWhenOffCooldown = 0 -- tp placement
@@ -47,8 +51,12 @@ function ERACombatFrames_WarlockUtility(cFrame, x, y, spec)
 
     utility:AddCooldown(2, -1, 333889, nil, true, ERALIBTalent:CreateLevel(22)) -- instant pet
 
-    utility:AddCovenantClassAbility(-0.5, 0.9, 312321, 321792, 325640, 325289)
+    timers:AddChannelInfo(234153, 1)
+    timers:AddChannelInfo(755, 1)
+
     utility:AddCovenantGenericAbility(0.5, 0.9)
+    utility:AddCovenantClassAbility(-0.5, 0.9, 312321, 321792, 325640, 325289)
+    timers:AddAuraBar(timers:AddTrackedDebuff(325640, ERALIBTalent:CreateNightfaeOrSpellKnown(325640)), nil, 0.0, 0.4, 0.8)
 
     return utility
 end
@@ -276,7 +284,6 @@ function ERACombatFrames_WarlockAfflictionSetup(cFrame)
     local timers = ERACombatTimersGroup:Create(cFrame, -121, -32, 1.5, 1)
 
     timers:AddChannelInfo(198590, 1)
-    timers:AddChannelInfo(234153, 1)
 
     local drainLifeBuff = timers:AddAuraIcon(timers:AddTrackedBuff(334320, ERALIBTalent:Create(1, 2)), 0, 0)
     function drainLifeBuff:ShouldShowWhenAbsent()
@@ -420,7 +427,7 @@ function ERACombatFrames_WarlockAfflictionSetup(cFrame)
 
     ERACombat_TimerBarDefaultSize = remember_default_bar_size
 
-    local utility = ERACombatFrames_WarlockUtility(cFrame, 0, -188, 1)
+    local utility = ERACombatFrames_WarlockUtilityAndCovenant(cFrame, timers, 0, -188, 1)
     utility:AddCooldown(-1, 0, 205180, nil, true, ERALIBTalent:CreateLevel(42)) -- gazer
     utility:AddCooldown(-2, 0, 113860, nil, true, ERALIBTalent:Create(7, 3)) -- dark soul
     utility:AddTrinket1Cooldown(-3, 0)
@@ -542,7 +549,7 @@ function ERACombatFrames_WarlockDemonologySetup(cFrame)
         end
     )
 
-    local utility = ERACombatFrames_WarlockUtility(cFrame, 16, -202, 2)
+    local utility = ERACombatFrames_WarlockUtilityAndCovenant(cFrame, timers, 16, -202, 2)
     utility:AddCooldown(-1, 0, 265187, nil, true, ERALIBTalent:CreateLevel(42)) -- tyrant
     utility:AddCooldown(-2, 0, 111898, nil, true, ERALIBTalent:Create(6, 3)) -- big guard
     utility:AddCooldown(-3, 0, 267217, nil, true, ERALIBTalent:Create(7, 3)) -- demon portal
@@ -652,7 +659,7 @@ function ERACombatFrames_WarlockDestructionSetup(cFrame)
         end
     )
 
-    local utility = ERACombatFrames_WarlockUtility(cFrame, 32, -188, 3)
+    local utility = ERACombatFrames_WarlockUtilityAndCovenant(cFrame, timers, 32, -188, 3)
     utility:AddCooldown(-1, 0, 1122, nil, true, ERALIBTalent:CreateLevel(42)) -- infernal
     utility:AddCooldown(-2, 0, 113858, nil, true, ERALIBTalent:Create(7, 3)) -- dark soul
     utility:AddTrinket1Cooldown(-3, 0)

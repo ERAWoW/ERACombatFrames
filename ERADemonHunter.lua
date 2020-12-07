@@ -2,6 +2,9 @@
 -- unifier fury et pain pour Shadowlands
 
 function ERACombatFrames_DemonHunterSetup(cFrame)
+    ERACombatGlobals_SpecID1 = 557
+    ERACombatGlobals_SpecID2 = 581
+
     local havocActive = ERACombatOptions_IsSpecActive(1)
     local vengeanceActive = ERACombatOptions_IsSpecActive(2)
 

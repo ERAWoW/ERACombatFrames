@@ -220,6 +220,7 @@ function ERACombatTimersGroup:Create(cFrame, x, y, baseGCD, ...)
 
     -- perte de contrôle
     group.loc = {}
+    group.events = {}
     --[[
     local loc_root = ERACombatTimerLOCBar:create(group, "ROOT", "ROOT", 136113, "Interface\\MINIMAP\\HumanUITile-TimeIndicator")
     group.loc["ROOT"] = loc_root
@@ -233,7 +234,6 @@ function ERACombatTimersGroup:Create(cFrame, x, y, baseGCD, ...)
     group.loc["FEAR_MECHANIC"] = loc_fear
     ]]
     -- évènements
-    group.events = {}
     --[[
     function group.events:LOSS_OF_CONTROL_ADDED(locIndex)
         local locType, spellID, text, iconTexture, startTime, timeRemaining, duration, lockoutSchool, priority, displayType = C_LossOfControl.GetEventInfo(locIndex)
@@ -250,7 +250,6 @@ function ERACombatTimersGroup:Create(cFrame, x, y, baseGCD, ...)
     function group.events:LOSS_OF_CONTROL_UPDATE()
         -- hum, on ne fait rien car on recalcule toujours dans ERACombatTimerLOCBar:GetRemDurationOr0IfInvisible
     end
-        ]]
     group.frame:SetScript(
         "OnEvent",
         function(self, event, ...)
@@ -261,7 +260,7 @@ function ERACombatTimersGroup:Create(cFrame, x, y, baseGCD, ...)
         table.insert(group.bars, v)
         table.insert(group.activeBars, v)
     end
-
+    ]]
     group:construct(cFrame, -1, 0.02, false, ...)
     return group
 end

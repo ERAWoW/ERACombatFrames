@@ -14,24 +14,44 @@ ERALIBTalent.__index = ERALIBTalent
 function ERALIBTalent:Create(tier, column)
     return ERALIBTalentYes:create(tier, column)
 end
+
 function ERALIBTalent:CreateLevel(lvl)
     return ERALIBTalentLevel:create(lvl)
 end
+
 function ERALIBTalent:CreateKyrian()
     return ERALIBTalentCovenant:create(1)
+end
+function ERALIBTalent:CreateKyrianOrSpellKnown(spellID)
+    return ERALIBTalentCovenantOrSpellKnown:create(1, spellID)
 end
 function ERALIBTalent:CreateVenthyr()
     return ERALIBTalentCovenant:create(2)
 end
+function ERALIBTalent:CreateVenthyrOrSpellKnown(spellID)
+    return ERALIBTalentCovenantOrSpellKnown:create(2, spellID)
+end
 function ERALIBTalent:CreateNightfae()
     return ERALIBTalentCovenant:create(3)
+end
+function ERALIBTalent:CreateNightfaeOrSpellKnown(spellID)
+    return ERALIBTalentCovenantOrSpellKnown:create(3, spellID)
 end
 function ERALIBTalent:CreateNecrolords()
     return ERALIBTalentCovenant:create(4)
 end
+function ERALIBTalent:CreateNecrolordsOrSpellKnown(spellID)
+    return ERALIBTalentCovenantOrSpellKnown:create(4, spellID)
+end
+
+function ERALIBTalent:CreateInstance(iid)
+    return ERALIBTalentInstance:create(iid)
+end
+
 function ERALIBTalent:CreateNotTalent(tier, column, lvl)
     return ERALIBTalentNotTalent:create(tier, column, lvl)
 end
+
 function ERALIBTalent:CreateNot(cdt)
     return ERALIBTalentNot:create(cdt)
 end
@@ -87,6 +107,47 @@ function ERALIBTalentCovenant:create(cid)
 end
 function ERALIBTalentCovenant:computeHasTalent()
     return self.cid == C_Covenants.GetActiveCovenantID()
+end
+
+ERALIBTalentCovenantOrSpellKnown = {}
+ERALIBTalentCovenantOrSpellKnown.__index = ERALIBTalentCovenantOrSpellKnown
+setmetatable(ERALIBTalentCovenantOrSpellKnown, {__index = ERALIBTalent})
+function ERALIBTalentCovenantOrSpellKnown:create(cid, spellID)
+    local t = {}
+    setmetatable(t, ERALIBTalentCovenantOrSpellKnown)
+    t.cid = cid
+    t.spellID = spellID
+    t:construct()
+    return t
+end
+function ERALIBTalentCovenantOrSpellKnown:computeHasTalent()
+    local c = C_Covenants.GetActiveCovenantID()
+    if (c and c > 0) then
+        return c == self.cid
+    else
+        for s = 1, 72 do
+            local type, id = GetActionInfo(s)
+            if (type == "spell" and id == self.spellID) then
+                return true
+            end
+        end
+        return false
+    end
+end
+
+ERALIBTalentInstance = {}
+ERALIBTalentInstance.__index = ERALIBTalentInstance
+setmetatable(ERALIBTalentInstance, {__index = ERALIBTalent})
+function ERALIBTalentInstance:create(iid)
+    local t = {}
+    setmetatable(t, ERALIBTalentInstance)
+    t.iid = iid
+    t:construct()
+    return t
+end
+function ERALIBTalentInstance:computeHasTalent()
+    local _, _, _, _, _, _, _, instanceID = GetInstanceInfo()
+    return instanceID == self.iid
 end
 
 ERALIBTalentYes = {}
@@ -213,5 +274,8 @@ end
 
 ERALIBTalent_Kyrian = ERALIBTalent:CreateKyrian()
 ERALIBTalent_Venthyr = ERALIBTalent:CreateVenthyr()
+ERALIBTalent_VenthyrOrGenericSpell = ERALIBTalent:CreateVenthyrOrSpellKnown(300728)
 ERALIBTalent_Nightfae = ERALIBTalent:CreateNightfae()
+ERALIBTalent_NightfaeOrGenericSpell = ERALIBTalent:CreateNightfaeOrSpellKnown(310143)
 ERALIBTalent_Necrolords = ERALIBTalent:CreateNecrolords()
+ERALIBTalent_NecrolordsOrGenericSpell = ERALIBTalent:CreateNecrolordsOrSpellKnown(324631)

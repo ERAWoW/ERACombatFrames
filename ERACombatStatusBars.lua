@@ -62,6 +62,9 @@ function ERACombatStatusBar:create(parentFrame, x, y, barWidth, barHeight, r, g,
     bar.gB = 1
     bar.bB = 1
     bar:SetBorderColor(0.9, 0.9, 0.9)
+    bar.rF = 0.5
+    bar.gF = 0.5
+    bar.bF = 1.0
 
     bar.max = 1
     bar.value = 0
@@ -109,6 +112,16 @@ function ERACombatStatusBar:SetMainColor(r, g, b)
         self.g = g
         self.b = b
         self.mainBar:SetVertexColor(r, g, b, 1)
+    end
+end
+
+function ERACombatStatusBar:SetPrevisionColor(r, g, b)
+    if (self.rF ~= r or self.gF ~= g or self.bF ~= b) then
+        self.rF = r
+        self.gF = g
+        self.bF = b
+        self.forecastH:SetColorTexture(r, g, b, 1)
+        self.forecastV:SetColorTexture(r, g, b, 1)
     end
 end
 

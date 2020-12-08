@@ -400,10 +400,12 @@ function ERACombatFrames_PaladinRetributionSetup(cFrame)
     timers:AddCooldownIcon(timers:AddTrackedCooldown(184575, ERALIBTalent:CreateLevel(19)), nil, 0, 0, true, true) -- blade of justice
     timers:AddCooldownIcon(timers:AddTrackedCooldown(255937, ERALIBTalent:CreateLevel(39)), nil, -1.7, -0.7, true, true) -- wake of ashes
 
-    timers:AddAuraBar(timers:AddTrackedDebuff(343721, talent_orbitalstrike), nil, 0.0, 0.8, 1.0)
+    timers:AddAuraBar(timers:AddTrackedBuff(267611, ERALIBTalent:Create(1, 2)), nil, 0.0, 0.8, 0.5)
 
     timers:AddCooldownIcon(timers:AddTrackedCooldown(343527, talent_condemn), nil, -2.7, -0.7, true, true) -- condemn
     timers:AddAuraBar(timers:AddTrackedDebuff(343527, talent_condemn), nil, 0.6, 0.2, 1.0)
+
+    timers:AddAuraBar(timers:AddTrackedDebuff(343721, talent_orbitalstrike), nil, 0.0, 0.8, 1.0)
 
     ERACombatFrames_Paladin_seraph(timers, 0.22, -0.88)
 

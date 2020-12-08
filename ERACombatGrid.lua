@@ -114,6 +114,7 @@ function ERACombatGrid:Create(cFrame, x, y, anchor, spec, dispellID, ...)
 end
 
 function ERACombatGrid:Pack()
+    self:RaidDebuffs()
     self.frame = CreateFrame("Frame", "ERACombatGridHeader" .. ERACombatGrid_counter, UIParent, "SecureGroupHeaderTemplate")
     ERACombatGrid_counter = ERACombatGrid_counter + 1
     self.frame.grid = self
@@ -833,3 +834,33 @@ end
 --------------------------------------------------------------------------------------------------------------------------------
 
 ERALIBTalent_Nathria = ERALIBTalent:CreateInstance(2296)
+
+function ERACombatGrid:RaidDebuffs()
+    -- rgbC, rgbB
+
+    self:AddTrackedDebuff(342074, 0, 1, 1.0, 0.0, 0.0, 0.0, 0.5, 0.5, ERALIBTalent_Nathria) -- bat jump
+    self:AddTrackedDebuff(328897, 0, 2, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, ERALIBTalent_Nathria) -- bat tank bleed
+
+    self:AddTrackedDebuff(335114, 0, 1, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, ERALIBTalent_Nathria) -- altimor shot 1
+    self:AddTrackedDebuff(335304, 0, 1, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, ERALIBTalent_Nathria) -- altimor shot 2
+    self:AddTrackedDebuff(335116, 0, 1, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, ERALIBTalent_Nathria) -- altimor shot 3
+
+    self:AddTrackedDebuff(339251, 0, 1, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, ERALIBTalent_Nathria) -- kael drained
+    self:AddTrackedDebuff(341473, 1, 1, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, ERALIBTalent_Nathria) -- kael bleed
+
+    self:AddTrackedDebuff(329298, 0, 1, 1.0, 0.5, 0.0, 1.0, 0.0, 0.0, ERALIBTalent_Nathria) -- blue giant zero heal
+
+    self:AddTrackedDebuff(324983, 0, 1, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, ERALIBTalent_Nathria) -- inerva 1 minute damage
+    self:AddTrackedDebuff(324982, 0, 1, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, ERALIBTalent_Nathria) -- inerva 1 minute damage
+    self:AddTrackedDebuff(325004, 0, 1, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, ERALIBTalent_Nathria) -- inerva 1 minute damage
+    self:AddTrackedDebuff(325936, 0, 2, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, ERALIBTalent_Nathria) -- inerva 10 seconds damage
+    self:AddTrackedDebuff(325908, 0, 2, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, ERALIBTalent_Nathria) -- inerva 10 seconds damage
+
+    self:AddTrackedDebuff(346651, 0, 1, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, ERALIBTalent_Nathria) -- dance drain
+    self:AddTrackedDebuff(346654, 0, 1, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, ERALIBTalent_Nathria) -- dance drain
+
+    self:AddTrackedDebuff(334765, 0, 1, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, ERALIBTalent_Nathria) -- generals small dot
+    self:AddTrackedDebuff(334771, 0, 1, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, ERALIBTalent_Nathria) -- generals big dot
+
+    --self:AddTrackedDebuff(spellID, 0, 1, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, ERALIBTalent_Nathria)
+end

@@ -116,16 +116,22 @@ end
 
 function ERACombatTimersGroup:AddKick(spellID, x, y, talent, displayOnlyIfSpellPetKnown)
     local timer = self:AddTrackedCooldown(spellID, talent)
-    local display = self:AddCooldownIcon(timer, nil, x, y, false, false)
+    local display = self:AddCooldownIcon(timer, nil, x, y, true, false)
     display.displayOnlyIfSpellPetKnown = displayOnlyIfSpellPetKnown
     function display:OverrideTimerVisibility()
-        if (self.group.targetKickable or timer.remDuration > 0) then
+        if (self.group.targetCast > 0.1 + timer.remDuration) then
             self.icon:SetAlpha(1.0)
+            return true
         else
-            self.icon:SetAlpha(0.08)
+            if (timer.remDuration > 0) then
+                self.icon:SetAlpha(0.4)
+            else
+                self.icon:SetAlpha(0.08)
+            end
+            return false
         end
-        return false
     end
+    table.insert(self.kicks, display)
 end
 function ERACombatTimersGroup:AddOffensiveDispellCooldown(spellID, x, y, talent, ...)
     self.watchTargetDispellable = true
@@ -190,6 +196,10 @@ function ERACombatTimersGroup:Create(cFrame, x, y, baseGCD, ...)
     group.targetDispellableMagic = false
     group.targetDispellableRage = false
 
+    -- kick
+    group.kicks = {}
+    group.targetCast = 0
+
     -- mécanique
     group.minGCD = 1
     group.baseGCD = baseGCD
@@ -216,7 +226,8 @@ function ERACombatTimersGroup:Create(cFrame, x, y, baseGCD, ...)
     group.castBackground:SetColorTexture(0.0, 0.0, 0.0, 0.66)
     group.castBar = group.frame:CreateTexture(nil, "BORDER")
     group.castBar:SetPoint("BOTTOMRIGHT", group.frame, "CENTER", 0, -ERACombat_TimerIconCooldownSize)
-    group.castBar:SetColorTexture(0.2, 0.6, 0.7, 0.55)
+    --group.castBar:SetColorTexture(0.2, 0.6, 0.7, 0.55)
+    group.castBar:SetColorTexture(0.2, 0.8, 0.6, 0.66)
 
     -- perte de contrôle
     group.loc = {}
@@ -336,6 +347,7 @@ end
 
 function ERACombatTimersGroup:Pack()
     self.frameOverlay = CreateFrame("Frame", nil, self.frame)
+    self.frameOverlay:SetFrameLevel(3)
     self.frameOverlay:SetPoint("TOPLEFT", self.frame, "TOPLEFT", 0, 0)
     self.frameOverlay:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", 0, 0)
     self.gcdTicks = {}
@@ -344,7 +356,10 @@ function ERACombatTimersGroup:Pack()
         line:SetStartPoint("CENTER", self.frameOverlay, 0 - i * (ERACombat_TimerWidth / ERACombat_TimerGCDCount), 0)
         table.insert(self.gcdTicks, line)
     end
-    self.gcdBar = self.frameOverlay:CreateTexture(nil, "OVERLAY")
+    if (#(self.kicks) > 0) then
+        self.targetCastBar = ERACombatTimerTargetCastBar:create(self, self.frameOverlay)
+    end
+    self.gcdBar = self.frameOverlay:CreateTexture(nil, "BACKGROUND")
     self.gcdBar:SetPoint("BOTTOMRIGHT", self.frameOverlay, "CENTER", 0, ERACombat_TimerBarSpacing)
     self.gcdBar:SetColorTexture(1.0, 1.0, 1.0, 0.8)
     for _, icon in ipairs(self.icons) do
@@ -426,13 +441,22 @@ function ERACombatTimersGroup:UpdateCombat(t)
             end
         end
     end
-    self.targetKickable = false
-    local _, _, _, _, _, _, _, notInterruptible, spellCastID = UnitCastingInfo("target")
+    self.targetCast = 0
+
+    local name, text, _, _, endTargetCastMS, _, _, notInterruptible, spellCastID = UnitCastingInfo("target")
     if (spellCastID and not notInterruptible) then
-        self.targetKickable = true
+        self.targetCast = endTargetCastMS / 1000 - t
+        if (self.targetCastBar) then
+            self.targetCastBar.view:SetText(name)
+        end
     else
-        _, _, _, _, _, _, notInterruptible, spellCastID = UnitChannelInfo("target")
-        self.targetKickable = spellCastID and not notInterruptible
+        name, text, _, _, endTargetCastMS, _, notInterruptible, spellCastID = UnitChannelInfo("target")
+        if (spellCastID and not notInterruptible) then
+            self.targetCast = endTargetCastMS / 1000 - t
+            if (self.targetCastBar) then
+                self.targetCastBar.view:SetText(name)
+            end
+        end
     end
 
     local haste = 1 + GetHaste() / 100
@@ -970,9 +994,11 @@ function ERACombatCooldownIcon:checkTalentsOrHide()
         if (self.iconTimer) then
             self.iconTimer:SetIconTexture(iconID, true)
         end
+        self.talentActive = true
         return true
     else
         self:hide()
+        self.talentActive = false
         return false
     end
 end
@@ -1148,12 +1174,12 @@ end
 ERACombatTimerStatusBar = {}
 ERACombatTimerStatusBar.__index = ERACombatTimerStatusBar
 
-function ERACombatTimerStatusBar:construct(group, iconID, r, g, b, texture)
+function ERACombatTimerStatusBar:construct(group, iconID, r, g, b, texture, parentFrame)
     -- assignation
     self.group = group
     table.insert(group.bars, self)
     -- affichage
-    self.view = ERACombatTimersBar:create(group.frame, "CENTER", iconID, r, g, b, texture)
+    self.view = ERACombatTimersBar:create(parentFrame or group.frame, "CENTER", iconID, r, g, b, texture)
     -- mécanique
     self.remDuration = 0
 end
@@ -1289,6 +1315,50 @@ function ERACombatTimerLOCBar:GetRemDurationOr0IfInvisible(t)
         local tmp = self.locRemDuration
         self.locRemDuration = 0
         return tmp
+    else
+        return 0
+    end
+end
+
+-- target cast
+
+ERACombatTimerTargetCastBar = {}
+ERACombatTimerTargetCastBar.__index = ERACombatTimerTargetCastBar
+setmetatable(ERACombatTimerTargetCastBar, {__index = ERACombatTimerStatusBar})
+
+function ERACombatTimerTargetCastBar:create(group, parentFrame)
+    local bar = {}
+    setmetatable(bar, ERACombatTimerTargetCastBar)
+    --bar:construct(group, nil, 1.0, 1.0, 1.0, "Interface\\BUTTONS\\BLUEGRAD64")
+    --bar:construct(group, nil, 1.0, 1.0, 1.0, "Interface\\Legionfall\\LegionfallHorizontal")
+    --bar:construct(group, nil, 1.0, 1.0, 1.0, "Interface\\FontStyles\\FontStyleIronHordeMetal")
+    --bar:construct(group, nil, 1.0, 1.0, 1.0, "Interface\\FontStyles\\FontStyleGarrisons")
+    --bar:construct(group, nil, 1.0, 1.0, 1.0, "Interface\\FontStyles\\FontStyleLegion")
+    --bar:construct(group, nil, 1.0, 1.0, 1.0, "Interface\\PLAYERFRAME\\ShamanMaelstromBarHorizontal")
+    --bar:construct(group, nil, 1.0, 1.0, 1.0, "Interface\\PLAYERFRAME\\DruidLunarBarHorizontal")
+    --bar:construct(group, nil, 1.0, 1.0, 1.0, "Interface\\UNITPOWERBARALT\\FelCorruption_Horizontal_Flash")
+    --bar:construct(group, nil, 1.0, 1.0, 1.0, "Interface\\UNITPOWERBARALT\\FelCorruptionRed_Horizontal_Flash")
+    --bar:construct(group, nil, 1.0, 1.0, 1.0, "Interface\\UNITPOWERBARALT\\Generic1Player_Horizontal_Flash")
+    --bar:construct(group, nil, 1.0, 1.0, 1.0, "Interface\\RAIDFRAME\\Shield-Overlay")
+    --bar:construct(group, nil, 1.0, 1.0, 1.0, "Interface\\RAIDFRAME\\Shield-Fill")
+    bar:construct(group, nil, 1.0, 1.0, 1.0, "Interface\\FontStyles\\FontStyleLegion", parentFrame)
+    ERALIB_SetFont(bar.view.text, ERACombat_TimerBarDefaultSize * 0.5)
+    return bar
+end
+
+function ERACombatTimerTargetCastBar:checkTalentsOrHide()
+    return true
+end
+
+function ERACombatTimerTargetCastBar:GetRemDurationOr0IfInvisible(t)
+    local c = self.group.targetCast
+    if (c > 0) then
+        for _, k in ipairs(self.group.kicks) do
+            if (k.talentActive and c > 0.1 + k.cd.remDuration and ((not k.displayOnlyIfSpellPetKnown) or IsSpellKnown(k.cd.spellID, true))) then
+                return c
+            end
+        end
+        return 0
     else
         return 0
     end

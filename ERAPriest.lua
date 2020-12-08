@@ -86,7 +86,7 @@ function ERACombatFrames_PriestDisciplineSetup(cFrame, kyrian_talent)
     -- spellID, position, priority, rC, gC, bC, rB, gB, bB, talent
     local expiation = grid:AddTrackedBuff(194384, 1, 1, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, nil)
     grid:AddTrackedBuff(17, 0, 1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, nil) -- boubou
-    grid:AddTrackedDebuff(6788, 1, 1, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, nil) -- pas boubou
+    grid:AddTrackedDebuff(6788, 2, 1, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, nil) -- pas boubou
 
     local disciUtility = ERACombatUtilityFrame:Create(cFrame, -222, -144, 1)
     disciUtility:AddCooldown(1, 0, 200174, nil, true, talent_mindblender)
@@ -211,7 +211,7 @@ function ERACombatFrames_PriestShadowSetup(cFrame, kyrian_talent)
     shadowUtility:AddCovenantClassAbility(1, 0, 325013, 323673, 327661, 324724)
     shadowUtility:AddCooldown(0, 0, 200174, nil, true, talent_mindblender)
     shadowUtility:AddCooldown(0, 0, 132603, nil, true, talent_not_mindblender)
-    shadowUtility:AddCooldown(-1, 0, 193223, nil, true, talent_madness)
+    shadowUtility:AddCooldown(-1, 0, 319952, nil, true, talent_madness)
     shadowUtility:AddBuffIcon(shadowUtility:AddTrackedBuff(193223, talent_madness), 136221, -1, 0, false)
     shadowUtility:AddCooldown(0.5, -0.9, 10060, nil, true, ERALIBTalent:CreateLevel(58)) -- infu
     shadowUtility:AddTrinket1Cooldown(-0.5, -0.9)
